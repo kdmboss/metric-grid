@@ -148,3 +148,18 @@ Codex also updated `web/Workspace.jsx`, `web/MapCanvas.jsx`, `web/workspace.css`
 
 
 Validation for these additions: 17 web tests passed; 182 Python tests passed with 11 expected skips; Chrome acceptance, pixel-variance and responsive/contrast checks passed. All 46 protected model/input/configuration files remained unchanged. No Safari validation is claimed. The owner must review the preview and complete the author fields.
+
+
+## Review polish and focused tabs (2026-10-19)
+
+OpenAI Codex applied the owner-supplied review and the owner’s request to separate content into focused tabs. Codex standardized METRIC-Grid branding, made Compare the default, separated supporting analysis from the primary comparison, fixed hover cleanup and map framing, and added conditional benefit copy. The historical customer count was verified against Duke Energy’s December 24, 2022 update and stored separately from model inputs. Codex did not change the original model, frozen data, configuration values or personal-story/quote files.
+
+| File | Status | What I changed |
+|---|---|---|
+| `docs/historical_context.yaml` | AI-assisted (OpenAI Codex); sourced historical UI context | TODO (author) |
+| `docs/PROJECT_CONTEXT.md` | AI-assisted (OpenAI Codex); current repository summary | TODO (author) |
+
+Codex also updated `web/Workspace.jsx`, `web/MapCanvas.jsx`, `web/Evidence.jsx`, `web/main.jsx`, `web/comparison.js`, `web/workspace.css`, `web/model.test.js`, `scripts/export-web-data.mjs`, `scripts/workspace-smoke.cjs`, `scripts/workspace-contrast.cjs`, `index.html`, `public/favicon.svg`, `README.md`, `CHANGELOG.md`, `docs/VIDEO_SHOTLIST.md`, `docs/UI_CHANGES.md`, `docs/DATA_SOURCES.md`, and `.hallmark/log.json`. All `web/` files are listed in this disclosure. Owner fields remain for the owners. Review screenshots are generated artifacts.
+
+
+Review validation: 19 web tests passed, the build passed, and the Python suite completed with 182 passed and 11 expected skips. Chrome checks covered all 40 rendered plan pairs, protected-zone styling, hover cleanup, focused/keyboard tabs, responsive layout and pixel variance. All 46 original protected file hashes matched. Desktop and phone review screenshots were refreshed; no Safari result is claimed. Production remains unchanged.

@@ -2,6 +2,15 @@
   {
     "date": "2026-10-19",
     "macrostructure": "Map / Diagram",
+    "theme": "existing civic workspace tokens",
+    "nav": "Compare-first primary tabs and focused secondary views",
+    "footer": "inline provenance",
+    "enrichment": "none",
+    "brief": "Owner-requested review fixes, professional first impression, focused tabs and tooltip/map-fit reliability"
+  },
+  {
+    "date": "2026-10-19",
+    "macrostructure": "Map / Diagram",
     "theme": "studied-DNA from user reference screenshots; retained Metric Grid tokens",
     "nav": "compact top workspace tabs",
     "footer": "inline provenance",

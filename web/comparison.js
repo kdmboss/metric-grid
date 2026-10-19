@@ -86,3 +86,20 @@ export function countyLabelAnchors(paths) {
     return { county, label: county.replace(' County', ''), x, y };
   });
 }
+
+
+/** Purpose copy follows the actual displayed result, including business-cost-only settings. */
+export function benefitSentence(record) {
+  if (record.weighted.h_human < record.baseline.h_human && record.weighted.electric_heat_households < record.baseline.electric_heat_households) return 'When power has to be cut, METRIC-Grid shows planners how to cut the same amount while leaving fewer of the families least able to handle the cold in the dark.';
+  return 'When power has to be cut, METRIC-Grid helps planners compare who bears the consequences—and see when prioritizing business cost increases exposure to cold.';
+}
+
+/** Match the SVG viewport to the panel while retaining all local tract geometry. */
+export function mapFrame(paths, ratio = 640 / 390) {
+  const points = paths.flatMap(path => [...path.d.matchAll(/[ML]([\d.-]+),([\d.-]+)/g)].map(m => [Number(m[1]), Number(m[2])]));
+  if (!points.length) return { x: 0, y: 0, width: 640, height: 390 };
+  const widthNeeded = Math.max(...points.map(([x]) => Math.abs(x - 320))) * 2 + 32;
+  const heightNeeded = Math.max(...points.map(([, y]) => Math.abs(y - 195))) * 2 + 32;
+  const width = Math.max(widthNeeded, heightNeeded * ratio), height = width / ratio;
+  return { x: 320 - width / 2, y: 195 - height / 2, width, height };
+}

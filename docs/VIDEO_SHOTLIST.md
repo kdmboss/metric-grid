@@ -6,19 +6,17 @@ Say it plainly: this is a **modeled planning scenario**, not Duke's method, not 
 
 ## Current React workspace recording flow
 
-Show Explore first: the people-first results, searchable map, social-vulnerability/electric-heat/estimated-load layers, and a selected census tract. Switch to Compare for the scenario controls, synchronized maps, distribution strips, and county concentration. Demonstrate Prepare by adding the selected zone, entering your own note, choosing a follow-up, and exporting CSV or printing the shortlist. Explain that the shortlist is a set of places to investigate; it does not estimate the benefit of an intervention.
+Start on the primary Vercel app with Compare selected (no query is required). Record the people-first results and equally prominent amber total-household trade-off; show each plan’s actual MW and the shared band. Keep the two maps visible while changing the priority and trying the county cap.
 
-The historical reference stays fixed. Do not call it live monitoring. Use the on-screen results rather than memorizing numbers. Show the amber household trade-off whenever discussing benefits. Do not read optional testimonials or a family story unless the owners have supplied approved content; both ship hidden.
+Use the comparison view tabs instead of scrolling through every section: Two plans → What changed? → County summary → Plan range. Explain the grey/amber/light/dark categories, protected hatching, and the live swap description. If its SVI direction reverses, say so. A mean tract SVI is not a count of specific people protected. In County summary, show Union’s share of each plan’s own cut and both household counts. Click a zone and demonstrate the synchronized outline and zoom control.
 
-Suggested timing: Explore and purpose 0:00–0:35; Compare and honest trade-off 0:35–1:20; Prepare 1:20–1:45; Review the evidence 1:45–2:15; code/test 2:15–2:40; limitations and close 2:40–2:55.
+Briefly open Explore for zone lookup and the priority list. Open Evidence → Forecast for the extreme-cold forecast miss, then Evidence → Methods & sources for the assumptions. Evidence → Robustness holds sensitivity results. Leave Prepare out of the video; its local shortlist and exports remain available in the app.
 
-In Compare, the slider uses plain-language labels. In Explore, the zone picker defaults to the top priority zone (zone 69 is open). Expand Review the evidence for How robust is this?, Why forecasts aren’t enough, and Methods & sources. The reference counts below remain sourced from the frozen data; the original shot-by-shot table is retained as a numeric/code reference, not a literal navigation script.
+Say the implementation accurately: **“Python for the data and optimization model, React and JavaScript for the interface.”** The web app replays precomputed Python optimization results and calculates displayed summaries locally; it does not run a live optimizer or monitor the grid.
 
-## Difference map and county context additions
+The required purpose sentence remains: “METRIC-Grid helps emergency planners and community stakeholders compare how load-only and vulnerability-aware outage scenarios could distribute risk across North Carolina's 8th District.” Disclose Claude, Claude Code, Perplexity and OpenAI Codex. Use the on-screen results rather than memorizing figures. Only include real owner-written personal experiences or approved quotes.
 
-Use the three-step strip to introduce the controls. In Compare, show both plans’ actual MW and shared target band, then scroll to “What changed between the two plans?” The grey zones are cut only in the megawatts-only plan; amber zones only in the vulnerability-aware plan; light zones in both; dark zones in neither; hatching marks protected zones. Read the live category counts and the current swap sentence, which can reverse with different settings. The stated average SVI describes tracts, not specific families or seniors protected.
-
-Click a tract and demonstrate the shared selected-zone outline and zoom-to-selected control. County labels come from bundled local geometry. In the county summary, start with Union and show each plan’s MW, share of its own district cut, electric-heat homes and total homes cut. Change the county once. Explain that the county selector summarizes existing results; it does not change either plan. Keep the amber total-household trade-off in the explanation. Fit these shots into the existing Compare segment rather than extending the video beyond its limit.
+Suggested timing: historical opener and purpose 0:00–0:25; Compare and trade-offs 0:25–1:25; Explore lookup 1:25–1:40; Evidence 1:40–2:10; code/test 2:10–2:35; limitations/tools/disclosure and close 2:35–2:55.
 
 ## Original shot reference (use current workspace navigation)
 

@@ -6,9 +6,11 @@ A Congressional App Challenge entry. It is a **public-data planning simulator**:
 
 The primary interface is now a **React + Vite web app for Vercel**. It runs the existing precomputed scenarios in the browser without Streamlit, Python functions, API keys, or a database at runtime. The original Python model, data pipeline, and legacy Streamlit interface are retained for reproducibility.
 
-## Map-first planning workspace
+**Live app:** [METRIC-Grid on Vercel](https://metric-grid.vercel.app/). Use this primary link for the submission; review previews are temporary and may require Vercel sign-in.
 
-Explore the district with local search, map layers, county filtering and zone details. Compare precomputed scenarios with synchronized maps. Prepare a manually selected shortlist with browser-local notes, CSV export and a printable evidence summary. This is a planning aid for investigation, not a validated siting tool.
+## Planning workspace
+
+The app opens on **Compare**, with synchronized maps and the honest total-household trade-off. Its focused views are Two plans, What changed?, County summary, and Plan range. **Explore** holds local search, map layers, county filtering, zone details, the priority table, and public-building examples. **Evidence** separates Robustness, Forecast, and Methods & sources. Prepare a manually selected shortlist with browser-local notes, CSV export and a printable evidence summary. This is a planning aid for investigation, not a validated siting tool.
 
 Optional testimonials are read from `docs/quotes.yaml` at build time; only entries with `permission: true` and nonempty `name`, `role`, and `quote` are included. The optional `docs/author_story.md` is rendered as plain text. Both files ship empty, and no empty sections are displayed. Owners must supply and review this content.
 
@@ -26,7 +28,7 @@ npm run preview  # serve the production build locally
 
 The build exports `data/frozen/` and relevant `config.yaml` settings to browser-safe JSON, converts non-finite Python JSON values to `null`, and bundles the existing fonts locally. Maps use tract geometry and SVG; charts and scenario calculations run locally. Data and model changes still happen in the Python pipeline, followed by a new web build. Every supported control setting uses the original precomputed results; there is no live optimizer.
 
-The web interface includes the paired maps, reduction and alpha controls, county cap, all 200-plan comparisons, current-scenario priority zones, zone and example-building lookup, sensitivity results, the optional demand panel, methods and sources, and JSON scenario export. Missing or infeasible settings disclose the nearest available result. Deep links retain the original format: `?alpha=1&pct=10&cap=1&zone=23`.
+The web interface includes the paired maps, reduction and alpha controls, county cap, all 200-plan comparisons, current-scenario priority zones, zone and example-building lookup, sensitivity results, the optional demand panel, methods and sources, and JSON scenario export. Missing or infeasible settings disclose the nearest available result. Deep links support `mode=compare|explore|prepare|evidence` and comparison `section=plans|changes|counties|range`. Missing or invalid modes open Compare. Existing scenario links still work: `?alpha=1&pct=10&cap=1&zone=23`.
 
 ## Deploy to Vercel
 
@@ -41,7 +43,7 @@ npx vercel --prod   # production deployment
 
 `npm test` checks all 40 precomputed scenarios, comparison distributions, target bands, county caps, protected zones, example buildings, and deep links. For browser acceptance checks, install Playwright in your development environment and run `node scripts/workspace-smoke.cjs`. `PLAYWRIGHT_MODULE` can select a bundled Playwright module; `BROWSER_EXECUTABLE` can select another Chromium executable (default: Chrome). `SMOKE_URL` selects a deployed or production-preview URL. Screenshots and downloads are saved to ignored `artifacts/`.
 
-![Original Streamlit interface, retained for reference](docs/figures/app_default.png)
+![METRIC-Grid comparison interface](docs/figures/ui_first_screen_1440.png)
 
 ## What it does
 

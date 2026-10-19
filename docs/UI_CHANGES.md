@@ -70,3 +70,19 @@ Review screenshots: `docs/figures/ui_first_screen_1440.png`, `docs/figures/ui_wh
 Validation for these additions: `npm test` — 17 passed; `npm run build` — passed; full `make test` — 182 passed, 11 expected skips, 27 existing missing-SVI warnings. Chrome acceptance checks passed, including exclusive live counts, all-county totals, label placement inside real tract outlines, selected-zone zoom synchronization, protected hatching, pixel variance, and responsive widths 320–1440 px. Compare text contrast at 1440 and 390 px was at least 6.95:1. All 46 protected model/data/configuration file hashes matched their starting values. Safari is not claimed.
 
 Review preview: https://metric-grid-d2xxwozl2-karthiks-projects-65cb8506.vercel.app/?mode=compare (Vercel account sign-in may be required). Production remains on its prior deployment.
+
+
+## Review polish and focused navigation
+
+The landing view is now Compare. The official METRIC-Grid name is consistent across the header/footer, browser title, loading states, favicon title and README. The historical opener uses the existing start-time and temperature observations plus a separately sourced Duke Energy customer count, bundled at build time. The benefit sentence becomes neutral at settings that do not reduce both weighted harm and electric-heat exposure.
+
+The main views are Compare / Explore / Prepare / Evidence. Compare has Two plans / What changed? / County summary / Plan range tabs; Evidence has Robustness / Forecast / Methods & sources tabs. Explore owns the priority list and public-building examples. Results are no longer presented as one long sequence. Comparison state, selected zone and camera are preserved between views; explicit mode and comparison-view deep links remain supported.
+
+Tooltips clear on tract leave, mode/view changes, pan and scenario changes. Protected zones cannot receive the cut styling. SVG viewports fit local whole-tract geometry to each panel’s dimensions with padding, preserving every tract. The two-plan map panels are taller for geographic readability. README and the new PROJECT_CONTEXT identify Vercel as primary; the video starts on Compare, names Python + React/JavaScript and explains the precomputed results. Prepare is omitted from the video.
+
+
+Final review validation: 19 web tests passed; production build passed; full Python suite completed with 182 passed and 11 expected skips (7 raw-data prerequisites and 4 unavailable browser builds). Chrome smoke checks covered exact rendered cut-zone sets across all 40 scenarios, protected exclusions, tooltip leave/tab cleanup, keyboard view tabs, the difference-map overlay shortcut, responsive widths 320–1440 px, local-only requests, shortlist/export flows, and safe optional content. Each comparison/evidence view passed contrast checks at 1440 and 390 px, with text at least 6.95:1. All 46 protected model/input/configuration hashes remained unchanged. Safari has not been verified.
+
+Primary navigation remains reachable in a sticky top bar. The full introduction and headline results appear in Compare; other modes open directly into their own content. Primary-mode changes open at the top of their content, while scenario and selection state are preserved. Selecting a zone from Plan range opens its Explore inspector.
+
+Current review preview: https://metric-grid-opwsq1y68-karthiks-projects-65cb8506.vercel.app/ (Compare opens by default; Vercel sign-in may be required). Production remains unchanged.

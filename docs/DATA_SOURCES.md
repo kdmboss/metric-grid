@@ -19,3 +19,8 @@ Each entry gets: name, URL, dataset date/vintage, retrieval date, what it is use
 | LBNL, "Updated Value of Service Reliability Estimates for Electric Utility Customers in the United States" (ICE Calculator 2.0 report, LBNL-6941E) | interruption cost: $5.1 per household-hour; $21.8 and $295.0 per average kW (Medium and Large / Small C&I); Table ES-1 p. xii (PDF p. 14), ES-2 p. xiii | https://eta-publications.lbl.gov/sites/default/files/lbnl-6941e.pdf | 2015, U.S. 2013 dollars | downloaded 2026-10-18; values verified |
 | EIA-930 bulk files (Dec 2017 to Dec 2018 for the demand model) | winter demand history before the API's 2019-01-01 start | https://www.eia.gov/electricity/gridmonitor/sixMonthFiles/ (EIA930_BALANCE_2017_Jul_Dec, 2018_Jan_Jun, 2018_Jul_Dec, 2019_Jan_Jun) | 2017-2019 | downloaded 2026-10-19; identical to the API on the overlap |
 | KCLT and KRDU hourly temperature via Iowa Environmental Mesonet | demand model temperature inputs | https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py | Dec 2017 to Feb 2025 | downloaded 2026-10-19 |
+
+
+## Historical interface opener
+
+The approximate customer count in the introduction comes from [Duke Energy’s December 24, 2022 restoration update](https://news.duke-energy.com/releases/duke-energy-asks-for-continued-energy-conservation-as-power-restoration-continues-following-extreme-winter-temperatures), which reports service interrupted to about 500,000 customers. The UI bundles this narrative context from `docs/historical_context.yaml` at build time; it does not affect any scenario result. The start time uses the SC ORS source already listed above. The approximate temperature uses the frozen KCLT reference-hour observation, not a temperature measured across the district at the exact start minute.

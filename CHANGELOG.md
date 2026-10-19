@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-19 · Review polish and focused tabs (OpenAI Codex)
+
+- Made Compare the default, preserved explicit mode and scenario deep links, and standardized visible branding and browser metadata to METRIC-Grid.
+- Split Compare into Two plans / What changed? / County summary / Plan range; moved priority lookup into Explore and supporting analyses into Evidence with Robustness / Forecast / Methods tabs.
+- Added a sourced historical opener and result-aware benefit copy. Historical facts are bundled at build time separately from model inputs.
+- Fixed tooltip cleanup on tract leave, tab changes and scenario/view changes; defensively exclude protected zones from cut styling.
+- Fit map viewports to local geometry and panel dimensions without cropping; added regression checks across all supported scenarios.
+- Updated the live-link documentation, project context and Compare-first video workflow. Production is unchanged.
+
 ## 2026-10-19 · Difference map and county context (OpenAI Codex)
 
 - Added the default-on difference map below the two comparison maps, with exclusive live categories, protected hatching, tooltips, and a conditional SVI swap explanation.

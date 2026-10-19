@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { cutCounts, defaults, enrichZones, getView, locate, mapPaths, planMetrics, readState, status, targets } from './model.js';
-import { planChanges, countySummary, countyLabelAnchors, swapSentence } from './comparison.js';
+import { planChanges, countySummary, countyLabelAnchors, swapSentence, benefitSentence, mapFrame } from './comparison.js';
 import { approvedContent } from './content.js';
 import { FOLLOWUPS, csvCell, exportRows, priorityName, sanitizePlan, shortlistCsv } from './planning.js';
 
@@ -197,4 +197,26 @@ test('local county labels have unique finite anchors within the map', () => {
   assert.equal(labels.length, new Set(zones.map(z => z.COUNTY)).size);
   assert.equal(new Set(labels.map(l => l.county)).size, labels.length);
   for (const label of labels) assert.ok(Number.isFinite(label.x) && Number.isFinite(label.y) && label.x >= 0 && label.x <= 640 && label.y >= 0 && label.y <= 390);
+});
+
+
+test('benefit copy only claims lower cold exposure when both measures support it', () => {
+  for (const record of data.records.filter(r => r.solved)) {
+    const improved = record.weighted.h_human < record.baseline.h_human && record.weighted.electric_heat_households < record.baseline.electric_heat_households;
+    assert.equal(benefitSentence(record).includes('leaving fewer'), improved);
+  }
+  assert.ok(data.history.approx_customers_interrupted > 0);
+  assert.match(data.history.customers_source_url, /^https:\/\/news\.duke-energy\.com\//);
+});
+
+test('responsive map frames contain every original tract point without cropping', () => {
+  const paths = mapPaths(data.zones, data.district).zones;
+  for (const ratio of [.8, 1, 1.5, 2, 3.5]) {
+    const frame = mapFrame(paths, ratio);
+    close(frame.width / frame.height, ratio, 'frame aspect');
+    for (const path of paths) for (const match of path.d.matchAll(/[ML]([\d.-]+),([\d.-]+)/g)) {
+      const x = Number(match[1]), y = Number(match[2]);
+      assert.ok(x > frame.x && x < frame.x + frame.width && y > frame.y && y < frame.y + frame.height);
+    }
+  }
 });

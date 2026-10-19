@@ -1,0 +1,6 @@
+# Historical narrative only; this is not an input to the optimization model.
+approx_customers_interrupted: 500000
+customers_source_title: Duke Energy, December 24, 2022 restoration update
+customers_source_url: https://news.duke-energy.com/releases/duke-energy-asks-for-continued-energy-conservation-as-power-restoration-continues-following-extreme-winter-temperatures
+# Time comes from frozen constants.scenario.shed_start_local (SC ORS report).
+# Approximate temperature comes from frozen demand_panel.elliott.temp_f (KCLT).

@@ -5,12 +5,13 @@ const assert = require('node:assert/strict');
   const browser = await chromium.launch({ headless: true, channel: 'chrome' });
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
   await page.goto(process.env.SMOKE_URL || 'http://127.0.0.1:5173');
-  await page.locator('#zone').waitFor();
-  for (const width of [1440, 390]) {
-    await page.getByRole('tab', { name: 'Compare', exact: true }).click();
+  await page.locator('#compare-zone').waitFor();
+  for (const width of [1440, 390]) for (const screen of ['plans', 'changes', 'counties', 'range', 'robust', 'forecast', 'methods']) {
+    const evidence = ['robust', 'forecast', 'methods'].includes(screen);
+    await page.getByRole('tab', { name: evidence ? 'Evidence' : 'Compare', exact: true }).click();
+    await page.locator(`#${evidence ? 'evidence' : 'compare'}-tab-${screen}`).click();
     await page.setViewportSize({ width, height: 1000 });
-    await page.getByRole('button', { name: 'Review the evidence →' }).click();
-    await page.getByRole('button', { name: 'Methods & sources', exact: true }).click();
+
     const result = await page.evaluate(() => {
       const ctx = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
       function rgb(color) { ctx.clearRect(0, 0, 1, 1); ctx.fillStyle = color; ctx.fillRect(0, 0, 1, 1); return [...ctx.getImageData(0, 0, 1, 1).data].slice(0, 3); }
@@ -36,12 +37,12 @@ const assert = require('node:assert/strict');
       const graphics = [['cut vs highest map shade', '--color-warning', '--color-map4'], ['district boundary vs map', '--color-positive', '--color-paper'], ['plan dots vs chart', '--color-dot', '--color-sidebar'], ['focus vs page', '--color-accent', '--color-paper']].map(([label, a, b]) => ({ label, ratio: ratio(token(a), token(b)) }));
       return { count, min, failures, graphics };
     });
-    console.log(`${width}px: ${result.count} text nodes checked; lowest contrast ${result.min.toFixed(2)}:1.`);
+    console.log(`${width}px ${screen}: ${result.count} text nodes checked; lowest contrast ${result.min.toFixed(2)}:1.`);
     if (result.failures.length) console.log(JSON.stringify(result.failures.slice(0, 12), null, 2));
     console.log(result.graphics.map(g => `${g.label}: ${g.ratio.toFixed(2)}:1`).join('\n'));
     assert.equal(result.failures.length, 0);
     assert.ok(result.graphics.every(g => g.ratio >= 3));
-    await page.getByRole('button', { name: 'Hide evidence', exact: true }).click();
+
   }
   await browser.close();
 })().catch(error => { console.error(error); process.exit(1); });

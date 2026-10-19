@@ -22,6 +22,7 @@ catch (error) { if (error.code !== 'ENOENT') throw error; data.panel = null; }
 // Match PyYAML's last-key-wins behavior for the retained source configuration.
 const config = parse(await readFile(resolve(root, 'config.yaml'), 'utf8'), { uniqueKeys: false });
 data.config = { harm: config.harm, optimizer: config.optimizer, priority_list: config.priority_list, example_locations: config.example_locations };
+data.history = parse(await readFile(resolve(root, 'docs/historical_context.yaml'), 'utf8'));
 data.content = approvedContent(
   parse(await readFile(resolve(root, 'docs/quotes.yaml'), 'utf8')),
   await readFile(resolve(root, 'docs/author_story.md'), 'utf8'),
