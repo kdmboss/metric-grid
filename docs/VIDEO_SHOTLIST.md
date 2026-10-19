@@ -18,6 +18,23 @@ The required purpose sentence remains: “METRIC-Grid helps emergency planners a
 
 Suggested timing: historical opener and purpose 0:00–0:25; Compare and trade-offs 0:25–1:25; Explore lookup 1:25–1:40; Evidence 1:40–2:10; code/test 2:10–2:35; limitations/tools/disclosure and close 2:35–2:55.
 
+## Technical evidence to include in the current recording
+
+This checklist is a presentation guide, not a claim about an official judging rubric. Use the current React interface and METRIC-Grid name throughout.
+
+1. **Visual scannability:** show the paired maps and each plan’s actual MW, then What changed? and its live category counts. Show Plan range briefly to explain that the comparison includes the load-only distribution, not just one favorable baseline. Keep the total-household trade-off in view or say it explicitly.
+2. **What-if controls:** change Elliott to a supported shortage preset, move the priority slider, then toggle the county cap. Pause for the updated geography and outcomes. Say: “These controls compare precomputed Python optimization results; the interface updates the maps and summaries locally.” Do not demonstrate or claim an arbitrary 50 MW target, continuous MW solving, or a live Python request from the browser; these are not implemented.
+3. **Data integration:** within the existing code/test segment, show `clean_svi` in `src/metric_grid/ingest/svi.py`, then `join_attributes` in `src/metric_grid/ingest/district.py`. Say: “I match the public datasets using eleven-digit tract identifiers, preserve leading zeroes, and reject duplicate keys so joins cannot silently multiply rows. Missing vulnerability values stay missing.” Point to the `zfill(11)`, chained GEOID merges, duplicate-key checks and tract-count guard in the real source.
+4. **Optimization and verification:** show `_build_problem` and `solve_one` in `src/metric_grid/model/optimizer.py`, then run the targeted optimizer test below. This test actually invokes the Python solver; it is separate from the web app’s precomputed playback. Explain the shared band and protected exclusions, rather than scrolling through many lines of code.
+
+Budget the code/test segment at about 25 seconds: a short GEOID/join shot, a short constraint/objective shot, and the test output. Rehearse and pre-open the files. If time is tight, put the longer data-pipeline explanation in the source walkthrough in README rather than adding runtime to the video.
+
+Optional data-cleaning proof for a reviewer (not required to run on camera):
+
+```bash
+.venv/bin/python -m pytest tests/test_phase1.py -k 'svi_missing_sentinel or join_rejects_duplicate' -v
+```
+
 ## Original shot reference (use current workspace navigation)
 
 | # | Time | App state (URL after `http://127.0.0.1:5173/`) | What is on screen | Say (in your own words) |
@@ -64,10 +81,10 @@ For the vulnerability-aware plan `objective[i]` is the harm score `H_i(alpha)`; 
 .venv/bin/python -m pytest tests/test_harm_optimizer.py -k real_both_plans_in_same_band -v
 ```
 
-Five PASSED lines (one per alpha). Do not run the whole suite on camera (about 40 seconds on a quiet machine).
+Five PASSED lines (one per alpha). Do not run the whole suite on camera. Rehearse the targeted test and avoid promising a fixed execution time.
 
 ## Before recording
 
 - `make test` and `npm test` are green; `npm run dev` opens the React workspace; no other tab shows a different data version.
-- Screenshots in `docs/figures/app_*.png` are current (`python scripts/app_screenshots.py` with the app running).
+- Current React screenshots in `docs/figures/ui_*.png` match the review build; refresh browser checks with `node scripts/workspace-smoke.cjs` using the configured Playwright runtime and Chrome.
 - Check every number you say against the screen, not memory. The numbers above come from the frozen model output.

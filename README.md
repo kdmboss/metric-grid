@@ -14,6 +14,17 @@ The app opens on **Compare**, with synchronized maps and the honest total-househ
 
 Optional testimonials are read from `docs/quotes.yaml` at build time; only entries with `permission: true` and nonempty `name`, `role`, and `quote` are included. The optional `docs/author_story.md` is rendered as plain text. Both files ship empty, and no empty sections are displayed. Owners must supply and review this content.
 
+## Technical walkthrough for reviewers
+
+| Area | What to demonstrate | Source evidence |
+|---|---|---|
+| Visual clarity | Compare → Two plans for paired household/MW totals; What changed? for exclusive tract categories; Plan range for the comparison against the full load-only set. | `web/MapCanvas.jsx`, `web/ComparisonPanels.jsx`, `web/Workspace.jsx`, `web/Evidence.jsx` |
+| What-if interaction | Change the shortage preset, move the planning-priority slider, and toggle the county cap. Maps, actual MW, category counts and household trade-offs update together. | `web/model.js` (`getView`), `web/comparison.js`, `web/model.test.js` |
+| Data engineering | Preserve leading zeroes in tract identifiers, convert missing-value sentinels to missing values, and join ACS, CDC SVI and LODES by GEOID while rejecting duplicate keys. | `src/metric_grid/ingest/svi.py` (`clean_svi`), `src/metric_grid/ingest/acs.py` (`clean_acs`), `src/metric_grid/ingest/district.py` (`join_attributes`), `tests/test_phase1.py` |
+| Optimization | Show the shared MW band, binary decisions, protected-zone exclusions, optional county cap and objective; run an existing optimizer test. | `src/metric_grid/model/optimizer.py` (`_build_problem`, `solve_one`), `tests/test_harm_optimizer.py` |
+
+The interface supports the Elliott reference plus 10%, 15% and 20% shortage presets, the configured priority grid and the county cap. It does **not** accept arbitrary MW targets or execute Python optimization when a browser control moves. The supported combinations replay reproducible Python results; presentation summaries are calculated locally. Precomputation keeps the deployed app offline-capable and avoids a solver service. Demonstrate the actual Python implementation and its tests instead of claiming a live backend.
+
 ## Run the web app
 
 Requires Node.js 22.12+ (Node 24 also works).

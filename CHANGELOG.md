@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-19 · Technical demonstration guidance (OpenAI Codex)
+
+- Mapped visual comparison, supported what-if controls, GEOID data integration and optimization tests to their real source files in README and the video shot list.
+- Clarified that the React app replays precomputed Python solutions; arbitrary MW targets and live browser-triggered Python solving are not implemented.
+- Added a concise data-join/code/test sequence for the existing video time budget. No UI, model, input, dependency or deployment changes.
+
 ## 2026-10-19 · Review polish and focused tabs (OpenAI Codex)
 
 - Made Compare the default, preserved explicit mode and scenario deep links, and standardized visible branding and browser metadata to METRIC-Grid.

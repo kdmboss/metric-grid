@@ -163,3 +163,10 @@ Codex also updated `web/Workspace.jsx`, `web/MapCanvas.jsx`, `web/Evidence.jsx`,
 
 
 Review validation: 19 web tests passed, the build passed, and the Python suite completed with 182 passed and 11 expected skips. Chrome checks covered all 40 rendered plan pairs, protected-zone styling, hover cleanup, focused/keyboard tabs, responsive layout and pixel variance. All 46 original protected file hashes matched. Desktop and phone review screenshots were refreshed; no Safari result is claimed. Production remains unchanged.
+
+
+## Technical demonstration guidance (2026-10-19)
+
+OpenAI Codex audited the owner-supplied technical checklist against the repository and updated `README.md`, `docs/VIDEO_SHOTLIST.md`, `CHANGELOG.md`, and `docs/AI_DISCLOSURE.md`. The guidance points to actual GEOID normalization, duplicate-key checks, joins, shared optimization constraints and existing tests. It explicitly distinguishes precomputed browser playback from Python solver execution and does not claim arbitrary MW targets or a live backend. No application/model/data files were changed. Owner-review fields remain for the owners.
+
+Validation for this documentation update: 2 targeted data-cleaning/join tests, 5 real optimizer tests and 21 audit tests passed. No pipeline rebuild or deployment was performed.
