@@ -1,0 +1,171 @@
+# METRIC-Grid configuration. Every constant lives here; no other file hard-codes
+# state, district, balancing authority, or counties. Values marked TODO are
+# placeholders to be resolved (and sourced) in the named phase.
+
+district:
+  state_fips: "37"            # Census FIPS, North Carolina
+  district: "08"              # CD119FP, NC-08 (119th Congress). Source: Census TIGER/Line 2024 tl_2024_us_cd119
+  tiger_year: 2024
+  tract_min_overlap: 0.5      # keep tract if centroid inside OR >=50% area overlap (Phase 1)
+  # Derived in Phase 1 from the tract selection (3-digit county FIPS under state_fips).
+  # Anson, Cabarrus, Mecklenburg, Montgomery, Richmond, Robeson, Scotland, Stanly, Union
+  counties: ["007", "025", "119", "123", "153", "155", "165", "167", "179"]
+
+# Footprint groups: one per utility whose balancing-authority demand is scaled down to the district.
+# D_NC08 = sum over groups of D_g (the hour ending 07:00) * W_NC08_in_g / W_g, with a consistent modeled weight W.
+# Counties are assigned to groups from EIA Form 861 (Service_Territory + the BA Code in Sales_Ult_Cust); see
+# docs/ASSUMPTIONS.md. Nothing here is specific to NC-08: another district only needs another list.
+balancing_authorities:
+  - key: "DEC"
+    name: "Duke Energy Carolinas"
+    eia930_respondents: ["DUK"]             # EIA-930 BA code(s) whose hourly demand is summed
+    eia861_utility_numbers: ["5416"]        # EIA-861 Utility Number for Duke Energy Carolinas, LLC
+    eia861_ba_codes: ["DUK"]                # co-ops/municipals with this BA Code count as this group's load
+    shed_mw: 1000                           # max firm load shed
+    shed_source: "FERC-NERC Elliott report (Nov 2023) PDF p.71: DEC 400 MW at 6:27, 1,000 MW at 7:10; SC ORS report p.39 (PDF p.49): 400 MW directed 6:14, maintained 1,000 MW"
+  - key: "DEP"
+    name: "Duke Energy Progress"
+    eia930_respondents: ["CPLE", "CPLW"]    # Progress East + West; EIA-861 lists DEP as one utility
+    eia861_utility_numbers: ["3046"]
+    eia861_ba_codes: ["CPLE", "CPLW"]
+    shed_mw: 961
+    shed_source: "FERC-NERC Elliott report (Nov 2023) PDF p.71: DEP 600 MW at 6:25, 800 MW at 7:10, max 961 MW by 7:56; SC ORS report p.39 (PDF p.49) requests sum to the same 961 MW"
+
+# How a county served by more than one group is split between them. "customer_spread" (default): each utility's EIA-861
+# customers are spread over the counties it serves in proportion to housing units. "equal" and 0/1 extremes are
+# run as sensitivity cases.
+shared_county_rule: "customer_spread"
+
+scenario:
+  name: "Winter Storm Elliott, Dec 24 2022, hour ending 07:00 (06:00-07:00)"
+  date: "2022-12-24"
+  eia_window_start_utc: "2022-12-22T00:00"   # EIA-930 fetch range per spec (2022-12-22 to 2022-12-26)
+  eia_window_end_utc: "2022-12-26T23:00"
+  local_tz: "America/New_York"
+  shed_start_local: "06:14"   # SC ORS report p.39: DEC load shed directed 6:14 AM (DEP: 6:25 AM)
+  reference_hour_local: "07:00"   # the EIA label: EIA labels each hour by its END, so this is the hour 06:00-07:00 local
+  # Per-group r_g = shed_mw / D_g (the hour ending 07:00), computed from balancing_authorities above, never typed in.
+  # Regional MW are never used as NC-08 MW.
+
+eia:
+  api_url: "https://api.eia.gov/v2/electricity/rto/region-data/data/"
+  api_key_env: "EIA_API_KEY"
+  type: "D"
+  # respondents come from balancing_authorities[].eia930_respondents
+  fallback: "EIA-930 bulk CSV, 2022 H2"
+
+census:
+  api_key_env: "CENSUS_API_KEY"
+  acs_year: 2024              # ACS 5-year 2020-2024 (latest vintage returning data on 2026-10-18)
+  svi_year: 2022              # CDC/ATSDR SVI 2022
+  svi_missing_value: -999     # treated as missing, warned, never zero-filled
+  lodes_year: 2023            # latest LODES8 NC WAC file that returned HTTP 200 on 2026-10-18
+
+facilities:
+  # Hard exclusions (protected = True when a tract/zone contains one). Counted on 2026-10-18 against the 183 NC-08
+  # tracts: these three types protect 26 tracts (15.0% of housing units); adding fire + police would protect
+  # 73 tracts (42.6%), above the ~35% ceiling, so those are display-only. See docs/ASSUMPTIONS.md.
+  protected_types: ["hospital", "nursing_home", "water_treatment"]
+  # Kept in the data and shown on the map only; never excluded by the optimizer.
+  display_only_types: ["fire_station", "police", "wastewater_treatment"]
+
+facilities:
+  # Hard exclusions (x_i = 0). Chosen from the tract-level check in docs/ASSUMPTIONS.md (2026-10-18):
+  # (a) hospital+nursing_home+water_treatment protects 26/183 tracts, 15.0% of housing units;
+  # (b) adding fire+police protects 73/183 tracts, 42.6% (> 35% threshold, too little room for plans to differ).
+  protected_types: ["hospital", "nursing_home", "water_treatment"]
+  # Shown on the map only, never excluded.
+  display_only_types: ["fire_station", "police", "wastewater_treatment"]
+
+zones:
+  # "substation" (Voronoi around public substation points; not implemented) or "tract".
+  # tract because the official HIFLD Open Electric Substations layer is not reachable (2026-10-18: the HIFLD ArcGIS org
+  # lists only transmission lines; the only copies found are third-party and cover >=69 kV, not distribution). See ASSUMPTIONS.md.
+  zone_mode: "tract"
+  min_zone_area_km2: null     # TODO Phase 3: sliver threshold, documented
+
+harm:
+  w_svi: 0.7                  # judgment call, see docs/ASSUMPTIONS.md
+  w_eheat: 0.3                # judgment call
+  alpha_default: 0.5          # human <-> economic mix, UI-adjustable
+  h_hours: 1                  # outage duration h; only 1 is supported because the ICE inputs below are the 1-hour column
+  # Interruption costs, LBNL "Updated Value of Service Reliability Estimates for Electric Utility Customers in the
+  # United States" (ICE Calculator 2.0 report, LBNL-6941E, Sullivan et al. 2015), 1-hour interruption, U.S. 2013 dollars
+  # (not inflated). Table ES-1, report p. xii (PDF p. 14); residential non-summer morning is also $5.1 (Table ES-2, p. xiii, PDF p. 15).
+  ice:
+    residential_per_household_1h: 5.1        # $ per event, Residential, weighted average
+    medium_large_ci_per_avg_kw_1h: 21.8      # $ per average kW, Medium and Large C&I (> 50,000 kWh/yr)
+    small_ci_per_avg_kw_1h: 295.0            # $ per average kW, Small C&I (< 50,000 kWh/yr)
+    # The report gives costs by customer SIZE class, not by NAICS sector (manufacturing / retail / health), so one commercial
+    # class is used for all sectors. "medium_large" is a judgment call (most commercial kW is in larger customers);
+    # "small" is the sensitivity case (13.5x higher per kW). Cost per job = $/kW x ComStock kW per job (frozen constants).
+    commercial_class: "medium_large"
+
+# "Vulnerable zones most often cut when only megawatts count": among unprotected zones with SVI >= svi_min OR electric-heat share >=
+# electric_heat_min, rank by how many of the load-only plans cut them; show the top max_rows. Thresholds are judgment calls.
+priority_list:
+  svi_min: 0.75
+  electric_heat_min: 0.5
+  max_rows: 10
+
+optimizer:
+  solver: "CBC"
+  max_solve_seconds: 2.0
+  # Shared target band for BOTH plans: T_NC08 <= sum x_i L_i <= T_NC08 + delta. delta = band_pct of T_NC08.
+  # Why a band: load is shed in discrete blocks and operators cannot hit an exact MW. If the band is infeasible it is widened
+  # through band_widen_pct (up to 5%); if still infeasible the result is Infeasible. (Exact equality is feasible with real
+  # zone loads, see docs/ASSUMPTIONS.md; the band is a modeling choice, not a workaround for infeasibility.)
+  band_pct: 2.0
+  band_widen_pct: [3.0, 4.0, 5.0]
+  band_sensitivity_pct: [1.0, 2.0, 5.0]
+  load_tol_mw: 0.01           # baseline is least-overshed within 10 kW (finer is not operationally meaningful and 100x slower)
+  # Optional county-share cap (toggle, default OFF): no single county takes more than max_share of the total MW cut,
+  # applied to both plans equally. A response to cumulative-burden concentration, see docs/ASSUMPTIONS.md.
+  # The load-only comparison set (docs/ASSUMPTIONS.md, "Baseline plan instability"): n_plans distinct plans that meet the target
+  # and overshoot it by at most near_opt_pct of the target, generated with a fixed seed.
+  loadonly:
+    n_plans: 200
+    near_opt_pct: 1.0
+    seed: 20261019
+    spread: 0.5
+  county_cap:
+    enabled: false
+    max_share: 0.5
+  target_pcts: [10, 15, 20]   # % of modeled NC-08 load
+  # Default scenario target is T_NC08 (the Elliott-anchored district estimate, ~5.5% of modeled load); target_pcts are slider presets.
+  alpha_grid: [0, 0.25, 0.5, 0.75, 1]
+  w_svi_grid: [0.5, 0.7, 0.9]
+
+weights:
+  # How commercial load per job is set in W. "state": ComStock NC total / NC LODES jobs (default).
+  # "county": ComStock county total / that county's LODES jobs. County values swing 5x (0.64-3.49 kW/job) because
+  # ComStock county models have artifacts (e.g. Robeson full-service restaurants ~69 MW), so state is the default
+  # and county is a sensitivity case. See docs/ASSUMPTIONS.md.
+  commercial_scope: "state"
+
+nrel:
+  # NREL End-Use Load Profiles, public OEDI bucket. The old nrel-pds-building-stock bucket now only holds comstock/athena;
+  # the data moved to oedi-data-lake (found by listing the bucket, 2026-10-18).
+  s3_base: "https://oedi-data-lake.s3.amazonaws.com"
+  root: "nrel-pds-building-stock/end-use-load-profiles-for-us-building-stock/2024"
+  resstock_release: "resstock_amy2018_release_2"   # only state-level aggregates exist (no by_county); NC state used
+  comstock_release: "comstock_amy2018_release_2"   # by_county aggregates exist
+  # Coldest 7 days of the AMY2018 weather year, from the Mecklenburg county weather file
+  # (weather/amy2018/G3701190_2018.csv): 7-day mean 2018-01-01..07 = -4.8 C, min -11.7 C (Jan 2). Elliott morning was ~10 F (-12 C).
+  cold_week_start: "2018-01-01"
+  cold_week_days: 7
+  reference_hour_local: 6     # the hour STARTING 06:00 local standard time = the hour ENDING 07:00, matching the EIA label (EULP timestamps are period-ending, EST)
+
+# Fixed example locations (no live geocoder). Public buildings only, never home addresses. They were CHOSEN TO ILLUSTRATE
+# DIFFERENCES between the vulnerability-aware plan and the TYPICAL load-only plan (see docs/ASSUMPTIONS.md): one in zone 17 (the
+# typical load-only plan cuts it, the vulnerability-aware plan spares it), one in zone 141 in Union County (the vulnerability-aware
+# plan cuts it, the typical load-only plan does not), and the Robeson library (kept on under both). The typical plan is one of many
+# equivalent load-only plans (each zone is cut by only about 5-10% of them), so these illustrations are specific to that plan.
+# Each point falls inside an NC-08 zone (checked in tests). Sources are per location.
+example_locations:
+  - {label: "Harrisburg Fire Department Station 3, Harrisburg (Cabarrus County)", county: "Cabarrus", address: "8045 Rocky River Rd, Harrisburg", lat: 35.302900, lon: -80.604668,
+     source: "OpenStreetMap way/868080437 (name, address, centroid), pulled via Overpass 2026-10-19"}
+  - {label: "Hemby Bridge Elementary School, Indian Trail (Union County)", county: "Union", address: "6701 Indian Trail Fairview Rd, Indian Trail", lat: 35.107220, lon: -80.618625,
+     source: "OpenStreetMap way/862806256 (name, address, centroid), pulled via Overpass 2026-10-19"}
+  - {label: "Robeson County Public Library, Lumberton", county: "Robeson", address: "101 N Chestnut St, Lumberton, NC 28358", lat: 34.617204, lon: -79.007862,
+     source: "US Census Geocoder (Public_AR_Current) for the street address, 2026-10-19; that the address is the library is from public knowledge, author to verify"}

@@ -1,0 +1,16 @@
+.env
+secrets.h
+data/raw/
+*.db
+.venv/
+__pycache__/
+.pytest_cache/
+.DS_Store
+node_modules/
+dist/
+.vercel/
+public/data/
+public/fonts/
+public/methods/
+artifacts/
+.vercel

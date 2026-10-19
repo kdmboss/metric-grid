@@ -1,0 +1,14 @@
+.git
+node_modules
+dist
+.venv
+__pycache__
+.pytest_cache
+data/raw
+data/interim
+docs/figures
+artifacts
+.env
+.env.*
+secrets.h
+.aws

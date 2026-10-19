@@ -1,0 +1,144 @@
+import { readFileSync } from 'node:fs';
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+import { cutCounts, defaults, enrichZones, getView, locate, mapPaths, planMetrics, readState, status, targets } from './model.js';
+import { approvedContent } from './content.js';
+import { FOLLOWUPS, csvCell, exportRows, priorityName, sanitizePlan, shortlistCsv } from './planning.js';
+
+const data = JSON.parse(readFileSync(new URL('../public/data/app.json', import.meta.url), 'utf8'));
+const zones = enrichZones(data);
+const close = (actual, expected, label) => assert.ok(Math.abs(actual - expected) < 1e-6, `${label}: ${actual} != ${expected}`);
+
+test('every precomputed scenario preserves original plan metrics, MW bands, and facility exclusions', () => {
+  for (const record of data.records.filter(r => r.solved)) {
+    for (const kind of ['baseline', 'weighted']) {
+      const plan = record[kind];
+      const calculated = planMetrics(zones, plan.zone_ids);
+      for (const [metric, value] of Object.entries(calculated)) close(value, plan[metric], `${record.target_key}/${record.alpha}/${record.cap}/${kind}/${metric}`);
+      assert.ok(calculated.mw_shed >= record.band_lo_mw - 1e-6 && calculated.mw_shed <= record.band_hi_mw + 1e-6);
+      assert.ok(zones.filter(z => plan.zone_ids.includes(z.zone_id)).every(z => !z.protected));
+      if (record.cap) {
+        const counties = {};
+        zones.filter(z => plan.zone_ids.includes(z.zone_id)).forEach(z => { counties[z.COUNTY] = (counties[z.COUNTY] || 0) + z.L_mw; });
+        assert.ok(Object.values(counties).every(mw => mw / calculated.mw_shed <= data.config.optimizer.county_cap.max_share + 1e-6));
+      }
+    }
+  }
+});
+
+test('every control combination selects the corresponding original record', () => {
+  for (const target of targets(data)) for (const alpha of data.config.optimizer.alpha_grid) for (const cap of [false, true]) {
+    const view = getView(data, { target, alpha, cap });
+    const original = data.records.find(r => r.target_key === target && r.alpha === alpha && r.cap === cap);
+    if (original.solved) { assert.equal(view.record, original); assert.equal(view.note, null); }
+    else assert.ok(view.note);
+  }
+});
+
+test('all comparison distributions reproduce stored extrema and plan counts', () => {
+  for (const record of data.records.filter(r => r.solved)) {
+    const plans = data.loadonly.sets[record.loadonly_key].plans;
+    const metrics = plans.map(plan => planMetrics(zones, plan));
+    assert.equal(plans.length, record.loadonly.n);
+    assert.deepEqual(plans[data.loadonly.sets[record.loadonly_key].typical_index], record.baseline.zone_ids);
+    for (const key of ['households', 'electric_heat_households', 'h_human', 'h_econ']) {
+      const values = metrics.map(m => m[key]);
+      close(Math.min(...values), record.loadonly[key].min, `distribution min ${key}`);
+      close(Math.max(...values), record.loadonly[key].max, `distribution max ${key}`);
+      assert.equal(values.filter(v => v > record.weighted[key] + 1e-6).length, record.loadonly[key].n_plans_more);
+    }
+    assert.equal(Object.values(cutCounts(plans)).reduce((a, b) => a + b, 0), plans.reduce((sum, p) => sum + p.length, 0));
+  }
+});
+
+test('default headline matches the original Elliott result', () => {
+  const r = getView(data, defaults(data)).record;
+  assert.equal(r.baseline.electric_heat_households - r.weighted.electric_heat_households, 3412);
+  assert.equal(r.weighted.households - r.baseline.households, 2543);
+});
+
+test('malformed deep links fall back safely and legacy deep links still work', () => {
+  assert.deepEqual(readState(data, '?alpha=nope&pct=NaN&zone=9999'), defaults(data));
+  assert.deepEqual(readState(data, '?alpha=&pct=&zone=bad'), defaults(data));
+  assert.deepEqual(readState(data, '?alpha=1&pct=10&cap=1&zone=23'), { alpha: 1, target: '10', cap: true, zone: 23 });
+  assert.equal(readState(data, '?alpha=.6').alpha, .5);
+});
+
+test('missing or infeasible settings visibly disclose the nearest result and retain the cap when possible', () => {
+  const clone = structuredClone(data), original = clone.records.find(r => r.target_key === 'elliott' && r.alpha === .5 && r.cap);
+  original.solved = false; original.reason = 'Synthetic infeasible target';
+  const result = getView(clone, { target: 'elliott', alpha: .5, cap: true });
+  assert.ok(result.record.solved); assert.equal(result.record.cap, true); assert.match(result.note, /cannot be met/);
+  const missing = getView(data, { target: '11', alpha: .6, cap: false });
+  assert.match(missing.note, /not precomputed/);
+});
+
+test('example building locations match original tract assignments', () => {
+  assert.deepEqual(data.config.example_locations.map(location => locate(data.zones.features, [location.lon, location.lat])), [17, 141, 100]);
+});
+
+test('map geometry is finite and zero-household missing SVI stays visibly missing', () => {
+  const paths = mapPaths(data.zones, data.district);
+  assert.equal(paths.zones.length, 183);
+  assert.ok(paths.zones.every(z => z.d.startsWith('M') && !/NaN|Infinity/.test(z.d)));
+  assert.ok(paths.district.startsWith('M'));
+  for (const zone of zones.filter(z => z.svi_missing)) {
+    assert.equal(zone.RPL_THEMES, null);
+    if (zone.occupied_units === 0) assert.equal(zone.human, 0);
+  }
+  const protectedZone = zones.find(z => z.protected);
+  assert.equal(status(protectedZone, { zone_ids: [] }), 'Protected');
+});
+
+test('content export hides empty/unapproved/unattributed quotes and retains author text without interpreting HTML', () => {
+  assert.deepEqual(approvedContent([], ''), { quotes: [], story: '' });
+  const fixture = { name: 'Reviewer fixture', role: 'Test role', quote: 'Test-only approved content', permission: true };
+  assert.equal(approvedContent([{ ...fixture, permission: false }, { ...fixture, permission: 'true' }, { ...fixture, role: '' }, { ...fixture, name: ' ' }, fixture], '').quotes.length, 1);
+  assert.equal(approvedContent(null, '  <script>fixture</script>  ').story, '<script>fixture</script>');
+  assert.deepEqual(data.content, { quotes: [], story: '' });
+});
+
+test('saved plans discard malformed and duplicate entries without changing valid notes', () => {
+  const plan = sanitizePlan([{ zone: 17, note: 'Line one\nLine two', followup: FOLLOWUPS[1] }, { zone: 17 }, { zone: 9999 }, null, { zone: 141, note: 42, followup: 'unknown' }], new Set(zones.map(z => z.zone_id)));
+  assert.equal(plan.length, 2); assert.equal(plan[0].note, 'Line one\nLine two');
+  assert.equal(plan[1].note, ''); assert.equal(plan[1].followup, FOLLOWUPS[0]);
+  assert.deepEqual(sanitizePlan({}, new Set()), []);
+});
+
+test('CSV exports provenance, the current scenario, truthful evidence, and safely escaped notes', () => {
+  const record = getView(data, { ...defaults(data), cap: true }).record;
+  const rows = exportRows(data, record, zones, [{ zone: 17, followup: FOLLOWUPS[0], note: '=HYPERLINK("fixture")\nSecond line' }]);
+  const row = rows[0], z = zones.find(z => z.zone_id === 17);
+  assert.equal(row.reference_date, data.constants.scenario.date);
+  assert.equal(row.county_cap, true); assert.equal(row.estimated_zone_load_mw, z.L_mw);
+  assert.equal(row.social_vulnerability_index, z.RPL_THEMES);
+  assert.equal(row.aware_status, status(z, record.weighted));
+  assert.equal(row.interruption_cost_2013_usd_1h, z.econ);
+  assert.match(row.limitations, /not a uniform sample/);
+  const csv = shortlistCsv(rows); assert.match(csv, /estimated_zone_load_mw/); assert.match(csv, /"'=HYPERLINK\(""fixture""\)/);
+  assert.equal(csvCell('a,"b"\nc'), '"a,""b""\nc"'); assert.equal(csvCell('@formula'), '"\'@formula"');
+  assert.equal(shortlistCsv([]), '');
+});
+
+test('plain-language priorities disclose both objective extremes', () => {
+  assert.equal(priorityName(0), 'Business cost only'); assert.equal(priorityName(1), 'People at risk only'); assert.equal(priorityName(.5), 'Balanced');
+});
+
+test('web interface copy preserves the required sentence and excludes prohibited claims or typed headline outcomes', () => {
+  const require = createRequire(import.meta.url);
+  const { parse } = require('@babel/parser');
+  const files = ['Workspace.jsx', 'Evidence.jsx', 'MapCanvas.jsx', 'main.jsx'];
+  const required = 'The Elliott regional event anchors this scenario. NC-08 load and required reduction are modeled district-scale estimates, not observed utility circuit values.';
+  const banned = ['privacy-preserving', 'federated learning', 'AI optimizer', 'conventional plan', 'circuit', 'feeder', 'service area', 'neighborhood demand', 'least harm', 'outage plan'];
+  const all = files.map(name => readFileSync(new URL(name, import.meta.url), 'utf8')).join('\n');
+  assert.ok(all.includes(required));
+  for (const phrase of banned) assert.ok(!all.replace(required, '').toLowerCase().includes(phrase.toLowerCase()), phrase);
+  const outcomes = ['3,412', '5,484', '8,896', '2,543', '17,956', '15,413', '73%', '12.6%'];
+  const visit = node => {
+    if (!node || typeof node !== 'object') return;
+    if (node.type === 'JSXText' || node.type === 'StringLiteral') for (const outcome of outcomes) assert.ok(!String(node.value).includes(outcome), `Typed model outcome: ${outcome}`);
+    for (const value of Object.values(node)) { if (Array.isArray(value)) value.forEach(visit); else if (value && typeof value === 'object') visit(value); }
+  };
+  files.forEach(name => visit(parse(readFileSync(new URL(name, import.meta.url), 'utf8'), { sourceType: 'module', plugins: ['jsx'] })));
+});
