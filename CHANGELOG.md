@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-19 · Difference map and county context (OpenAI Codex)
+
+- Added the default-on difference map below the two comparison maps, with exclusive live categories, protected hatching, tooltips, and a conditional SVI swap explanation.
+- Added locally computed county labels, a two-stroke selected-zone outline, and synchronized zoom to the selected tract on all maps.
+- Added a Union-default county summary with ACS household/heating data and each plan’s MW, district share, electric-heat and total households cut.
+- Added the three-step how-to strip. Retained actual plan MW, the shared band and the equally prominent household trade-off.
+- Added all-scenario partition/rollup checks and Chrome map pixel-variance checks. No model, frozen inputs, dependencies or production changes.
+
 ## 2026-10-19 · Map-first planning workspace (OpenAI Codex)
 
 - Added Explore, Compare and Prepare modes within the existing React/Vite page; retained the original frozen model results and Python pipeline.

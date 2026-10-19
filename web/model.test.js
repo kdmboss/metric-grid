@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { cutCounts, defaults, enrichZones, getView, locate, mapPaths, planMetrics, readState, status, targets } from './model.js';
+import { planChanges, countySummary, countyLabelAnchors, swapSentence } from './comparison.js';
 import { approvedContent } from './content.js';
 import { FOLLOWUPS, csvCell, exportRows, priorityName, sanitizePlan, shortlistCsv } from './planning.js';
 
@@ -128,7 +129,7 @@ test('plain-language priorities disclose both objective extremes', () => {
 test('web interface copy preserves the required sentence and excludes prohibited claims or typed headline outcomes', () => {
   const require = createRequire(import.meta.url);
   const { parse } = require('@babel/parser');
-  const files = ['Workspace.jsx', 'Evidence.jsx', 'MapCanvas.jsx', 'main.jsx'];
+  const files = ['Workspace.jsx', 'Evidence.jsx', 'MapCanvas.jsx', 'ComparisonPanels.jsx', 'comparison.js', 'main.jsx'];
   const required = 'The Elliott regional event anchors this scenario. NC-08 load and required reduction are modeled district-scale estimates, not observed utility circuit values.';
   const banned = ['privacy-preserving', 'federated learning', 'AI optimizer', 'conventional plan', 'circuit', 'feeder', 'service area', 'neighborhood demand', 'least harm', 'outage plan'];
   const all = files.map(name => readFileSync(new URL(name, import.meta.url), 'utf8')).join('\n');
@@ -141,4 +142,59 @@ test('web interface copy preserves the required sentence and excludes prohibited
     for (const value of Object.values(node)) { if (Array.isArray(value)) value.forEach(visit); else if (value && typeof value === 'object') visit(value); }
   };
   files.forEach(name => visit(parse(readFileSync(new URL(name, import.meta.url), 'utf8'), { sourceType: 'module', plugins: ['jsx'] })));
+});
+
+
+test('difference categories partition every zone and match both plans across all supported scenarios', () => {
+  for (const record of data.records.filter(r => r.solved)) {
+    const result = planChanges(zones, record);
+    assert.equal(Object.values(result.counts).reduce((a, b) => a + b, 0), zones.length);
+    assert.equal(result.counts.protected, zones.filter(z => z.protected).length);
+    assert.equal(result.counts['only-baseline'] + result.counts.both, record.baseline.zone_ids.length);
+    assert.equal(result.counts['only-aware'] + result.counts.both, record.weighted.zone_ids.length);
+    for (const z of zones) {
+      const key = result.byId[z.zone_id].category;
+      if (z.protected) assert.equal(key, 'protected');
+      else {
+        assert.equal(['only-baseline', 'both'].includes(key), record.baseline.zone_ids.includes(z.zone_id));
+        assert.equal(['only-aware', 'both'].includes(key), record.weighted.zone_ids.includes(z.zone_id));
+      }
+    }
+  }
+});
+
+test('county totals reproduce plan totals and heating shares use the summed ACS denominator', () => {
+  const counties = [...new Set(zones.map(z => z.COUNTY))];
+  for (const record of data.records.filter(r => r.solved)) {
+    const rows = counties.map(c => countySummary(zones, record, c));
+    close(rows.reduce((n, r) => n + r.households, 0), zones.reduce((n, z) => n + z.occupied_units, 0), 'district households');
+    assert.equal(rows.reduce((n, r) => n + r.zones, 0), zones.length);
+    assert.equal(rows.reduce((n, r) => n + r.protectedZones, 0), zones.filter(z => z.protected).length);
+    for (const key of ['baseline', 'weighted']) {
+      close(rows.reduce((n, r) => n + r[key].mw, 0), record[key].mw_shed, 'county MW');
+      close(rows.reduce((n, r) => n + r[key].share, 0), 1, 'county share');
+      close(rows.reduce((n, r) => n + r[key].heatHomes, 0), record[key].electric_heat_households, 'county heat');
+      close(rows.reduce((n, r) => n + r[key].households, 0), record[key].households, 'county households');
+    }
+    for (const row of rows) {
+      const countyZones = zones.filter(z => z.COUNTY === row.county);
+      close(row.heatShare, countyZones.reduce((n, z) => n + z.heat_electricity, 0) / countyZones.reduce((n, z) => n + z.heat_total_occupied, 0), 'ACS heat share');
+    }
+  }
+});
+
+test('swap explanation reverses or becomes neutral when improvement is unsupported', () => {
+  const result = planChanges(zones, getView(data, defaults(data)).record);
+  assert.match(swapSentence(result), /higher average social vulnerability.*lower average/);
+  assert.match(swapSentence({ ...result, removedMeanSvi: .1, addedMeanSvi: .8 }), /lower average social vulnerability.*higher average/);
+  for (const values of [{ removedMeanSvi: null, addedMeanSvi: .8 }, { removedMeanSvi: .5, addedMeanSvi: .5 }]) assert.doesNotMatch(swapSentence({ ...result, ...values }), /higher|lower/);
+  assert.match(swapSentence({ counts: { 'only-baseline': 0, 'only-aware': 0 } }), /same zones/);
+});
+
+test('local county labels have unique finite anchors within the map', () => {
+  const paths = mapPaths(data.zones, data.district);
+  const labels = countyLabelAnchors(paths.zones);
+  assert.equal(labels.length, new Set(zones.map(z => z.COUNTY)).size);
+  assert.equal(new Set(labels.map(l => l.county)).size, labels.length);
+  for (const label of labels) assert.ok(Number.isFinite(label.x) && Number.isFinite(label.y) && label.x >= 0 && label.x <= 640 && label.y >= 0 && label.y <= 390);
 });

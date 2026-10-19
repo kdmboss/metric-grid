@@ -58,3 +58,15 @@ This is a preview target; the existing production deployment at https://metric-g
 The remote source-build preview stayed queued, so the delivered preview uses the verified static `dist/` artifact through Vercel’s Build Output API. Vercel reported the prebuilt preview READY; no production target or alias was changed.
 
 Authenticated Vercel checks returned HTTP 200 for the preview HTML and `/data/app.json`. The deployed data bundle matches the local verified build byte-for-byte, and the HTML references the verified JavaScript asset. The original production deployment remains `dpl_5YNaGYaS8xuZNQsRfTdSPeFoVRf5`.
+
+
+## Difference map and county context review
+
+The Compare view now includes a default-on, synchronized difference map, exclusive category counts, protected hatching and an SVI-direction-aware explanation. All maps have local county labels, a clearer selected-zone outline and zoom-to-selected. The county summary defaults to Union and independently summarizes existing household, heating and plan-cut data. The top how-to strip explains the three main interactions. County heating percentages use the summed ACS denominator; the swap averages weight each tract equally and are not counts of people protected.
+
+Review screenshots: `docs/figures/ui_first_screen_1440.png`, `docs/figures/ui_what_changed.png`, `docs/figures/ui_county_summary.png`, plus phone versions. This is a review checkpoint, with production unchanged.
+
+
+Validation for these additions: `npm test` — 17 passed; `npm run build` — passed; full `make test` — 182 passed, 11 expected skips, 27 existing missing-SVI warnings. Chrome acceptance checks passed, including exclusive live counts, all-county totals, label placement inside real tract outlines, selected-zone zoom synchronization, protected hatching, pixel variance, and responsive widths 320–1440 px. Compare text contrast at 1440 and 390 px was at least 6.95:1. All 46 protected model/data/configuration file hashes matched their starting values. Safari is not claimed.
+
+Review preview: https://metric-grid-d2xxwozl2-karthiks-projects-65cb8506.vercel.app/?mode=compare (Vercel account sign-in may be required). Production remains on its prior deployment.

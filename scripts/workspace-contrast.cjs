@@ -7,6 +7,7 @@ const assert = require('node:assert/strict');
   await page.goto(process.env.SMOKE_URL || 'http://127.0.0.1:5173');
   await page.locator('#zone').waitFor();
   for (const width of [1440, 390]) {
+    await page.getByRole('tab', { name: 'Compare', exact: true }).click();
     await page.setViewportSize({ width, height: 1000 });
     await page.getByRole('button', { name: 'Review the evidence →' }).click();
     await page.getByRole('button', { name: 'Methods & sources', exact: true }).click();

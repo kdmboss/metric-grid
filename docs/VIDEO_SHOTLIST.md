@@ -14,6 +14,12 @@ Suggested timing: Explore and purpose 0:00–0:35; Compare and honest trade-off 
 
 In Compare, the slider uses plain-language labels. In Explore, the zone picker defaults to the top priority zone (zone 69 is open). Expand Review the evidence for How robust is this?, Why forecasts aren’t enough, and Methods & sources. The reference counts below remain sourced from the frozen data; the original shot-by-shot table is retained as a numeric/code reference, not a literal navigation script.
 
+## Difference map and county context additions
+
+Use the three-step strip to introduce the controls. In Compare, show both plans’ actual MW and shared target band, then scroll to “What changed between the two plans?” The grey zones are cut only in the megawatts-only plan; amber zones only in the vulnerability-aware plan; light zones in both; dark zones in neither; hatching marks protected zones. Read the live category counts and the current swap sentence, which can reverse with different settings. The stated average SVI describes tracts, not specific families or seniors protected.
+
+Click a tract and demonstrate the shared selected-zone outline and zoom-to-selected control. County labels come from bundled local geometry. In the county summary, start with Union and show each plan’s MW, share of its own district cut, electric-heat homes and total homes cut. Change the county once. Explain that the county selector summarizes existing results; it does not change either plan. Keep the amber total-household trade-off in the explanation. Fit these shots into the existing Compare segment rather than extending the video beyond its limit.
+
 ## Original shot reference (use current workspace navigation)
 
 | # | Time | App state (URL after `http://127.0.0.1:5173/`) | What is on screen | Say (in your own words) |

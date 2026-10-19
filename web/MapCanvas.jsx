@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { fmt, status } from './model.js';
+import { countyLabelAnchors } from './comparison.js';
 
 export const LAYERS = {
   vulnerability: { name: 'Social vulnerability', field: 'RPL_THEMES', low: 'Lower vulnerability', high: 'Higher vulnerability' },
@@ -24,8 +25,10 @@ export function zoomView(view, factor) {
   return { scale, x: 320 - (320 - view.x) * ratio, y: 195 - (195 - view.y) * ratio };
 }
 
-export function MapCanvas({ paths, zones, layer, county, protectedVisible, boundaryVisible, view, setView, selected, onSelect, plan, id, counts, n }) {
+export function MapCanvas({ paths, zones, layer, county, protectedVisible, boundaryVisible, view, setView, selected, onSelect, plan, id, counts, n, changes, onZoomSelected }) {
   const drag = useRef(null), [hover, setHover] = useState(null);
+  const labels = useMemo(() => countyLabelAnchors(paths.zones), [paths]);
+  const selectedPath = paths.zones.find(z => z.zone_id === selected);
   const cut = new Set(plan?.zone_ids || []), definition = LAYERS[layer];
   const max = layer === 'load' ? Math.max(...zones.map(z => z.L_mw)) : 1;
   const point = event => {
@@ -53,7 +56,7 @@ export function MapCanvas({ paths, zones, layer, county, protectedVisible, bound
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
   }
   return <div className="map-canvas">
-    <svg className="interactive-map" data-map={id} viewBox="0 0 640 390" role="img" aria-label={`${plan ? id === 'aware' ? 'Vulnerability-aware plan' : 'Megawatts-only plan' : definition.name} map. Drag to pan. Use map controls to zoom, and the zone search to inspect any tract by keyboard.`}
+    <svg className="interactive-map" data-map={id} viewBox="0 0 640 390" role="img" aria-label={`${changes ? 'What changed between the two plans?' : plan ? id === 'aware' ? 'Vulnerability-aware plan' : 'Megawatts-only plan' : definition.name} map. Drag to pan. Use map controls to zoom, and the zone search to inspect any tract by keyboard.`}
       onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={() => { drag.current = null; }} onMouseLeave={() => setHover(null)}>
       <defs><pattern id={`protect-${id}`} patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(40)"><rect width="6" height="6" className="hatch-background"/><path d="M0 0V6" className="hatch-line"/></pattern></defs>
       <g className="map-transform" transform={`translate(${view.x} ${view.y}) scale(${view.scale})`}>
@@ -61,16 +64,18 @@ export function MapCanvas({ paths, zones, layer, county, protectedVisible, bound
           const value = z[definition.field], missing = value == null || (layer === 'vulnerability' && z.svi_missing);
           const level = Math.min(4, Math.max(0, Math.floor(value / max * 5)));
           return <path key={z.zone_id} d={z.d} data-zone={z.zone_id} fillRule="evenodd" vectorEffect="non-scaling-stroke"
-            className={`tract ${missing ? 'no-data' : `vulnerability-${level}`} ${cut.has(z.zone_id) ? 'is-cut' : ''} ${selected === z.zone_id ? 'selected' : ''} ${county && z.COUNTY !== county ? 'filtered-out' : ''} ${protectedVisible && z.protected ? 'protected-tract' : ''}`}
-            style={protectedVisible && z.protected ? { fill: `url(#protect-${id})` } : undefined}
-            onMouseEnter={() => setHover(z)}><title>{`Zone ${z.zone_id} · ${z.COUNTY}\n${plan ? status(z, plan) : z.protected ? 'Protected facility zone' : 'Census tract zone'}\n${fmt(z.occupied_units)} households · SVI ${fmt(z.RPL_THEMES, 2)}\nElectric heat ${z.share_electric_heat == null ? 'No data' : fmt(z.share_electric_heat * 100) + '%'} · ${fmt(z.L_mw, 2)} modeled MW`}</title></path>;
+            className={`tract ${changes ? `difference-${changes.byId[z.zone_id].category}` : missing ? 'no-data' : `vulnerability-${level}`} ${!changes && cut.has(z.zone_id) ? 'is-cut' : ''} ${selected === z.zone_id ? 'selected' : ''} ${county && z.COUNTY !== county ? 'filtered-out' : ''} ${(protectedVisible || changes) && z.protected ? 'protected-tract' : ''}`}
+            style={(protectedVisible || changes) && z.protected ? { fill: `url(#protect-${id})` } : undefined}
+            onMouseEnter={() => setHover(z)}><title>{`Zone ${z.zone_id} · ${z.COUNTY}\n${changes ? changes.byId[z.zone_id].label : plan ? status(z, plan) : z.protected ? 'Protected facility zone' : 'Census tract zone'}\n${fmt(z.occupied_units)} households · SVI ${fmt(z.RPL_THEMES, 2)}\nElectric heat ${z.share_electric_heat == null ? 'No data' : fmt(z.share_electric_heat * 100) + '%'} · ${fmt(z.L_mw, 2)} modeled MW`}</title></path>;
         })}
         {boundaryVisible && <path d={paths.district} className="district-boundary" fillRule="evenodd" vectorEffect="non-scaling-stroke"/>}
+        {selectedPath && <g className="selection-outline" aria-hidden="true"><path d={selectedPath.d} className="selected-zone-halo" vectorEffect="non-scaling-stroke"/><path d={selectedPath.d} className="selected-zone-outline" vectorEffect="non-scaling-stroke"/></g>}
+        <g className="county-labels" aria-hidden="true">{labels.filter(label => !county || label.county === county).map(label => <text key={label.county} x={label.x} y={label.y} fontSize={12 / view.scale} textAnchor="middle" dominantBaseline="middle">{label.label}</text>)}</g>
       </g>
       <text x="608" y="30" className="north">N ↑</text>
     </svg>
-    <div className="map-controls" aria-label={`${id} map controls`}><button aria-label={`Zoom in ${id} map`} onClick={() => setView(v => zoomView(v, 1.35))}>+</button><button aria-label={`Zoom out ${id} map`} onClick={() => setView(v => zoomView(v, 1 / 1.35))}>−</button><button aria-label={`Reset ${id} map view`} onClick={() => setView(county ? fitPaths(paths.zones.filter(z => z.COUNTY === county)) : HOME_VIEW)}>↺</button></div>
-    {hover && <div className="map-hover" aria-hidden="true"><strong>Zone {hover.zone_id}</strong><span>{hover.COUNTY}</span><span>{fmt(hover.occupied_units)} households · {fmt(hover.L_mw, 1)} modeled MW</span><span>SVI {fmt(hover.RPL_THEMES, 2)} · electric heat {hover.share_electric_heat == null ? 'No data' : `${fmt(hover.share_electric_heat * 100)}%`}</span><span>{plan ? status(hover, plan) : hover.protected ? 'Protected facility zone' : 'Select to inspect'} · {counts[hover.zone_id] || 0} / {n} load-only plans</span></div>}
+    <div className="map-controls" aria-label={`${id} map controls`}><button aria-label={`Zoom in ${id} map`} onClick={() => setView(v => zoomView(v, 1.35))}>+</button><button aria-label={`Zoom out ${id} map`} onClick={() => setView(v => zoomView(v, 1 / 1.35))}>−</button><button aria-label={`Reset ${id} map view`} onClick={() => setView(county ? fitPaths(paths.zones.filter(z => z.COUNTY === county)) : HOME_VIEW)}>↺</button><button aria-label={`Zoom to selected zone on ${id} map`} title="Zoom to selected zone" disabled={!selectedPath} onClick={() => onZoomSelected ? onZoomSelected() : setView(fitPaths([selectedPath]))}>⌖</button></div>
+    {hover && <div className="map-hover" aria-hidden="true"><strong>Zone {hover.zone_id}</strong><span>{hover.COUNTY}</span><span>{fmt(hover.occupied_units)} households · {fmt(hover.L_mw, 1)} modeled MW</span><span>SVI {fmt(hover.RPL_THEMES, 2)} · electric heat {hover.share_electric_heat == null ? 'No data' : `${fmt(hover.share_electric_heat * 100)}%`}</span><span>{changes ? changes.byId[hover.zone_id].label : plan ? status(hover, plan) : hover.protected ? 'Protected facility zone' : 'Select to inspect'} · {counts[hover.zone_id] || 0} / {n} load-only plans</span></div>}
     <span className="map-caption">{county || 'NC-08'} · census tract zones · drag to pan</span>
   </div>;
 }

@@ -133,3 +133,18 @@ OpenAI Codex implemented the owner-requested map-first Explore/Compare/Prepare i
 Codex also updated `web/main.jsx`, `web/model.test.js`, `scripts/export-web-data.mjs`, `scripts/web-smoke.cjs`, `index.html`, `README.md`, `CHANGELOG.md`, `docs/VIDEO_SHOTLIST.md`, and `.hallmark/log.json`. Existing author-review fields remain unfilled.
 
 Validation for the workspace: 13 web tests passed; the original suite completed with 182 passed and 11 skipped (7 raw-data prerequisites, 4 missing browser builds). Codex ran Chrome interaction and responsive checks, contrast checks and a protected-file hash comparison. Safari and owner-operated real-browser checks are not claimed. New UI screenshots in `docs/figures/ui_*.png` are generated artifacts.
+
+
+## Difference map and county context additions (2026-10-19)
+
+OpenAI Codex added UI-only comparisons from the existing frozen results. County heat share uses summed ACS heating-fuel occupied households as its denominator. The swap description tests actual mean SVI direction and does not claim specific people protected. No personal story or quote content was written. Original model/data/configuration and production remain unchanged.
+
+| File | Status | What I changed |
+|---|---|---|
+| `web/comparison.js` | AI-scaffolded (OpenAI Codex); author review pending | TODO (author) |
+| `web/ComparisonPanels.jsx` | AI-scaffolded (OpenAI Codex); author review pending | TODO (author) |
+
+Codex also updated `web/Workspace.jsx`, `web/MapCanvas.jsx`, `web/workspace.css`, `web/model.test.js`, `scripts/workspace-smoke.cjs`, `scripts/workspace-contrast.cjs`, `CHANGELOG.md`, `docs/UI_CHANGES.md`, and `docs/VIDEO_SHOTLIST.md`. Screenshots `docs/figures/ui_what_changed.png`, `docs/figures/ui_county_summary.png`, and their phone counterparts are generated artifacts; author-review fields remain for the owners.
+
+
+Validation for these additions: 17 web tests passed; 182 Python tests passed with 11 expected skips; Chrome acceptance, pixel-variance and responsive/contrast checks passed. All 46 protected model/input/configuration files remained unchanged. No Safari validation is claimed. The owner must review the preview and complete the author fields.

@@ -2,6 +2,7 @@
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const { execFileSync } = require('node:child_process');
 const path = require('node:path');
 const base = process.env.SMOKE_URL || 'http://127.0.0.1:5173';
 const output = path.resolve('artifacts');
@@ -101,6 +102,45 @@ async function main() {
   assert.match(await page.locator('.empty-shortlist').innerText(), /Start with a place/);
 
   await page.getByRole('tab', { name: 'Compare', exact: true }).click();
+  assert.equal(await page.getByRole('checkbox', { name: 'Show difference map' }).isChecked(), true);
+  assert.equal(await page.locator('[data-map=difference] .tract').count(), 183);
+  assert.equal((await page.locator('[data-category-count]').allTextContents()).reduce((sum, v) => sum + Number(v.replaceAll(',', '')), 0), 183);
+  assert.equal(await page.locator('#summary-county').inputValue(), 'Union County');
+  const unionMw = await page.locator('[data-county-plan=weighted-mw]').innerText();
+  await page.selectOption('#summary-county', 'Anson County');
+  assert.notEqual(await page.locator('[data-county-plan=weighted-mw]').innerText(), unionMw);
+  await page.selectOption('#summary-county', 'Union County');
+  for (const id of ['typical', 'aware', 'difference']) {
+    assert.equal(await page.locator(`[data-map=${id}] .county-labels text`).count(), 9);
+    assert.equal(await page.locator(`[data-map=${id}] .selected-zone-outline`).count(), 1);
+    assert.equal(await page.locator(`[data-map=${id}] .county-labels text`).evaluateAll(labels => labels.every(label => {
+      const point = new DOMPoint(Number(label.getAttribute('x')), Number(label.getAttribute('y')));
+      return [...label.ownerSVGElement.querySelectorAll('path[data-zone]')].some(path => path.isPointInFill(point));
+    })), true);
+  }
+  await page.getByRole('button', { name: 'Zoom to selected zone on difference map', exact: true }).click();
+  const views = await page.locator('#panel-compare .map-transform').evaluateAll(nodes => nodes.map(n => n.getAttribute('transform')));
+  assert.equal(new Set(views).size, 1);
+  assert.doesNotMatch(views[0], /scale\(1\)/);
+  await page.getByRole('button', { name: 'Reset difference map view', exact: true }).click();
+  await page.getByRole('checkbox', { name: 'Show difference map' }).uncheck();
+  assert.equal(await page.locator('[data-map=difference]').count(), 0);
+  await page.getByRole('checkbox', { name: 'Show difference map' }).check();
+  await page.locator('.map-options summary').click();
+  await page.getByRole('checkbox', { name: 'Protected facilities', exact: true }).uncheck();
+  assert.equal(await page.locator('[data-map=difference] .protected-tract').count(), 26);
+  await page.getByRole('checkbox', { name: 'Protected facilities', exact: true }).check();
+  await page.locator('.map-options summary').click();
+  for (const id of ['typical', 'aware', 'difference']) {
+    const file = `${output}/map_${id}.png`;
+    await page.locator(`[data-map=${id}]`).screenshot({ path: file });
+    execFileSync(process.env.PYTHON || '.venv/bin/python', ['-c', 'from PIL import Image, ImageStat; import sys; im=Image.open(sys.argv[1]).convert("RGB"); assert max(ImageStat.Stat(im).stddev)>8, "Flat map pixels"; assert len(im.getcolors(im.width*im.height))>20, "Insufficient map color variance"', file]);
+  }
+  await page.setViewportSize({ width: 1440, height: 1200 });
+  await page.locator('.difference-panel').screenshot({ path: `${output}/ui_what_changed.png` });
+  await page.locator('.county-summary').screenshot({ path: `${output}/ui_county_summary.png` });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  console.log('Difference counts, local label placement, selected outlines, synchronized selected-zone zoom, county summaries, and pixel-variance map checks passed.');
   await page.locator('#alpha').fill('0');
   assert.match(await page.locator('.people-results').innerText(), /13,098[\s\S]*52% higher/);
   await page.screenshot({ path: `${output}/ui_cost_priority.png` });
@@ -135,6 +175,9 @@ async function main() {
     assert.deepEqual(clipped, [], `Clipped controls at ${width}`);
     if (width === 390 || width === 1024 || width === 1440) await page.screenshot({ path: `${output}/ui_${width === 390 ? 'phone_390' : width === 1024 ? 'tablet_1024' : 'first_screen_1440'}.png` });
     if (width === 390) await page.screenshot({ path: `${output}/ui_phone_full.png`, fullPage: true });
+    await page.getByRole('tab', { name: 'Compare', exact: true }).click();
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `Compare overflow at ${width}`);
+    if (width === 390) { await page.setViewportSize({ width, height: 1400 }); await page.locator('.difference-panel').screenshot({ path: `${output}/ui_what_changed_phone.png` }); await page.locator('.county-summary').screenshot({ path: `${output}/ui_county_summary_phone.png` }); await page.setViewportSize({ width, height: 900 }); }
     console.log(`Responsive layout: ${width}px passed`);
   }
   await page.goto(`${base}/?alpha=1&pct=10&cap=1&zone=23&mode=compare`); await page.locator('#compare-zone').waitFor();
