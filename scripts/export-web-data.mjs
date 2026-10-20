@@ -19,6 +19,8 @@ const names = {
 const data = Object.fromEntries(await Promise.all(Object.entries(names).map(async ([key, name]) => [key, await readFrozen(name)])));
 try { data.panel = await readFrozen('demand_panel.json'); }
 catch (error) { if (error.code !== 'ENOENT') throw error; data.panel = null; }
+try { data.places = await readFrozen('places.json'); }
+catch (error) { if (error.code !== 'ENOENT') throw error; data.places = []; }
 // Match PyYAML's last-key-wins behavior for the retained source configuration.
 const config = parse(await readFile(resolve(root, 'config.yaml'), 'utf8'), { uniqueKeys: false });
 data.config = { harm: config.harm, optimizer: config.optimizer, priority_list: config.priority_list, example_locations: config.example_locations };

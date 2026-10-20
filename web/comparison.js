@@ -1,4 +1,5 @@
 import { fmt } from './model.js';
+import { awarePlanLabel } from './presentation.js';
 
 export const CHANGE_CATEGORIES = [
   ['only-baseline', 'Cut only in megawatts-only plan'],
@@ -12,7 +13,7 @@ export const CHANGE_CATEGORIES = [
 export function planChanges(zones, record) {
   const baseline = new Set(record.baseline.zone_ids), aware = new Set(record.weighted.zone_ids);
   const counts = Object.fromEntries(CHANGE_CATEGORIES.map(([key]) => [key, 0]));
-  const labels = Object.fromEntries(CHANGE_CATEGORIES);
+  const labels = Object.fromEntries(CHANGE_CATEGORIES.map(([key, label]) => [key, label.replace('vulnerability-aware', awarePlanLabel(record).toLowerCase())]));
   const byId = {};
   for (const zone of zones) {
     const b = baseline.has(zone.zone_id), w = aware.has(zone.zone_id);
@@ -24,18 +25,19 @@ export function planChanges(zones, record) {
   const added = zones.filter(z => byId[z.zone_id].category === 'only-aware');
   const mean = rows => rows.length && rows.every(z => Number.isFinite(z.RPL_THEMES) && !z.svi_missing)
     ? rows.reduce((sum, z) => sum + z.RPL_THEMES, 0) / rows.length : null;
-  return { byId, counts, removedMeanSvi: mean(removed), addedMeanSvi: mean(added) };
+  return { byId, counts, awareLabel: awarePlanLabel(record), removedMeanSvi: mean(removed), addedMeanSvi: mean(added) };
 }
 
 /** Never imply an improvement at priority settings where SVI goes the other direction. */
 export function swapSentence(changes) {
+  const label = (changes.awareLabel || 'Vulnerability-aware').toLowerCase();
   const a = changes.counts['only-baseline'], b = changes.counts['only-aware'];
   if (!a && !b) return 'The two displayed plans select the same zones.';
   if (a && b && changes.removedMeanSvi != null && changes.addedMeanSvi != null) {
     const direction = changes.removedMeanSvi - changes.addedMeanSvi;
-    if (Math.abs(direction) > 1e-9) return `The vulnerability-aware plan swaps out ${fmt(a)} zones with ${direction > 0 ? 'higher' : 'lower'} average social vulnerability for ${fmt(b)} zones with ${direction > 0 ? 'lower' : 'higher'} average social vulnerability.`;
+    if (Math.abs(direction) > 1e-9) return `The ${label} plan swaps out ${fmt(a)} zones with ${direction > 0 ? 'higher' : 'lower'} average social vulnerability for ${fmt(b)} zones with ${direction > 0 ? 'lower' : 'higher'} average social vulnerability.`;
   }
-  return `The vulnerability-aware plan keeps on ${fmt(a)} zones cut only in the megawatts-only plan and cuts ${fmt(b)} other zones instead.`;
+  return `The ${label} plan keeps on ${fmt(a)} zones cut only in the megawatts-only plan and cuts ${fmt(b)} other zones instead.`;
 }
 
 /** County heat share uses the ACS heating-fuel denominator, not a mean of tract percentages. */
@@ -90,8 +92,8 @@ export function countyLabelAnchors(paths) {
 
 /** Purpose copy follows the actual displayed result, including business-cost-only settings. */
 export function benefitSentence(record) {
-  if (record.weighted.h_human < record.baseline.h_human && record.weighted.electric_heat_households < record.baseline.electric_heat_households) return 'When power has to be cut, METRIC-Grid shows planners how to cut the same amount while leaving fewer of the families least able to handle the cold in the dark.';
-  return 'When power has to be cut, METRIC-Grid helps planners compare who bears the consequences—and see when prioritizing business cost increases exposure to cold.';
+  if (record.weighted.h_human < record.baseline.h_human && record.weighted.electric_heat_households < record.baseline.electric_heat_households) return 'When power has to be cut, HEARTH shows planners how to cut the same amount while leaving fewer of the families least able to handle the cold in the dark.';
+  return 'When power has to be cut, HEARTH helps planners compare who bears the consequences—and see when prioritizing business cost increases exposure to cold.';
 }
 
 /** Match the SVG viewport to the panel while retaining all local tract geometry. */

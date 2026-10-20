@@ -1,4 +1,4 @@
-"""METRIC-Grid: one-page Streamlit app. Reads only data/frozen/ (no network). Every number comes from the model functions."""
+"""HEARTH legacy Streamlit interface. Reads only data/frozen/ (no network); numbers come from the model functions."""
 import sys
 from pathlib import Path
 
@@ -14,25 +14,24 @@ from metric_grid.model.optimizer import PairResult, PlanResult
 from metric_grid.model.scenarios import county_breakdown, plain_summary
 
 def _page_icon():
-    """Favicon: the wordmark's 3x3 grid as a tiny image (no file needed)."""
+    """Draw the HEARTH house-and-warmth mark as a small page icon."""
     from PIL import Image, ImageDraw
-    img = Image.new("RGBA", (64, 64), (0, 0, 0, 0))
+    img = Image.new("RGBA", (64, 64), (11, 18, 32, 255))
     d = ImageDraw.Draw(img)
-    for row in range(3):
-        for col in range(3):
-            on = (row + col) == 2
-            d.rounded_rectangle([4 + col * 20, 4 + row * 20, 20 + col * 20, 20 + row * 20], radius=3, fill=theme.BLUE if on else theme.BORDER)
+    d.line([(9, 31), (32, 10), (55, 31), (55, 55), (9, 55), (9, 31)], fill=theme.TEXT, width=4, joint="curve")
+    d.line([(25, 55), (25, 38), (39, 38), (39, 55)], fill=theme.TEXT, width=3)
+    d.ellipse((29, 23, 35, 30), fill=theme.AMBER)
     return img
 
 
-st.set_page_config(page_title="METRIC-Grid", page_icon=_page_icon(), layout="wide", initial_sidebar_state="auto")
+st.set_page_config(page_title="HEARTH · Legacy simulator", page_icon=_page_icon(), layout="wide", initial_sidebar_state="auto")
 st.markdown(theme.css(), unsafe_allow_html=True)
 
 try:
     with st.spinner("Loading the frozen data…"):
         A = data.load_all()
 except (FileNotFoundError, OSError) as exc:  # missing-data state: say exactly what to do, never a stack trace
-    st.markdown("<div class='eyebrow'>METRIC-Grid</div><div class='headline'>The frozen data is missing.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='eyebrow'>HEARTH · Legacy simulator</div><div class='headline'>The frozen data is missing.</div>", unsafe_allow_html=True)
     st.error(f"The app reads only the files in data/frozen/ and could not open them ({exc}). "
              "Run `make data` and `make freeze` (needs network and API keys once), or restore data/frozen/ from the repository.")
     st.stop()
@@ -119,9 +118,9 @@ when = pd.Timestamp(consts["scenario"]["date"]).strftime("%b %d, %Y").replace(" 
 NAV = [("overview", "Overview"), ("compare", f"Compared with {n_plans} plans"), ("priority", "Priority zones"), ("lookup", "Look up a zone"),
        ("robust", "How robust is this?")] + ([("forecast", "Why forecasts aren't enough")] if A["panel"] else []) + [("methods", "Methods & sources")]
 with st.sidebar:
-    st.markdown(f"<div class='brand'>{theme.LOGO_SVG}<span class='name'>Metric<b>Grid</b></span></div>"
+    st.markdown(f"<div class='brand'>{theme.LOGO_SVG}<span class='name'>HEARTH<small class='tagline'>Outage planning that remembers who's home</small></span></div>"
                 "<nav class='nav' aria-label='Sections'>" + "".join(f"<a href='#{k}'>{v}</a>" for k, v in NAV) + "</nav>"
-                f"<div class='side-meta'>Modeled planning scenario for North Carolina's 8th Congressional District.<span class='k'>Scenario date</span>"
+                f"<div class='side-meta'><span class='k'>Legacy Streamlit interface</span>Modeled planning scenario for North Carolina's 8th Congressional District.<span class='k'>Scenario date</span>"
                 f"<span class='mono'>{consts['scenario']['date']}</span><span class='k'>Data built</span><span class='mono'>{consts['built_utc'][:10]}</span>"
                 "<span class='k'>Runs offline from frozen public data.</span></div>", unsafe_allow_html=True)
 

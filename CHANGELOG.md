@@ -1,14 +1,42 @@
 # Changelog
 
+## 2026-10-19 · Warm light visual cleanup (OpenAI Codex)
+
+- Applied the owner’s warm paper/ember palette, self-hosted Inter only, 400/600 weights, shared tokens, 8 px spacing, three KPI cards, and a compact wordmark-only header.
+- Removed redundant hero copy, the right-side reference box, the fourth KPI, the visible instructions row and empty Prepare badge. Actual MW and the shared target band remain visible below controls; instructions and county cap are disclosures.
+- Collapsed map filters; moved County summary and Plan range into Evidence while preserving older deep links. Resident tools remain in a disclosure below the comparison; county imports remain in Prepare.
+- Added phone map switching, a native zone detail sheet, home-screen metadata/manifest and original H assets.
+- Correctly label alpha-zero results Business-cost optimized and preserve higher/lower/unchanged wording from the actual outcomes. No model, frozen-input or frozen-result changes; existing tests retained, with a new presentation regression file and cleanup browser checks.
+
+## 2026-10-19 · County resource CSV imports (OpenAI Codex)
+
+- Added a drag-and-drop/file-picker box in Prepare with an empty CSV template for county resource information.
+- Validate all rows against existing tract GEOIDs, require source/update date, derive counties, and preview each resource’s current modeled tract status under both plans. Support county filtering and removing the imported list.
+- Process uploads locally for the browser session, with file/row limits and clear errors. Imports do not change the model or frozen data. No new dependencies or production deployment.
+
+## 2026-10-19 · Resident place context and winter readiness (OpenAI Codex)
+
+- Added the resident Census-place search UI and freeze-time generator for intersecting tract zones under both current model plans, alongside household counts, electric-heat share and a clear no-home-prediction disclaimer. The local preview has no frozen place file yet, so results remain unavailable until the Census input is supplied and generated.
+- Added five basic winter-outage preparation tips with official ReadyNC and Ready.gov links.
+- Added the place-to-zone generator to the Python freeze pipeline; the generated table will bundle locally for offline app use when the source input is present. No optimization or harm model changes.
+- The current checkout has no raw TIGER place-boundary ZIP. The generator and UI are implemented; the final frozen mapping, screenshot and end-to-end place lookup remain blocked until that official input is available.
+
+## 2026-10-19 · HEARTH name and identity (OpenAI Codex)
+
+- Renamed the visible web and legacy Streamlit interfaces to HEARTH; added the requested tagline and original inline house-and-warmth mark, including the favicon.
+- Updated browser metadata, print and download names, export headers, documentation and video purpose sentence. Kept the repository/package/module identifiers and Vercel URL unchanged.
+- Added source and built-output checks for retired visible names. No model, data, deployment or dependency changes.
+
 ## 2026-10-19 · Technical demonstration guidance (OpenAI Codex)
 
 - Mapped visual comparison, supported what-if controls, GEOID data integration and optimization tests to their real source files in README and the video shot list.
 - Clarified that the React app replays precomputed Python solutions; arbitrary MW targets and live browser-triggered Python solving are not implemented.
-- Added a concise data-join/code/test sequence for the existing video time budget. No UI, model, input, dependency or deployment changes.
+- Added the actual GeoPandas/Shapely tract selection and facility spatial join, clarified the civic planning use, and replaced the obsolete long-page video sequence with the current focused-tab flow.
+- Kept the distinction between modeled comparisons and operational decisions explicit. Documentation only; no UI, model, input, dependency or deployment changes.
 
 ## 2026-10-19 · Review polish and focused tabs (OpenAI Codex)
 
-- Made Compare the default, preserved explicit mode and scenario deep links, and standardized visible branding and browser metadata to METRIC-Grid.
+- Made Compare the default, preserved explicit mode and scenario deep links, and standardized visible branding and browser metadata to the prior app name.
 - Split Compare into Two plans / What changed? / County summary / Plan range; moved priority lookup into Explore and supporting analyses into Evidence with Robustness / Forecast / Methods tabs.
 - Added a sourced historical opener and result-aware benefit copy. Historical facts are bundled at build time separately from model inputs.
 - Fixed tooltip cleanup on tract leave, tab changes and scenario/view changes; defensively exclude protected zones from cut styling.

@@ -22,6 +22,22 @@ async function main() {
   });
   await page.goto(base);
   await page.getByRole('heading', { name: /Same power cut/ }).waitFor();
+  const appData = JSON.parse(fs.readFileSync('public/data/app.json', 'utf8'));
+  assert.equal(await page.locator('.resident-layer').isVisible(), true);
+  assert.equal(await page.locator('.resident-layer .resident-disclaimer').innerText(), 'A modeled planning scenario, not a prediction for your home.');
+  assert.equal(await page.locator('.resident-layer:not(:has(.resident-disclaimer))').count(), 0);
+  assert.equal(await page.locator('.winter-ready li').count(), 5);
+  assert.equal(await page.getByRole('link', { name: 'ReadyNC winter weather ↗' }).getAttribute('href'), 'https://www.readync.gov/winter-weather');
+  assert.equal(await page.getByRole('link', { name: 'Ready.gov winter weather ↗' }).getAttribute('href'), 'https://www.ready.gov/winter-weather');
+  if (appData.places?.length) {
+    const validZones = new Set(appData.zones.features.map(feature => feature.properties.zone_id));
+    for (const place of appData.places) assert.ok(place.zone_ids.length && place.zone_ids.every(id => validZones.has(id)), `invalid zones for ${place.name}`);
+    const example = appData.places[0];
+    await page.getByLabel('Town or place name').fill(example.name);
+    await page.locator('#place-results button').first().click();
+    assert.equal(await page.locator('.resident-zone-list article').count(), example.zone_ids.length);
+    assert.equal(await page.locator('.resident-disclaimer').isVisible(), true);
+  }
   assert.match(await page.locator('.people-results').innerText(), /5,484[\s\S]*8,896[\s\S]*73%[\s\S]*2,543/);
   assert.equal(await page.locator('.community-section').count(), 0);
   assert.equal(await page.locator('.author-story').count(), 0);
@@ -29,8 +45,8 @@ async function main() {
   assert.equal(await page.locator('#compare-plans').isVisible(), true);
   assert.equal(await page.locator('.priority-section').isVisible(), false);
   assert.equal(await page.locator('#panel-evidence').isVisible(), false);
-  assert.equal(await page.locator('.brand').first().innerText(), 'METRIC-Grid');
-  assert.match(await page.title(), /METRIC-Grid/);
+  assert.match(await page.locator('.brand').first().innerText(), /HEARTH[\s\S]*Outage planning that remembers who's home/);
+  assert.equal(await page.title(), 'HEARTH · NC-08 outage planning');
   assert.match(await page.locator('.story-eyebrow').innerText(), /Christmas Eve 2022.*6:14 a.m..*10 °F[\s\S]*500,000/);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.screenshot({ path: `${output}/ui_first_screen_1440.png` });
@@ -102,6 +118,22 @@ async function main() {
   console.log('Map selection passed.');
   await page.getByRole('button', { name: /Add to planning shortlist/ }).filter({ visible: true }).click();
   await page.getByRole('tab', { name: /Prepare/ }).click();
+  const resourceCsv = `tract_geoid,resource_name,resource_type,capacity_people,source,updated_on,notes\r\n${appData.zones.features[0].properties.GEOID},Automated fixture,warming_center,25,Test fixture,2026-10-19,"<img src='https://example.invalid/county-fixture'>"`;
+  await page.locator('#county-data-file').setInputFiles({ name: 'fixture.csv', mimeType: 'text/csv', buffer: Buffer.from(resourceCsv) });
+  await page.locator('.county-data tbody tr').waitFor();
+  assert.equal(await page.locator('.county-data tbody tr').count(), 1);
+  assert.equal(await page.locator('.county-data img').count(), 0);
+  assert.match(await page.locator('.county-data [role=status]').innerText(), /county-supplied/);
+  await page.locator('#county-data-file').setInputFiles({ name: 'invalid.csv', mimeType: 'text/csv', buffer: Buffer.from('bad,headers') });
+  await page.locator('.county-data [role=alert]').waitFor();
+  assert.equal(await page.locator('.county-data tbody tr').count(), 1, 'failed uploads must retain the accepted list');
+  await page.getByRole('button', { name: 'Remove imported data', exact: true }).click();
+  assert.equal(await page.locator('.county-data tbody tr').count(), 0);
+  await page.locator('.county-data').screenshot({ path: `${output}/ui_county_data_1440.png` });
+  await page.setViewportSize({ width: 390, height: 900 });
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'county upload must fit a phone');
+  await page.locator('.county-data').screenshot({ path: `${output}/ui_county_data_390.png` });
+  await page.setViewportSize({ width: 1440, height: 1000 });
   assert.equal(await page.locator('.shortlist-item').count(), 1);
   await page.getByLabel('Planning note for zone 141', { exact: true }).fill('=formula fixture, "quoted"\nInvestigate backup power.');
   await page.getByLabel('Follow-up for zone 141', { exact: true }).selectOption('Backup-power investigation');

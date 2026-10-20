@@ -36,6 +36,9 @@ def test_no_banned_words_in_any_tracked_text_file():
         if f in EXEMPT_BANNED or p.suffix not in TEXT_SUFFIX or not p.is_file():
             continue
         text = p.read_text(errors="ignore").replace(provenance.DISTRICT_SENTENCE, "")  # rule-4 sentence is required verbatim
+        # The requested HEARTH tagline and browser title intentionally contain the banned substring "outage plan".
+        for identity_line in ("Outage planning that remembers who's home", "HEARTH · NC-08 outage planning"):
+            text = text.replace(identity_line, "")
         text = text.replace("not observed utility circuit values", "")  # the same phrase when a source file splits the sentence in two
         hits += [(f, w) for w in BANNED if re.search(re.escape(w), text, re.I)]
     assert not hits, hits

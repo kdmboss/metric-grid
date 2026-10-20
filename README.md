@@ -1,12 +1,16 @@
-# METRIC-Grid
+# HEARTH
 
-METRIC-Grid helps emergency planners and community stakeholders compare how load-only and vulnerability-aware outage scenarios could distribute risk across North Carolina's 8th Congressional District (NC-08).
+HEARTH helps emergency planners and community stakeholders compare how load-only and vulnerability-aware outage scenarios could distribute risk across North Carolina's 8th District.
+
+Formerly METRIC-Grid.
 
 A Congressional App Challenge entry. It is a **public-data planning simulator**: not Duke's method, not an operational switching tool, and not a prediction of what any utility did or will do.
 
 The primary interface is now a **React + Vite web app for Vercel**. It runs the existing precomputed scenarios in the browser without Streamlit, Python functions, API keys, or a database at runtime. The original Python model, data pipeline, and legacy Streamlit interface are retained for reproducibility.
 
-**Live app:** [METRIC-Grid on Vercel](https://metric-grid.vercel.app/). Use this primary link for the submission; review previews are temporary and may require Vercel sign-in.
+**Live app:** [HEARTH on Vercel](https://metric-grid.vercel.app/). Use this primary link for the submission; review previews are temporary and may require Vercel sign-in.
+
+The browser title is “HEARTH · NC-08 outage planning.” The house-and-warmth icon is drawn inline and has no external asset dependency.
 
 ## Planning workspace
 
@@ -16,11 +20,14 @@ Optional testimonials are read from `docs/quotes.yaml` at build time; only entri
 
 ## Technical walkthrough for reviewers
 
+Prepare → **County data** accepts a local CSV of county-supplied resources (warming centers, backup power, outreach, or other resources). Download the empty template, preserve tract GEOIDs as eleven digits, and include a resource name/type, named source and update date. Optional capacity is in people. The app validates every row against its tract catalog, derives the county, and previews current modeled plan statuses. Files remain in memory for the browser session; importing a replacement replaces the list, failed imports keep the previous list, and Remove imported data clears it. Uploaded resources do not change model inputs, optimization results or protected-zone exclusions and are not independently verified. No server or new dependency is used.
+
 | Area | What to demonstrate | Source evidence |
 |---|---|---|
-| Visual clarity | Compare → Two plans for paired household/MW totals; What changed? for exclusive tract categories; Plan range for the comparison against the full load-only set. | `web/MapCanvas.jsx`, `web/ComparisonPanels.jsx`, `web/Workspace.jsx`, `web/Evidence.jsx` |
+| Visual clarity | Compare → Two plans for paired household/MW totals and What changed? for exclusive tract categories; Evidence → Plan range for the comparison against the full load-only set. | `web/MapCanvas.jsx`, `web/ComparisonPanels.jsx`, `web/Workspace.jsx`, `web/Evidence.jsx` |
 | What-if interaction | Change the shortage preset, move the planning-priority slider, and toggle the county cap. Maps, actual MW, category counts and household trade-offs update together. | `web/model.js` (`getView`), `web/comparison.js`, `web/model.test.js` |
 | Data engineering | Preserve leading zeroes in tract identifiers, convert missing-value sentinels to missing values, and join ACS, CDC SVI and LODES by GEOID while rejecting duplicate keys. | `src/metric_grid/ingest/svi.py` (`clean_svi`), `src/metric_grid/ingest/acs.py` (`clean_acs`), `src/metric_grid/ingest/district.py` (`join_attributes`), `tests/test_phase1.py` |
+| Spatial processing | Select NC-08 census tracts by district overlap, retain tract geometry as analysis zones, and spatially join public facility locations to those zones. | `src/metric_grid/ingest/district.py` (`select_tracts`), `src/metric_grid/geometry/zones.py` (`tract_zones`, `flag_protected`) |
 | Optimization | Show the shared MW band, binary decisions, protected-zone exclusions, optional county cap and objective; run an existing optimizer test. | `src/metric_grid/model/optimizer.py` (`_build_problem`, `solve_one`), `tests/test_harm_optimizer.py` |
 
 The interface supports the Elliott reference plus 10%, 15% and 20% shortage presets, the configured priority grid and the county cap. It does **not** accept arbitrary MW targets or execute Python optimization when a browser control moves. The supported combinations replay reproducible Python results; presentation summaries are calculated locally. Precomputation keeps the deployed app offline-capable and avoids a solver service. Demonstrate the actual Python implementation and its tests instead of claiming a live backend.
@@ -39,7 +46,7 @@ npm run preview  # serve the production build locally
 
 The build exports `data/frozen/` and relevant `config.yaml` settings to browser-safe JSON, converts non-finite Python JSON values to `null`, and bundles the existing fonts locally. Maps use tract geometry and SVG; charts and scenario calculations run locally. Data and model changes still happen in the Python pipeline, followed by a new web build. Every supported control setting uses the original precomputed results; there is no live optimizer.
 
-The web interface includes the paired maps, reduction and alpha controls, county cap, all 200-plan comparisons, current-scenario priority zones, zone and example-building lookup, sensitivity results, the optional demand panel, methods and sources, and JSON scenario export. Missing or infeasible settings disclose the nearest available result. Deep links support `mode=compare|explore|prepare|evidence` and comparison `section=plans|changes|counties|range`. Missing or invalid modes open Compare. Existing scenario links still work: `?alpha=1&pct=10&cap=1&zone=23`.
+The web interface includes a resident-facing Census-place search for aggregate tract context, public winter-preparedness links, paired maps, reduction and alpha controls, county cap, all 200-plan comparisons, current-scenario priority zones, zone and example-building lookup, sensitivity results, the optional demand panel, methods and sources, and JSON scenario export. The place lookup uses frozen 2024 TIGER place polygons; it never asks for an address or predicts an individual home's outage. Missing or infeasible settings disclose the nearest available result. Deep links support `mode=compare|explore|prepare|evidence` and comparison `section=plans|changes`; Evidence uses `section=counties|range|robust|forecast|methods`. Older county/range comparison links redirect to Evidence. Missing or invalid modes open Compare. Existing scenario links still work: `?alpha=1&pct=10&cap=1&zone=23`.
 
 ## Deploy to Vercel
 
@@ -52,22 +59,22 @@ npx vercel          # preview deployment; authenticate when prompted
 npx vercel --prod   # production deployment
 ```
 
-`npm test` checks all 40 precomputed scenarios, comparison distributions, target bands, county caps, protected zones, example buildings, and deep links. For browser acceptance checks, install Playwright in your development environment and run `node scripts/workspace-smoke.cjs`. `PLAYWRIGHT_MODULE` can select a bundled Playwright module; `BROWSER_EXECUTABLE` can select another Chromium executable (default: Chrome). `SMOKE_URL` selects a deployed or production-preview URL. Screenshots and downloads are saved to ignored `artifacts/`.
+`npm test` checks all 40 precomputed scenarios, comparison distributions, target bands, county caps, protected zones, example buildings, and deep links. For browser acceptance checks, install Playwright in your development environment and run `node scripts/cleanup-smoke.cjs`. `PLAYWRIGHT_MODULE` can select a bundled Playwright module; `BROWSER_EXECUTABLE` can select another Chromium executable (default: Chrome). `SMOKE_URL` selects a deployed or production-preview URL. Screenshots and downloads are saved to ignored `artifacts/`.
 
-![METRIC-Grid comparison interface](docs/figures/ui_first_screen_1440.png)
+![HEARTH comparison interface](docs/figures/ui_first_screen_1440.png)
 
 ## What it does
 
 When a utility cannot meet demand it sheds load by opening breakers at substations. On December 24, 2022 (Winter Storm Elliott), Duke Energy Carolinas began shedding at 6:14 a.m. and shed up to 1,000 MW, and Duke Energy Progress shed up to 961 MW. Publicly described procedures protect critical facilities but publish no community-vulnerability layer.
 
-METRIC-Grid takes the observed regional demand curves from that morning (EIA-930), public census vulnerability data, and published interruption-cost figures, scales the regional event down to the district, and solves two plans held to the same MW band:
+HEARTH takes historical regional demand curves from that morning (EIA-930), public census vulnerability data, and published interruption-cost figures, scales the regional event down to the district, and solves two plans held to the same MW band:
 
 - **load-only plans**: any way of cutting the required MW with little overshoot, ignoring who lives there (there are very many; the app generates a fixed, reproducible set of 200 and shows the typical one);
 - a **vulnerability-aware plan**: cut the same MW band at the lowest modeled harm.
 
-It shows the vulnerability-aware plan next to a typical load-only plan on a map of 183 census tract zones, and against the whole set of load-only plans in a strip chart,, with every assumption exposed in the page and in `docs/ASSUMPTIONS.md`.
+It shows the vulnerability-aware plan next to a typical load-only plan on a map of 183 census tract zones, and against the whole set of load-only plans in a strip chart, with every assumption exposed in the page and in `docs/ASSUMPTIONS.md`.
 
-**Primary user:** a county emergency planner who wants to know whether two technically equal scenarios could impose very different consequences on vulnerable communities, and who leaves with a short list of zones to prioritize for outreach, warming centers and backup power. **Not for:** utility operators (they would need private network data) or residents (no household prediction).
+**Civic purpose:** give county emergency planners and community stakeholders a way to compare modeled trade-offs before an emergency, and identify areas they may want to investigate for outreach, warming centers and backup power. Residents can search a Census place for aggregate tract-level scenario context and winter-preparedness guidance. The lookup never predicts a home's outage, and HEARTH does not choose real-world emergency actions.
 
 ## The default scenario (modeled)
 
@@ -117,6 +124,7 @@ The app reads only `data/frozen/` (committed, about 1 MB). There are no live API
 | Source | Vintage | Used for |
 |---|---|---|
 | Census TIGER/Line 2024 (district, tracts) | 2024 | NC-08 boundary and tracts |
+| Census TIGER/Line 2024 (places) | 2024 | Build-time place names and intersecting NC-08 tract zones |
 | Census ACS 5-year | 2020-2024 | households, heating fuel, housing units |
 | CDC/ATSDR Social Vulnerability Index | 2022 | vulnerability (RPL_THEMES) |
 | LEHD LODES8 WAC | 2023 | jobs by sector |
@@ -170,3 +178,5 @@ Optional hardware prototype (ESP32 outage + indoor temperature logger) is in pro
 - A consent-based sensor pilot (the node and firmware) and a thermal model of indoor temperature.
 - Electric heat in the load weights (a cold morning raises load in electric-heat tracts).
 - Stochastic scenarios.
+
+The current review interface uses a warm light theme, self-hosted Inter, three outcome cards and compact filters. On a phone, the two plans share one map with a toggle and tract details open in a bottom sheet. The α = 0 column is labeled Business-cost optimized; the model and outcomes are unchanged.

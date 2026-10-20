@@ -1,5 +1,33 @@
 # AI disclosure
 
+## Warm light visual cleanup (2026-10-19)
+
+OpenAI Codex applied the owner-supplied cleanup brief to the existing React components and CSS. Codex added shared theme tokens, a compact hero/three-card comparison, disclosures, updated tab placement, a mobile plan toggle, a native zone detail dialog, dynamic objective labels, and local home-screen assets. Codex retained all model and frozen data files and left existing test files intact during this pass; the new presentation test covers objective labels, outcome directions and navigation migration. The new browser script captures the requested desktop and phone states. Existing author-review fields are still for the owners to complete.
+
+| File | Status | What I changed |
+|---|---|---|
+| `tokens.css` | AI-scaffolded (OpenAI Codex); owner-specified design tokens | TODO (author) |
+| `web/cleanup.css` | AI-scaffolded (OpenAI Codex); cleanup styles and responsive states | TODO (author) |
+| `web/presentation.js` | AI-scaffolded (OpenAI Codex); objective labels and navigation | TODO (author) |
+| `web/presentation.test.js` | AI-scaffolded (OpenAI Codex); new presentation regressions | TODO (author) |
+| `scripts/cleanup-smoke.cjs` | AI-scaffolded (OpenAI Codex); browser acceptance and screenshots | TODO (author) |
+| `scripts/generate-app-icons.py` | AI-scaffolded (OpenAI Codex); original geometric H assets | TODO (author) |
+| `public/manifest.webmanifest` | AI-scaffolded (OpenAI Codex); standalone display metadata | TODO (author) |
+| `public/apple-touch-icon.png` | AI-generated from the original local H drawing | TODO (author) |
+| `public/icon-192.png` | AI-generated from the original local H drawing | TODO (author) |
+| `public/icon-512.png` | AI-generated from the original local H drawing | TODO (author) |
+
+Codex also updated `web/Workspace.jsx`, `web/Evidence.jsx`, `web/MapCanvas.jsx`, `web/ComparisonPanels.jsx`, `web/comparison.js`, `web/ResidentLayer.jsx`, `web/CountyData.jsx`, `web/main.jsx`, `web/styles.css`, `web/workspace.css`, `package.json`, `index.html`, `public/favicon.svg`, `.hallmark/log.json`, `README.md`, `docs/UI_BRIEF.md`, `docs/UI_CHANGES.md`, `docs/PROJECT_CONTEXT.md`, `docs/VIDEO_SHOTLIST.md`, `CHANGELOG.md`, and this disclosure. Screenshots under `docs/figures/cleanup_*.png` are generated browser captures. No production deployment was performed.
+
+## County resource import addition (2026-10-19)
+
+OpenAI Codex added the local CSV parser/validator and the Prepare county resource panel, plus validation tests and browser acceptance checks. Codex updated `web/Workspace.jsx`, `web/workspace.css`, `web/model.test.js`, `scripts/workspace-smoke.cjs`, `README.md`, `docs/PROJECT_CONTEXT.md`, `docs/UI_BRIEF.md`, `docs/ASSUMPTIONS.md`, `docs/SPEC.md`, `CHANGELOG.md`, and this disclosure. Uploaded rows are county-supplied annotations with explicit source/date fields, not model inputs. No model, frozen data, dependency or production changes were made. Test resources are explicitly automated fixtures and are not shipped as sample county data. Owner-review fields remain for the owners. `docs/figures/ui_county_data.png` is a browser screenshot of the empty upload panel.
+
+| File | Status | What I changed |
+|---|---|---|
+| `web/CountyData.jsx` | AI-scaffolded (OpenAI Codex); author review pending | TODO (author) |
+| `web/countyData.js` | AI-scaffolded (OpenAI Codex); author review pending | TODO (author) |
+
 ## Tools used
 - **OpenAI Codex**: created the React/Vite interface, browser data export, Vercel configuration, migration tests, and deployment documentation on 2026-10-19. Validated all 40 precomputed scenarios against the original frozen outputs and tested desktop and mobile browser interactions. Author review remains pending.
 - **Claude** (Anthropic): design discussion and drafting of the project spec; the optional hardware prototype's firmware and node server (not in this repository; in progress, not part of this submission) are AI-written with Claude, reviewed by the author, hardware testing in progress.
@@ -105,6 +133,9 @@ Generated exports under `public/data/`, `public/fonts/`, and `public/methods/` a
 | `index.html` | AI-scaffolded (OpenAI Codex); author review pending | TODO (author) |
 | `public/favicon.svg` | AI-scaffolded (OpenAI Codex); author review pending | TODO (author) |
 | `scripts/export-web-data.mjs` | AI-scaffolded (OpenAI Codex); author review pending | TODO (author) |
+| `src/metric_grid/ingest/places.py` | AI-scaffolded (OpenAI Codex); author review pending | TODO (author) |
+| `web/ResidentLayer.jsx` | AI-scaffolded (OpenAI Codex); author review pending | TODO (author) |
+| `tests/test_places.py` | AI-scaffolded (OpenAI Codex); author review pending | TODO (author) |
 | `scripts/web-smoke.cjs` | AI-scaffolded (OpenAI Codex); author review pending | TODO (author) |
 | `web/main.jsx` | AI-scaffolded (OpenAI Codex); author review pending | TODO (author) |
 | `web/model.js` | AI-scaffolded (OpenAI Codex); author review pending | TODO (author) |
@@ -152,7 +183,7 @@ Validation for these additions: 17 web tests passed; 182 Python tests passed wit
 
 ## Review polish and focused tabs (2026-10-19)
 
-OpenAI Codex applied the owner-supplied review and the owner’s request to separate content into focused tabs. Codex standardized METRIC-Grid branding, made Compare the default, separated supporting analysis from the primary comparison, fixed hover cleanup and map framing, and added conditional benefit copy. The historical customer count was verified against Duke Energy’s December 24, 2022 update and stored separately from model inputs. Codex did not change the original model, frozen data, configuration values or personal-story/quote files.
+OpenAI Codex applied the owner-supplied review and the owner’s request to separate content into focused tabs. Codex completed the previous brand pass, made Compare the default, separated supporting analysis from the primary comparison, fixed hover cleanup and map framing, and added conditional benefit copy. The historical customer count was verified against Duke Energy’s December 24, 2022 update and stored separately from model inputs. Codex did not change the original model, frozen data, configuration values or personal-story/quote files.
 
 | File | Status | What I changed |
 |---|---|---|
@@ -167,6 +198,17 @@ Review validation: 19 web tests passed, the build passed, and the Python suite c
 
 ## Technical demonstration guidance (2026-10-19)
 
-OpenAI Codex audited the owner-supplied technical checklist against the repository and updated `README.md`, `docs/VIDEO_SHOTLIST.md`, `CHANGELOG.md`, and `docs/AI_DISCLOSURE.md`. The guidance points to actual GEOID normalization, duplicate-key checks, joins, shared optimization constraints and existing tests. It explicitly distinguishes precomputed browser playback from Python solver execution and does not claim arbitrary MW targets or a live backend. No application/model/data files were changed. Owner-review fields remain for the owners.
+OpenAI Codex audited the owner-supplied technical checklist against the repository and updated `README.md`, `docs/VIDEO_SHOTLIST.md`, `CHANGELOG.md`, and this disclosure. The guidance points to actual GEOID normalization, duplicate-key checks, ACS/SVI/LODES joins, GeoPandas/Shapely tract selection and facility spatial joins, shared optimization constraints and existing tests. It explicitly distinguishes precomputed browser playback from Python solver execution, describes the civic planning use without promising operational decisions, and does not claim arbitrary MW targets or a live backend. The video guide now follows the focused-tab interface instead of the retired long-page layout. No application/model/data files were changed. Owner-review fields remain for the owners.
 
 Validation for this documentation update: 2 targeted data-cleaning/join tests, 5 real optimizer tests and 21 audit tests passed. No pipeline rebuild or deployment was performed.
+
+
+## HEARTH visible-name update (2026-10-19)
+
+OpenAI Codex updated visible browser and legacy Streamlit branding, the original inline house mark and favicon, export filenames and CSV/JSON headers, name-copy tests, project guidance, and the video wording. Codex retained the repository, package, Python module, storage key, data, and deployed URL identifiers. No model or data changes were made. A protected review preview was deployed; production was not promoted or changed.
+
+| File | Status | What I changed |
+|---|---|---|
+| `docs/UI_BRIEF.md` | AI-assisted (OpenAI Codex); new current product brief | TODO (author) |
+
+Codex also updated `web/Evidence.jsx`, `web/Workspace.jsx`, `web/comparison.js`, `web/planning.js`, `web/styles.css`, `web/main.jsx`, `web/model.test.js`, `scripts/workspace-smoke.cjs`, `index.html`, `public/favicon.svg`, `src/metric_grid/app/streamlit_app.py`, `src/metric_grid/app/theme.py`, `README.md`, `CLAUDE.md`, `config.yaml` (comment only), `docs/PROJECT_CONTEXT.md`, `docs/UI_BRIEF.md`, `docs/UI_CHANGES.md`, `docs/VIDEO_SHOTLIST.md`, `docs/SPEC.md`, `CHANGELOG.md`, `tests/test_app.py`, `tests/test_audit.py`, and this disclosure. Updated screenshots are generated artifacts. Existing owner-review fields remain the owners’ responsibility.

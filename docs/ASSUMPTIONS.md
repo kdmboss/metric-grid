@@ -1,5 +1,15 @@
 # Assumptions and fallbacks
 
+## County resource imports (2026-10-19)
+
+Prepare accepts county-supplied resource CSVs as local annotations, matched by exact tract GEOID to the existing zone catalog. County/zone labels come from that catalog. Every row needs a resource name/type, source and valid update date; optional capacity is reported in people without assessing availability or suitability. CSVs are limited to 1 MB and 500 rows. Invalid imports are rejected as a whole and preserve the previous accepted list. Imported text is never interpreted as HTML. The list stays in memory for the browser session, can be removed, and is not sent to a server or incorporated into optimization, facility exclusions, load estimates or frozen model results.
+
+## Resident area lookup (2026-10-19)
+
+The resident lookup is an informational view over 2024 Census TIGER/Line Census places. At freeze time, place polygons are clipped to the NC-08 district and mapped to every census-tract zone with a positive-area overlap; the result is bundled in `data/frozen/places.json`. It is a town/place search, not address geocoding. The displayed zone statistics and plan statuses describe whole census-tract zones, so they cannot identify which homes would lose power. The card must always show: “A modeled planning scenario, not a prediction for your home.” If the official TIGER place boundaries are absent, the lookup data cannot be generated and must not be fabricated.
+
+Preparedness tips link to ReadyNC and Ready.gov winter-weather guidance. They are general reminders, not a substitute for local emergency instructions.
+
 Judgment calls, proxies, data-source failures and the fallbacks used are recorded here before work continues past them (rule 7).
 
 ## Fixed design decisions

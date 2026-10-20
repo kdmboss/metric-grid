@@ -1,0 +1,14 @@
+{
+  "name": "HEARTH",
+  "short_name": "HEARTH",
+  "description": "Compare modeled power-shortage scenarios across North Carolina's 8th District.",
+  "start_url": "/?mode=compare",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F6F3EE",
+  "theme_color": "#F6F3EE",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -1,5 +1,39 @@
 # UI changes · 2026-10-19
 
+## Current review · warm light cleanup
+
+This section describes the current owner-requested cleanup. Sections below it record earlier iterations and their historical screenshots/validation.
+
+- One self-hosted Inter family, 400/600 weights, tabular numerals, the specified type scale, centralized warm paper/ember tokens and a centered 1200 px workspace.
+- Three outcome cards keep the total-household trade-off visible. The shared target band and both actual MW cuts appear below the controls. At alpha zero the optimized column is named Business-cost optimized; all signs follow the existing outcomes.
+- Compare has Two plans and What changed?. County summary and Plan range are in Evidence, with legacy deep links migrated. County imports remain in Prepare. The resident tools remain in a disclosure below the comparison.
+- Phone users switch one map between the two plans and tap a tract for a native detail sheet; keyboard users can open the selected-zone button. County labels stay 12 screen pixels, with subtle halos, collision spacing and leaders where needed.
+- Home-screen metadata and a standalone manifest use original local H icons. No service worker, background refresh, model change or production deployment was added.
+
+### Removed from the visible layout
+
+- Repeated hero subtitle and benefit copy; the longer customer-count narrative remains sourced in Methods.
+- The right-side reference box, fourth MW KPI tile and amber underline.
+- The house icon and tagline in the header/footer, the empty Prepare count, the tab-bar plan-count sentence and “Planning workspace” header text.
+- The permanent how-to row, open filter bar and always-visible county-cap switch. Their functions remain in How to use, Filters and More options.
+- Monospace typography and the prior blue/teal/yellow palette. No functional model, county data, shortlist, evidence, quote or story feature was removed.
+
+### Verification for this cleanup
+
+- 25 web tests pass, including the 23 retained tests and 2 new presentation regressions; production build passes.
+- The full Python run has 183 passed and 8 prerequisite skips. Its four legacy map-render setups were initially blocked by sandbox socket restrictions; rerunning those four outside the sandbox gives four missing-browser-build skips. Across both runs: 183 passed, 12 skipped. Existing tests were not rewritten for this cleanup.
+- The current cleanup browser script verifies all six required widths (320/375/390/414/768/1440), typography, no root horizontal overflow, actual tract tapping, mobile plan switching/sheet dismissal, filters, priority extremes, county cap, Evidence navigation, legacy links, local home-screen assets, no page exceptions and no external requests.
+- The desktop map surface starts at approximately 764 px, inside a 1440×900 viewport. At 390×844, all three KPI cards and the household trade-off fit in the default screenshot.
+- Palette text contrast: primary on paper 15.47:1; secondary on paper 6.52:1; secondary on cards 7.21:1; ember on cards 5.55:1. Essential labels use secondary text rather than the lower-contrast decorative muted tone.
+- Model and frozen-data differences are empty. Browser checks use Chrome; an actual iPhone/Safari Add to Home Screen launch is not claimed.
+
+### Current screenshots
+
+- [Desktop default](figures/cleanup_desktop_default.png), [middle priority](figures/cleanup_desktop_middle.png), [selected zone](figures/cleanup_desktop_selected.png), [business-cost-only honesty check](figures/cleanup_desktop_cost_only.png).
+- [Phone default](figures/cleanup_phone_default.png), [middle priority](figures/cleanup_phone_middle.png), [selected-zone sheet](figures/cleanup_phone_selected.png), [other plan selected](figures/cleanup_phone_other_plan.png).
+
+The default priority is already the middle position; the middle-priority shots explicitly return to it after testing another value. The standard `ui_first_screen_1440.png` and `ui_phone_390.png` aliases also show this cleanup. Current browser checks run with `node scripts/cleanup-smoke.cjs`; the older workspace smoke script retains its pre-cleanup interface expectations and is preserved as requested.
+
 ## Scope
 
 The React/Vite app now provides Explore, Compare, and Prepare views in one page. Production is unchanged; this work is on `codex/map-first-workspace` for preview review.
@@ -74,7 +108,7 @@ Review preview: https://metric-grid-d2xxwozl2-karthiks-projects-65cb8506.vercel.
 
 ## Review polish and focused navigation
 
-The landing view is now Compare. The official METRIC-Grid name is consistent across the header/footer, browser title, loading states, favicon title and README. The historical opener uses the existing start-time and temperature observations plus a separately sourced Duke Energy customer count, bundled at build time. The benefit sentence becomes neutral at settings that do not reduce both weighted harm and electric-heat exposure.
+The landing view is now Compare. At that review stage, the former app name was consistent across the header/footer, browser title, loading states, favicon title and README. The historical opener uses the existing start-time and temperature observations plus a separately sourced Duke Energy customer count, bundled at build time. The benefit sentence becomes neutral at settings that do not reduce both weighted harm and electric-heat exposure.
 
 The main views are Compare / Explore / Prepare / Evidence. Compare has Two plans / What changed? / County summary / Plan range tabs; Evidence has Robustness / Forecast / Methods & sources tabs. Explore owns the priority list and public-building examples. Results are no longer presented as one long sequence. Comparison state, selected zone and camera are preserved between views; explicit mode and comparison-view deep links remain supported.
 
@@ -86,3 +120,10 @@ Final review validation: 19 web tests passed; production build passed; full Pyth
 Primary navigation remains reachable in a sticky top bar. The full introduction and headline results appear in Compare; other modes open directly into their own content. Primary-mode changes open at the top of their content, while scenario and selection state are preserved. Selecting a zone from Plan range opens its Explore inspector.
 
 Current review preview: https://metric-grid-opwsq1y68-karthiks-projects-65cb8506.vercel.app/ (Compare opens by default; Vercel sign-in may be required). Production remains unchanged.
+
+
+## HEARTH visible identity
+
+The web header and footer use HEARTH, the requested muted tagline, and a locally drawn house-and-warmth icon. The browser title, loading and benefit copy, print sheet, CSV/JSON exports and favicon match. The retained Streamlit app is labeled as the legacy interface and carries the same identity. Repository/package/module names and the Vercel hostname stay stable.
+
+Review screenshots: [1440 × 900 first screen](figures/ui_first_screen_1440.png) and [390 × 900 phone first screen](figures/ui_phone_390.png). Chrome’s full workspace smoke check passed. Web tests: 20 passed. Production build passed. Python suite: 182 passed, 11 skipped, 27 existing missing-SVI warnings. A protected Vercel review preview is ready at https://metric-grid-dn2xyt1s3-karthiks-projects-65cb8506.vercel.app/ (HTTP 200; sign-in may be required). This preview was not promoted to production.

@@ -72,6 +72,9 @@ def test_required_district_sentence_and_labels_present(default_page):
 
 def test_no_banned_words_in_ui_text(default_page):
     text = page_text(default_page).replace(provenance.DISTRICT_SENTENCE, "")  # rule 4 sentence is required verbatim
+    # Keep the exact owner-requested HEARTH identity copy while rejecting that phrase elsewhere.
+    for identity_line in ("Outage planning that remembers who's home", "HEARTH · NC-08 outage planning"):
+        text = text.replace(identity_line, "")
     for w in BANNED:
         assert not re.search(re.escape(w), text, re.I), w
 

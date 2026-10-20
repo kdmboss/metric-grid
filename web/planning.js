@@ -26,6 +26,7 @@ export function exportRows(data, record, zones, shortlist) {
   return shortlist.map(item => {
     const z = zones.find(z => z.zone_id === item.zone);
     return {
+      app_name: 'HEARTH',
       reference_date: data.constants.scenario.date, data_built: data.constants.built_utc,
       displayed_alpha: record.alpha, displayed_target_mw: record.target_mw, county_cap: record.cap,
       shared_band_min_mw: record.band_lo_mw, shared_band_max_mw: record.band_hi_mw,

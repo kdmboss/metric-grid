@@ -1,6 +1,15 @@
 [
   {
     "date": "2026-10-19",
+    "scope": "app",
+    "macrostructure": "Map / Diagram",
+    "theme": "owner-specified warm light",
+    "theme_axes": "warm paper / Inter sans / ember",
+    "enrichment": "none",
+    "brief": "Explicit cleanup: three KPIs, shorter hero, compact controls, Evidence analysis tabs, mobile map switch and zone sheet. Existing app and scientific results retained."
+  },
+  {
+    "date": "2026-10-19",
     "macrostructure": "Map / Diagram",
     "theme": "existing civic workspace tokens",
     "nav": "Compare-first primary tabs and focused secondary views",

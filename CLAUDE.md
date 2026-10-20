@@ -1,8 +1,8 @@
-# METRIC-Grid: project memory (full locked spec: docs/SPEC.md)
+# HEARTH: project memory (full locked spec: docs/SPEC.md)
 
-**Purpose:** helps emergency planners and community stakeholders compare how load-only and vulnerability-aware outage scenarios could distribute risk across NC's 8th Congressional District (NC-08). Congressional App Challenge entry, due 12:00 pm EDT Oct 26, 2026. Author is a high-school student: less scope, more proof, explainable code.
+**Purpose:** HEARTH helps emergency planners and community stakeholders compare how load-only and vulnerability-aware outage scenarios could distribute risk across North Carolina's 8th District. Congressional App Challenge entry, due 12:00 pm EDT Oct 26, 2026. Author is a high-school student: less scope, more proof, explainable code.
 
-**Primary user:** a county emergency planner who wants to know whether two technically equal scenarios could burden vulnerable communities very differently, and leaves with zones to prioritize for outreach, warming centers, backup power. Not utility operators, not residents.
+**Primary user:** a county emergency planner who wants to know whether two technically equal scenarios could burden vulnerable communities very differently, and leaves with zones to prioritize for outreach, warming centers, backup power. Residents are secondary users of the aggregate Census-place lookup and winter-preparedness tips; this layer never predicts an individual home's outage. Not utility operators.
 
 **Anchor:** Winter Storm Elliott, Dec 24 2022, the hour ending 07:00 (06:00-07:00; EIA labels hours by their end) (DEC shed 1,000 MW from 06:14; DEP shed up to 961 MW; sources in docs/DATA_SOURCES.md). Planning simulator, not a dispatcher, not Duke's method.
 

@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
@@ -6,10 +6,55 @@ import { cutCounts, defaults, enrichZones, getView, locate, mapPaths, planMetric
 import { planChanges, countySummary, countyLabelAnchors, swapSentence, benefitSentence, mapFrame } from './comparison.js';
 import { approvedContent } from './content.js';
 import { FOLLOWUPS, csvCell, exportRows, priorityName, sanitizePlan, shortlistCsv } from './planning.js';
+import { COUNTY_COLUMNS, countyTemplate, MAX_COUNTY_ROWS, validateCountyData } from './countyData.js';
 
 const data = JSON.parse(readFileSync(new URL('../public/data/app.json', import.meta.url), 'utf8'));
 const zones = enrichZones(data);
 const close = (actual, expected, label) => assert.ok(Math.abs(actual - expected) < 1e-6, `${label}: ${actual} != ${expected}`);
+
+const countyFixture = overrides => ({ tract_geoid: String(zones[0].GEOID), resource_name: 'Test fixture resource', resource_type: 'warming_center', capacity_people: '25', source: 'Automated test fixture', updated_on: '2026-10-19', notes: 'Not a real resource', ...overrides });
+const countyCsv = records => countyTemplate() + records.map(row => COUNTY_COLUMNS.map(key => `"${String(row[key] ?? '').replaceAll('"', '""')}"`).join(',')).join('\r\n');
+
+test('county CSV preserves quoted content, matches counties and leaves model inputs untouched', () => {
+  const original = JSON.stringify({ zones, records: data.records });
+  const note = 'Comma, quote " and\na new line <script>fixture</script>';
+  const parsed = validateCountyData('\uFEFF' + countyCsv([countyFixture({ notes: note })]), zones);
+  assert.equal(parsed[0].county, zones[0].COUNTY);
+  assert.equal(parsed[0].zone_id, zones[0].zone_id);
+  assert.equal(parsed[0].capacity_people, 25);
+  assert.equal(parsed[0].notes, note);
+  assert.equal(validateCountyData(countyCsv([countyFixture({ capacity_people: '' })]), zones)[0].capacity_people, null);
+  assert.equal(JSON.stringify({ zones, records: data.records }), original);
+  assert.equal(countyTemplate(), COUNTY_COLUMNS.join(',') + '\r\n');
+});
+
+test('county CSV rejects unknown tracts, ambiguous rows, invalid capacity and invalid dates', () => {
+  for (const override of [{ tract_geoid: '99999999999' }, { tract_geoid: '' }, { source: '' }, { resource_name: '' }, { resource_type: 'hospital' }, { capacity_people: '-1' }, { capacity_people: '1.5' }, { capacity_people: 'unknown' }, { updated_on: '2026-02-30' }, { updated_on: '10/19/2026' }]) {
+    assert.throws(() => validateCountyData(countyCsv([countyFixture(override)]), zones), /Record 1:/);
+  }
+  assert.throws(() => validateCountyData(countyCsv([countyFixture(), countyFixture()]), zones), /duplicate resource/);
+  assert.throws(() => validateCountyData(countyTemplate(), zones), /at least one/);
+  assert.throws(() => validateCountyData('tract_geoid,resource_name\n123,fixture', zones), /column headers/);
+  assert.throws(() => validateCountyData(countyTemplate() + '"unfinished', zones), /closing quote/);
+  assert.throws(() => validateCountyData(countyTemplate() + '"closed"extra', zones), /after a quoted cell/);
+  assert.throws(() => validateCountyData(countyTemplate() + 'one,two', zones), /number of cells/);
+});
+
+test('county import enforces size and row limits before accepting a resource list', () => {
+  assert.throws(() => validateCountyData('x'.repeat(1024 * 1024 + 1), zones), /1 MB/);
+  assert.throws(() => validateCountyData(countyCsv(Array.from({ length: MAX_COUNTY_ROWS + 1 }, (_, i) => countyFixture({ resource_name: `Fixture ${i}` }))), zones), /at most 500/);
+});
+
+test('retired visible brand names are absent from browser source and built assets', () => {
+  const retiredNames = [['METRIC', 'Grid'].join('-'), ['Metric', 'Grid'].join('')];
+  const collect = directory => readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+    const file = new URL(`../${directory}/${entry.name}`, import.meta.url);
+    return entry.isDirectory() ? collect(`${directory}/${entry.name}`) : [readFileSync(file, 'utf8')];
+  });
+  const source = collect('web');
+  const built = existsSync(new URL('../dist', import.meta.url)) ? collect('dist') : [];
+  for (const text of [...source, ...built]) for (const retired of retiredNames) assert.equal(text.includes(retired), false, `retired brand found: ${retired}`);
+});
 
 test('every precomputed scenario preserves original plan metrics, MW bands, and facility exclusions', () => {
   for (const record of data.records.filter(r => r.solved)) {
@@ -117,7 +162,7 @@ test('CSV exports provenance, the current scenario, truthful evidence, and safel
   assert.equal(row.aware_status, status(z, record.weighted));
   assert.equal(row.interruption_cost_2013_usd_1h, z.econ);
   assert.match(row.limitations, /not a uniform sample/);
-  const csv = shortlistCsv(rows); assert.match(csv, /estimated_zone_load_mw/); assert.match(csv, /"'=HYPERLINK\(""fixture""\)/);
+  const csv = shortlistCsv(rows); assert.match(csv, /^\uFEFF"app_name"/); assert.match(csv, /"HEARTH"/); assert.match(csv, /estimated_zone_load_mw/); assert.match(csv, /"'=HYPERLINK\(""fixture""\)/);
   assert.equal(csvCell('a,"b"\nc'), '"a,""b""\nc"'); assert.equal(csvCell('@formula'), '"\'@formula"');
   assert.equal(shortlistCsv([]), '');
 });
@@ -134,7 +179,9 @@ test('web interface copy preserves the required sentence and excludes prohibited
   const banned = ['privacy-preserving', 'federated learning', 'AI optimizer', 'conventional plan', 'circuit', 'feeder', 'service area', 'neighborhood demand', 'least harm', 'outage plan'];
   const all = files.map(name => readFileSync(new URL(name, import.meta.url), 'utf8')).join('\n');
   assert.ok(all.includes(required));
-  for (const phrase of banned) assert.ok(!all.replace(required, '').toLowerCase().includes(phrase.toLowerCase()), phrase);
+  const sanctionedBrandCopy = ["Outage planning that remembers who's home", 'HEARTH · NC-08 outage planning'];
+  const copyUnderAudit = sanctionedBrandCopy.reduce((copy, phrase) => copy.replaceAll(phrase, ''), all.replace(required, ''));
+  for (const phrase of banned) assert.ok(!copyUnderAudit.toLowerCase().includes(phrase.toLowerCase()), phrase);
   const outcomes = ['3,412', '5,484', '8,896', '2,543', '17,956', '15,413', '73%', '12.6%'];
   const visit = node => {
     if (!node || typeof node !== 'object') return;

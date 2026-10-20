@@ -1,4 +1,4 @@
-# METRIC-Grid configuration. Every constant lives here; no other file hard-codes
+# HEARTH configuration. Every constant lives here; no other file hard-codes
 # state, district, balancing authority, or counties. Values marked TODO are
 # placeholders to be resolved (and sourced) in the named phase.
 

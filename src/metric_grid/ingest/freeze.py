@@ -12,7 +12,7 @@ import pandas as pd
 from metric_grid.config import load_config
 from metric_grid.frozen import FROZEN
 from metric_grid.geometry import zones as zmod
-from metric_grid.ingest import eia930, footprints
+from metric_grid.ingest import eia930, footprints, places as place_ingest
 from metric_grid.ingest.common import PROCESSED
 from metric_grid.model import load_allocation as la
 from metric_grid.model import scenarios as scen
@@ -22,6 +22,7 @@ SIMPLIFY_DEG = 0.0001  # ~10 m: keeps files small; geometry is for display, area
 
 DATASETS = [  # provenance list for the app's drawer (vintage per source; full notes in docs/DATA_SOURCES.md)
     {"name": "Census TIGER/Line 2024 (cd119, tracts)", "vintage": "2024", "url": "https://www2.census.gov/geo/tiger/TIGER2024/"},
+    {"name": "Census TIGER/Line 2024 (places)", "vintage": "2024", "url": "https://www2.census.gov/geo/tiger/TIGER2024/PLACE/"},
     {"name": "Census ACS 5-year", "vintage": "2020-2024", "url": "https://api.census.gov/data/2024/acs/acs5"},
     {"name": "CDC/ATSDR Social Vulnerability Index", "vintage": "2022", "url": "https://svi.cdc.gov/"},
     {"name": "LEHD LODES8 WAC", "vintage": "2023", "url": "https://lehd.ces.census.gov/data/lodes/LODES8/"},
@@ -85,6 +86,9 @@ def freeze() -> dict:
     dist = gpd.read_file(PROCESSED / "district.geojson")
     dist["geometry"] = dist.geometry.simplify(SIMPLIFY_DEG, preserve_topology=True)
     dist[["STATEFP", "CD119FP", "geometry"]].to_file(FROZEN / "district.geojson", driver="GeoJSON")
+    places = place_ingest.load_tiger_places(cfg)
+    lookup = place_ingest.place_zone_lookup(places, zones, dist)
+    (FROZEN / "places.json").write_text(json.dumps(lookup, indent=2))
     f = fac.copy()
     f["protected"] = f["facility_type"].isin(cfg["facilities"]["protected_types"])
     f.to_file(FROZEN / "facilities.geojson", driver="GeoJSON")

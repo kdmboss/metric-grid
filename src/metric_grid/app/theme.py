@@ -55,9 +55,10 @@ a {{ color: var(--blue); text-decoration:none; }} a:hover {{ text-decoration:und
 [data-testid="stSidebar"] {{ background: var(--surface); border-right:1px solid var(--border); }}
 [data-testid="stSidebar"] [data-testid="stSidebarContent"] {{ padding: var(--s6) var(--s4); }}
 .brand {{ display:flex; align-items:center; gap: var(--s3); margin-bottom: var(--s6); }}
-.brand svg {{ width:28px; height:28px; flex:none; }}
-.brand .name {{ font-size:17px; font-weight:600; letter-spacing:-0.01em; color: var(--text); }}
-.brand .name b {{ font-weight:600; color: var(--blue); }}
+.brand svg {{ width:30px; height:30px; flex:none; }}
+.brand .name {{ display:flex; flex-direction:column; font-size:17px; font-weight:650; letter-spacing:-0.01em; color: var(--text); line-height:1.1; }}
+.brand .tagline {{ margin-top:4px; font-size:9px; font-weight:400; color:var(--muted); letter-spacing:0; }}
+.brand .warmth {{ fill:{AMBER}; stroke:none; }}
 .nav {{ display:flex; flex-direction:column; gap:2px; margin-bottom: var(--s6); }}
 .nav {{ gap:2px !important; }}
 [data-testid="stSidebar"] .nav a {{ display:block; text-decoration:none !important; color: var(--muted); font-size: var(--t-small); padding: var(--s2) var(--s3); border-radius:6px; border-left:2px solid transparent; transition: background .12s, color .12s; }}
@@ -148,9 +149,7 @@ iframe, canvas {{ max-width:100%; }}
 # Back-compat name used by older code and tests
 CSS = css()
 
-LOGO_SVG = (f"<svg viewBox='0 0 28 28' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>"
-            f"<rect x='1' y='1' width='7' height='7' rx='1.5' fill='{BORDER}'/><rect x='10.5' y='1' width='7' height='7' rx='1.5' fill='{BORDER}'/>"
-            f"<rect x='20' y='1' width='7' height='7' rx='1.5' fill='{BLUE}'/><rect x='1' y='10.5' width='7' height='7' rx='1.5' fill='{BORDER}'/>"
-            f"<rect x='10.5' y='10.5' width='7' height='7' rx='1.5' fill='{BLUE}'/><rect x='20' y='10.5' width='7' height='7' rx='1.5' fill='{BORDER}'/>"
-            f"<rect x='1' y='20' width='7' height='7' rx='1.5' fill='{BLUE}'/><rect x='10.5' y='20' width='7' height='7' rx='1.5' fill='{BORDER}'/>"
-            f"<rect x='20' y='20' width='7' height='7' rx='1.5' fill='{BORDER}'/></svg>")
+LOGO_SVG = (f"<svg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>"
+            f"<path d='M4.5 14.5 16 5l11.5 9.5v12H4.5z' fill='none' stroke='{TEXT}' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/>"
+            f"<path d='M12 26.5v-8h8v8' fill='none' stroke='{TEXT}' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/>"
+            f"<path class='warmth' d='M16 9.5c-2.5 2.6-2.2 4.1 0 5.4 2.2-1.3 2.5-2.8 0-5.4Z' fill='{AMBER}'/></svg>")
