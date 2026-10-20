@@ -8,7 +8,7 @@ Say it plainly: this is a **modeled planning scenario**, not Duke's method, not 
 
 Start on the primary Vercel app with Compare selected (no query is required). Record the people-first results and equally prominent total-household trade-off; show each plan’s actual MW and the shared band. In the default Elliott scenario, the modeled vulnerability-aware plan has 3,412 fewer electric-heat homes than the typical load-only plan; it cuts 2,543 MORE households overall. Read both from the live comparison and make the trade-off clear. Keep the two maps visible while changing the priority and trying the county cap.
 
-Use Compare → Two plans and What changed?, then Evidence → County summary and Plan range. Explain the grey/amber/light/dark categories, protected hatching, and the live swap description. If its SVI direction reverses, say so. A mean tract SVI is not a count of specific people protected. In County summary, show Union’s share of each plan’s own cut and both household counts. Click a zone and demonstrate the bold outline and matching zone chip on both maps, then the zoom control; details now sit below the full-width maps.
+Use Compare → Two plans and What changed?, then Evidence → County summary and Plan range. Explain the grey/amber/light/dark categories, protected hatching, and the live swap description. If its SVI direction reverses, say so. A mean tract SVI is not a count of specific people protected. In County summary, show Union’s share of each plan’s own cut and both household counts. Click a zone and demonstrate the bold outline and matching zone chip on both maps, the zone drawer now overlays the maps without changing their width.
 
 Briefly open Explore for zone lookup and the priority list. Open Evidence → Forecast for the extreme-cold forecast miss, then Evidence → Methods & sources → “What this can and can’t tell you” for the assumptions. Evidence → Robustness holds sensitivity results. Leave Prepare out of the video; its local shortlist and exports remain available in the app.
 
@@ -89,3 +89,13 @@ Five PASSED lines (one per alpha). Do not run the whole suite on camera. Rehears
 ## Warm-theme recording notes (2026-10-19)
 
 Record the light review build. Start on Compare with the three KPI cards and both actual MW values. Open More options for the county cap and Filters for zone search. At Business cost only, say “Business-cost optimized”; the human-impact score has zero weight and increases must be reported honestly. On a phone, use the plan toggle and tap a tract for the detail sheet. County summary and Plan range now live in Evidence. Keep Prepare and its county upload workflow out of this short video.
+
+
+## UI pass 3 recording notes
+
+For a clean recording, open Compare with `?present=1` or press P outside a text field. Presentation mode hides secondary menus/filters/exports/footer and enlarges the result values; it changes no outcomes. Select a tract to show the camera transition and drawer. Exit presentation mode to demonstrate the actual town search: Albemarle highlights every intersecting tract and shows the current count cut in each plan. Town boundaries and tract boundaries differ; repeat the planning-scenario disclaimer. Keep the total-household trade-off and each actual MW visible when discussing results. Phone footage may show the nonmodal detail sheet and installed-app navigation only after a real device check; the review screenshots use WebKit standalone emulation, not a claimed physical iPhone recording.
+
+
+### App hierarchy refinement
+
+On desktop, scenario controls and town search now sit in the left panel. Show a priority change there while the result strip and paired maps remain visible beside it. Prepare and Evidence open directly into their own tools without repeating the comparison controls. The smaller introduction preserves the purpose; the amber household trade-off remains beside the other outcomes.

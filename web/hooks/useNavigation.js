@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import { readState } from '../model.js';
 import { initialNavigation } from '../presentation.js';
+function initialState(data) {
+  const state = readState(data, location.search);
+  return new URLSearchParams(location.search).has('zone') ? state : { ...state, zone: 0 };
+}
 export function useNavigation(data) {
-  const [state, setState] = useState(() => readState(data, location.search));
+  const [state, setState] = useState(() => initialState(data));
   const [nav, setNav] = useState(() => initialNavigation(location.search));
   const setMode = (value) => setNav((current) => ({ ...current, mode: value }));
   const setCompareTab = (value) => setNav((current) => ({ ...current, compareTab: value }));
@@ -24,7 +28,7 @@ export function useNavigation(data) {
   }, [mode]);
   useEffect(() => {
     function restoreLink() {
-      setState(readState(data, location.search));
+      setState(initialState(data));
       setNav(initialNavigation(location.search));
     }
     window.addEventListener('popstate', restoreLink);

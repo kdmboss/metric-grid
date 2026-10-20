@@ -299,3 +299,65 @@ OpenAI Codex updated visible browser and legacy Streamlit branding, the original
 | `docs/UI_BRIEF.md` | AI-assisted (OpenAI Codex); new current product brief | TODO (author) |
 
 Codex also updated `web/Evidence.jsx`, `web/Workspace.jsx`, `web/comparison.js`, `web/planning.js`, `web/styles.css`, `web/main.jsx`, `web/model.test.js`, `scripts/workspace-smoke.cjs`, `index.html`, `public/favicon.svg`, `src/metric_grid/app/streamlit_app.py`, `src/metric_grid/app/theme.py`, `README.md`, `CLAUDE.md`, `config.yaml` (comment only), `docs/PROJECT_CONTEXT.md`, `docs/UI_BRIEF.md`, `docs/UI_CHANGES.md`, `docs/VIDEO_SHOTLIST.md`, `docs/SPEC.md`, `CHANGELOG.md`, `tests/test_app.py`, `tests/test_audit.py`, and this disclosure. Updated screenshots are generated artifacts. Existing owner-review fields remain the owners’ responsibility.
+
+
+## UI pass 3 (2026-10-20)
+
+OpenAI Codex implemented the owner-supplied iOS-ready UI brief, generated the real Census place lookup using the existing pipeline functions, and ran local tests and browser screenshot checks. Python model modules, existing frozen inputs/results and configuration values were unchanged. The UI still replays precomputed results. Standalone mode was emulated in WebKit; physical iOS installation remains for owner review. No personal story or quotes were invented, and no production push/deployment was performed.
+
+| File | Status | What I changed |
+|---|---|---|
+| `CHANGELOG.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `Makefile` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `README.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `data/frozen/places.json` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/DATA_SOURCES.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/PROJECT_CONTEXT.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/UI_BRIEF.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/UI_PASS3_REVIEW.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/VIDEO_SHOTLIST.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/figures/ui-pass3/checks.json` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `scripts/build_places.py` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `scripts/ui-pass3-smoke.cjs` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `tokens.css` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/MapCanvas.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/ResidentLayer.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/Workspace.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/app.css` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ComparePlans.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ExploreView.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/LineChart.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/MapControls.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/MapLegend.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/MapTooltip.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/MapTracts.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ModeIcon.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/Preparation.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/Robustness.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ScenarioControls.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/SelectionPanel.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/StandaloneHeader.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/TownLookup.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ViewTabs.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ZoneDetail.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ZoneSheet.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/hooks/useAppShell.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/hooks/useMapAnimation.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/hooks/useMobileSheet.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/hooks/useNavigation.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/hooks/useWorkspace.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/hooks/workspaceProps.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/pass3.test.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+
+`docs/AI_DISCLOSURE.md` was updated by Codex. `docs/figures/ui-pass3/*.png` are generated browser screenshots; `checks.json` and verification logs are generated review artifacts. Owner-review fields remain for the owners.
+
+
+## App hierarchy refinement (2026-10-20)
+
+OpenAI Codex refined the existing interface using the Hallmark skill and the existing warm palette. Changed `web/Workspace.jsx`, `web/components/Hero.jsx`, `web/components/TownLookup.jsx`, `web/hooks/workspaceProps.js`, `web/app.css`, `scripts/ui-pass3-smoke.cjs`, `CHANGELOG.md`, `docs/VIDEO_SHOTLIST.md`, `docs/APP_REFINEMENT_REVIEW.md` and this disclosure. Screenshots/check outputs under `docs/figures/app-refinement/` are generated review artifacts. Desktop controls moved to a side panel, results were grouped, and Prepare/Evidence omit repeated comparison UI. No model/data logic changed, no family claims were invented, and no deployment was performed. Owner review of appeal/usability remains necessary; visual polish is not evidence of actual user impact. What the owners changed: TODO (author).
+
+OpenAI Codex updated `web/app.css`, `CHANGELOG.md` and this disclosure for the owner's iOS tab review: corrected desktop navigation alignment and verified four separate phone tab panels using WebKit standalone emulation. Review images in `docs/figures/ios-tabs/` are generated screenshots. Physical installation remains unverified. Owner changes: TODO (author).
+
+OpenAI Codex implemented the phone map-first refinement in `web/components/ScenarioRail.jsx` (new), `web/Workspace.jsx`, `web/components/StandaloneHeader.jsx`, `web/app.css`, `CHANGELOG.md` and this disclosure. Inspiration was Apple's public Maps place-card interaction and Weather's at-a-glance hierarchy; no Apple assets or logos were copied. Generated screenshots: `docs/figures/ios-map-first/*.png`. Existing model/data and results unchanged. Physical iOS installation unverified. Owner changes: TODO (author).
+
+OpenAI Codex refined `web/components/PeopleResults.jsx`, `web/components/Preparation.jsx`, `web/app.css`, `CHANGELOG.md` and this disclosure for clean iPhone styling. New `docs/figures/ios-clean/*.png` are generated WebKit standalone-emulation screenshots. Responsive labels are shorter while full labels/definitions remain in desktop and Methods; all three current outcomes and the household trade-off remain visible. No model or data changes. Owner changes: TODO (author).

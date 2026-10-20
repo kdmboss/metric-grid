@@ -1,0 +1,47 @@
+
+> hearth@1.0.0 test
+> npm run data:export && node --test web/*.test.js
+
+
+> hearth@1.0.0 data:export
+> node scripts/export-web-data.mjs
+
+Exported 183 zones and 40 scenarios for the web app.
+✔ county CSV preserves quoted content, matches counties and leaves model inputs untouched (4.72225ms)
+✔ county CSV rejects unknown tracts, ambiguous rows, invalid capacity and invalid dates (1.364958ms)
+✔ county import enforces size and row limits before accepting a resource list (4.041834ms)
+✔ retired visible brand names are absent from browser source and built assets (14.119666ms)
+✔ every precomputed scenario preserves original plan metrics, MW bands, and facility exclusions (2.994375ms)
+✔ every control combination selects the corresponding original record (0.478458ms)
+✔ all comparison distributions reproduce stored extrema and plan counts (66.322333ms)
+✔ default headline matches the original Elliott result (0.239083ms)
+✔ malformed deep links fall back safely and legacy deep links still work (0.368208ms)
+✔ missing or infeasible settings visibly disclose the nearest result and retain the cap when possible (26.563083ms)
+✔ example building locations match original tract assignments (5.308667ms)
+✔ map geometry is finite and zero-household missing SVI stays visibly missing (11.159458ms)
+✔ content export hides empty/unapproved/unattributed quotes and retains author text without interpreting HTML (0.214833ms)
+✔ saved plans discard malformed and duplicate entries without changing valid notes (0.178542ms)
+✔ CSV exports provenance, the current scenario, truthful evidence, and safely escaped notes (0.604ms)
+✔ plain-language priorities disclose both objective extremes (0.068084ms)
+✔ web interface copy preserves the required sentence and excludes prohibited claims or typed headline outcomes (38.290666ms)
+✔ difference categories partition every zone and match both plans across all supported scenarios (3.289416ms)
+✔ county totals reproduce plan totals and heating shares use the summed ACS denominator (5.366875ms)
+✔ swap explanation reverses or becomes neutral when improvement is unsupported (0.717292ms)
+✔ local county labels have unique finite anchors within the map (26.961291ms)
+✔ benefit copy only claims lower cold exposure when both measures support it (0.19525ms)
+✔ responsive map frames contain every original tract point without cropping (66.443417ms)
+✔ frozen town lookup is populated and every place maps to existing zones (0.844666ms)
+✔ town lookup keeps the household prediction disclaimer beside its results (0.339792ms)
+✔ objective labels and outcome directions remain honest across every supported priority (23.437166ms)
+✔ county and range deep links migrate to Evidence while explicit Explore links stay put (0.774458ms)
+✔ priority ranking excludes protected zones and resolves frequency ties by SVI then zone ID (2.288042ms)
+✔ concentration accounts for every displayed MW and keeps the highest county first (10.682958ms)
+✔ cursor zoom holds the pointed map coordinate fixed and viewport padding stays symmetric (0.460292ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 360.937875

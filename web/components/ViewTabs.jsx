@@ -1,3 +1,4 @@
+import { ModeIcon } from './ModeIcon.jsx';
 import React from 'react';
 
 /** One keyboard pattern for mode, comparison, and evidence tabs. */
@@ -34,7 +35,8 @@ export function ViewTabs({ items, value, onChange, label, prefix, modeTabs = fal
           onClick={chooseTab}
           onKeyDown={moveTab}
         >
-          {title}
+          {modeTabs && <ModeIcon mode={id} />}
+          <span>{title}</span>
         </button>
       ))}
     </div>

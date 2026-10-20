@@ -1,0 +1,814 @@
+[
+  {
+    "geoid": "3700680",
+    "name": "Albemarle",
+    "zone_ids": [
+      120,
+      121,
+      122,
+      123,
+      130,
+      133,
+      134,
+      135
+    ]
+  },
+  {
+    "geoid": "3701420",
+    "name": "Ansonville",
+    "zone_ids": [
+      2
+    ]
+  },
+  {
+    "geoid": "3701560",
+    "name": "Aquadale",
+    "zone_ids": [
+      3,
+      129
+    ]
+  },
+  {
+    "geoid": "3702960",
+    "name": "Badin",
+    "zone_ids": [
+      120,
+      121
+    ]
+  },
+  {
+    "geoid": "3703665",
+    "name": "Barker Ten Mile",
+    "zone_ids": [
+      102
+    ]
+  },
+  {
+    "geoid": "3706000",
+    "name": "Biscoe",
+    "zone_ids": [
+      65,
+      66
+    ]
+  },
+  {
+    "geoid": "3710120",
+    "name": "Candor",
+    "zone_ids": [
+      73,
+      74
+    ]
+  },
+  {
+    "geoid": "3712000",
+    "name": "Charlotte",
+    "zone_ids": [
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      46,
+      47,
+      50,
+      51,
+      52,
+      53,
+      54,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      148,
+      171,
+      172,
+      181
+    ]
+  },
+  {
+    "geoid": "3714100",
+    "name": "Concord",
+    "zone_ids": [
+      10,
+      11,
+      12,
+      13,
+      14,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33
+    ]
+  },
+  {
+    "geoid": "3714600",
+    "name": "Cordova",
+    "zone_ids": [
+      77,
+      82
+    ]
+  },
+  {
+    "geoid": "3716730",
+    "name": "Deercroft",
+    "zone_ids": [
+      118
+    ]
+  },
+  {
+    "geoid": "3717325",
+    "name": "Dobbins Heights",
+    "zone_ids": [
+      84
+    ]
+  },
+  {
+    "geoid": "3719800",
+    "name": "East Rockingham",
+    "zone_ids": [
+      80,
+      81,
+      82,
+      83
+    ]
+  },
+  {
+    "geoid": "3720840",
+    "name": "Ellerbe",
+    "zone_ids": [
+      76
+    ]
+  },
+  {
+    "geoid": "3721120",
+    "name": "Elrod",
+    "zone_ids": [
+      105,
+      106
+    ]
+  },
+  {
+    "geoid": "3722360",
+    "name": "Fairmont",
+    "zone_ids": [
+      104,
+      106
+    ]
+  },
+  {
+    "geoid": "3722500",
+    "name": "Fairview",
+    "zone_ids": [
+      19,
+      126,
+      137,
+      138,
+      139,
+      140
+    ]
+  },
+  {
+    "geoid": "3724570",
+    "name": "Foxfire",
+    "zone_ids": [
+      73
+    ]
+  },
+  {
+    "geoid": "3725940",
+    "name": "Gibson",
+    "zone_ids": [
+      115
+    ]
+  },
+  {
+    "geoid": "3726800",
+    "name": "Gold Hill",
+    "zone_ids": [
+      22
+    ]
+  },
+  {
+    "geoid": "3729160",
+    "name": "Hamlet",
+    "zone_ids": [
+      80,
+      83,
+      84,
+      85
+    ]
+  },
+  {
+    "geoid": "3729800",
+    "name": "Harrisburg",
+    "zone_ids": [
+      13,
+      14,
+      15,
+      16,
+      17,
+      31,
+      32,
+      33
+    ]
+  },
+  {
+    "geoid": "3730620",
+    "name": "Hemby Bridge",
+    "zone_ids": [
+      137,
+      141,
+      144,
+      145,
+      152,
+      153,
+      154
+    ]
+  },
+  {
+    "geoid": "3731920",
+    "name": "Hoffman",
+    "zone_ids": [
+      75
+    ]
+  },
+  {
+    "geoid": "3733560",
+    "name": "Indian Trail",
+    "zone_ids": [
+      138,
+      139,
+      141,
+      142,
+      143,
+      144,
+      145,
+      146,
+      147,
+      148,
+      149,
+      150,
+      151,
+      152,
+      153,
+      154,
+      155,
+      181
+    ]
+  },
+  {
+    "geoid": "3733993",
+    "name": "JAARS",
+    "zone_ids": [
+      177
+    ]
+  },
+  {
+    "geoid": "3735200",
+    "name": "Kannapolis",
+    "zone_ids": [
+      12
+    ]
+  },
+  {
+    "geoid": "3736512",
+    "name": "Lake Park",
+    "zone_ids": [
+      146,
+      152,
+      154
+    ]
+  },
+  {
+    "geoid": "3737120",
+    "name": "Laurel Hill",
+    "zone_ids": [
+      116,
+      117
+    ]
+  },
+  {
+    "geoid": "3737220",
+    "name": "Laurinburg",
+    "zone_ids": [
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      117
+    ]
+  },
+  {
+    "geoid": "3738200",
+    "name": "Lilesville",
+    "zone_ids": [
+      1
+    ]
+  },
+  {
+    "geoid": "3738860",
+    "name": "Locust",
+    "zone_ids": [
+      18,
+      19,
+      20,
+      125,
+      126
+    ]
+  },
+  {
+    "geoid": "3739700",
+    "name": "Lumberton",
+    "zone_ids": [
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      106
+    ]
+  },
+  {
+    "geoid": "3741380",
+    "name": "Marietta",
+    "zone_ids": [
+      107
+    ]
+  },
+  {
+    "geoid": "3741640",
+    "name": "Marshville",
+    "zone_ids": [
+      166
+    ]
+  },
+  {
+    "geoid": "3741720",
+    "name": "Marvin",
+    "zone_ids": [
+      172,
+      173,
+      178,
+      179,
+      180
+    ]
+  },
+  {
+    "geoid": "3741960",
+    "name": "Matthews",
+    "zone_ids": [
+      37,
+      41,
+      42,
+      43,
+      48,
+      50,
+      53,
+      54,
+      55,
+      56,
+      60,
+      61,
+      63,
+      64,
+      147,
+      148,
+      153
+    ]
+  },
+  {
+    "geoid": "3742020",
+    "name": "Maxton",
+    "zone_ids": [
+      108,
+      109,
+      114
+    ]
+  },
+  {
+    "geoid": "3740140",
+    "name": "McDonald",
+    "zone_ids": [
+      106
+    ]
+  },
+  {
+    "geoid": "3740240",
+    "name": "McFarlan",
+    "zone_ids": [
+      8
+    ]
+  },
+  {
+    "geoid": "3742760",
+    "name": "Midland",
+    "zone_ids": [
+      13,
+      17,
+      19,
+      20,
+      45
+    ]
+  },
+  {
+    "geoid": "3743200",
+    "name": "Millingport",
+    "zone_ids": [
+      119,
+      124
+    ]
+  },
+  {
+    "geoid": "3743360",
+    "name": "Mineral Springs",
+    "zone_ids": [
+      169,
+      170,
+      174,
+      176
+    ]
+  },
+  {
+    "geoid": "3743480",
+    "name": "Mint Hill",
+    "zone_ids": [
+      34,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      137
+    ]
+  },
+  {
+    "geoid": "3743580",
+    "name": "Misenheimer",
+    "zone_ids": [
+      119
+    ]
+  },
+  {
+    "geoid": "3743920",
+    "name": "Monroe",
+    "zone_ids": [
+      136,
+      139,
+      141,
+      142,
+      143,
+      155,
+      156,
+      157,
+      158,
+      159,
+      160,
+      161,
+      162,
+      163,
+      165
+    ]
+  },
+  {
+    "geoid": "3744560",
+    "name": "Morven",
+    "zone_ids": [
+      8
+    ]
+  },
+  {
+    "geoid": "3744900",
+    "name": "Mount Gilead",
+    "zone_ids": [
+      71,
+      72
+    ]
+  },
+  {
+    "geoid": "3745140",
+    "name": "Mount Pleasant",
+    "zone_ids": [
+      12,
+      18,
+      20,
+      21,
+      22
+    ]
+  },
+  {
+    "geoid": "3746820",
+    "name": "New London",
+    "zone_ids": [
+      119,
+      120
+    ]
+  },
+  {
+    "geoid": "3747260",
+    "name": "Norman",
+    "zone_ids": [
+      73,
+      74,
+      76
+    ]
+  },
+  {
+    "geoid": "3747980",
+    "name": "Norwood",
+    "zone_ids": [
+      131,
+      132
+    ]
+  },
+  {
+    "geoid": "3748040",
+    "name": "Oakboro",
+    "zone_ids": [
+      127,
+      128
+    ]
+  },
+  {
+    "geoid": "3748940",
+    "name": "Old Hundred",
+    "zone_ids": [
+      116
+    ]
+  },
+  {
+    "geoid": "3750820",
+    "name": "Peachland",
+    "zone_ids": [
+      3
+    ]
+  },
+  {
+    "geoid": "3751080",
+    "name": "Pembroke",
+    "zone_ids": [
+      91,
+      92,
+      93,
+      105
+    ]
+  },
+  {
+    "geoid": "3753140",
+    "name": "Polkton",
+    "zone_ids": [
+      3,
+      4,
+      9
+    ]
+  },
+  {
+    "geoid": "3753950",
+    "name": "Prospect",
+    "zone_ids": [
+      88,
+      90,
+      91
+    ]
+  },
+  {
+    "geoid": "3754600",
+    "name": "Raemon",
+    "zone_ids": [
+      109
+    ]
+  },
+  {
+    "geoid": "3755340",
+    "name": "Raynham",
+    "zone_ids": [
+      106
+    ]
+  },
+  {
+    "geoid": "3755460",
+    "name": "Red Cross",
+    "zone_ids": [
+      125,
+      128
+    ]
+  },
+  {
+    "geoid": "3755660",
+    "name": "Red Springs",
+    "zone_ids": [
+      86,
+      87,
+      88
+    ]
+  },
+  {
+    "geoid": "3756340",
+    "name": "Richfield",
+    "zone_ids": [
+      119
+    ]
+  },
+  {
+    "geoid": "3757039",
+    "name": "Roberdel",
+    "zone_ids": [
+      77,
+      78
+    ]
+  },
+  {
+    "geoid": "3757260",
+    "name": "Rockingham",
+    "zone_ids": [
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83
+    ]
+  },
+  {
+    "geoid": "3758140",
+    "name": "Rowland",
+    "zone_ids": [
+      107
+    ]
+  },
+  {
+    "geoid": "3759765",
+    "name": "Scotch Meadows",
+    "zone_ids": [
+      115
+    ]
+  },
+  {
+    "geoid": "3764420",
+    "name": "Stallings",
+    "zone_ids": [
+      42,
+      43,
+      56,
+      61,
+      63,
+      137,
+      144,
+      145,
+      146,
+      147,
+      148,
+      149,
+      153,
+      181
+    ]
+  },
+  {
+    "geoid": "3764460",
+    "name": "Stanfield",
+    "zone_ids": [
+      125,
+      126
+    ]
+  },
+  {
+    "geoid": "3764580",
+    "name": "Star",
+    "zone_ids": [
+      66
+    ]
+  },
+  {
+    "geoid": "3768520",
+    "name": "Troy",
+    "zone_ids": [
+      67,
+      68
+    ]
+  },
+  {
+    "geoid": "3769260",
+    "name": "Unionville",
+    "zone_ids": [
+      136,
+      138,
+      139,
+      140,
+      156,
+      162,
+      164
+    ]
+  },
+  {
+    "geoid": "3770380",
+    "name": "Wadesboro",
+    "zone_ids": [
+      5,
+      6,
+      7
+    ]
+  },
+  {
+    "geoid": "3770480",
+    "name": "Wagram",
+    "zone_ids": [
+      117,
+      118
+    ]
+  },
+  {
+    "geoid": "3770580",
+    "name": "Wakulla",
+    "zone_ids": [
+      89,
+      90
+    ]
+  },
+  {
+    "geoid": "3771460",
+    "name": "Waxhaw",
+    "zone_ids": [
+      169,
+      170,
+      173,
+      174,
+      175,
+      176,
+      177,
+      178,
+      179
+    ]
+  },
+  {
+    "geoid": "3771680",
+    "name": "Weddington",
+    "zone_ids": [
+      58,
+      63,
+      149,
+      150,
+      171,
+      172,
+      173,
+      178,
+      180,
+      181,
+      182,
+      183
+    ]
+  },
+  {
+    "geoid": "3771940",
+    "name": "Wesley Chapel",
+    "zone_ids": [
+      142,
+      143,
+      149,
+      150,
+      151,
+      169,
+      173,
+      174,
+      181,
+      182,
+      183
+    ]
+  },
+  {
+    "geoid": "3774760",
+    "name": "Wingate",
+    "zone_ids": [
+      162,
+      164,
+      165
+    ]
+  }
+]

@@ -25,3 +25,8 @@ Each entry gets: name, URL, dataset date/vintage, retrieval date, what it is use
 ## Historical interface opener
 
 The approximate customer count in the introduction comes from [Duke Energy’s December 24, 2022 restoration update](https://news.duke-energy.com/releases/duke-energy-asks-for-continued-energy-conservation-as-power-restoration-continues-following-extreme-winter-temperatures), which reports service interrupted to about 500,000 customers. The UI bundles this narrative context from `docs/historical_context.yaml` at build time; it does not affect any scenario result. The start time uses the SC ORS source already listed above. The approximate temperature uses the frozen KCLT reference-hour observation, not a temperature measured across the district at the exact start minute.
+
+
+## Census place lookup (UI pass 3, 2026-10-20)
+
+Official source: [Census TIGER/Line 2024 North Carolina places ZIP](https://www2.census.gov/geo/tiger/TIGER2024/PLACE/tl_2024_37_place.zip). `make places` runs `scripts/build_places.py`, reusing `load_tiger_places` and `place_zone_lookup`. The existing frozen district and tract geometry constrain the spatial intersections. The generated `data/frozen/places.json` contains 79 named places and valid zone IDs; Albemarle, Rockingham, Laurinburg and Lumberton were verified. Runtime search is local and makes no geocoding requests. This build changes only the lookup, not demand, harm values, or precomputed plans.

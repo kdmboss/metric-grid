@@ -1,12 +1,15 @@
 PY ?= .venv/bin/python
 
-.PHONY: data freeze test app demo api demand demand-train
+.PHONY: data freeze places test app demo api demand demand-train
 
 data:      ## Phases 1-3 done. Download raw inputs into data/raw (needs network + .env keys)
 	set -a; [ -f .env ] && . ./.env; set +a; PYTHONPATH=src $(PY) -m metric_grid.ingest.run
 
 freeze:    ## Phase 3: write data/frozen/ (the only runtime inputs); run `make data` first
 	PYTHONPATH=src $(PY) -m metric_grid.ingest.freeze
+
+places:    ## Build the Census place lookup from existing frozen geometry only
+	$(PY) scripts/build_places.py
 
 test:
 	$(PY) -m pytest -q

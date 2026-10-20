@@ -24,7 +24,7 @@ export function Preparation({
       <div className="prepare-intro">
         <div>
           <span className="workspace-kicker">From comparison to preparation</span>
-          <h2>Your planning shortlist.</h2>
+          <h2>Your shortlist</h2>
           <p>Save areas and notes for outreach, warming centers, and backup-power discussions.</p>
         </div>
         <div className="prepare-actions">
@@ -44,7 +44,6 @@ export function Preparation({
           </button>
         </div>
       </div>
-      <CountyData zones={zones} record={record} />
 
       {printMode && (
         <PrintSheet setPrintMode={setPrintMode} data={data} record={record} rows={rows} />
@@ -52,13 +51,12 @@ export function Preparation({
       {!plan.length ? (
         <div className="empty-shortlist">
           <span aria-hidden="true">＋</span>
-          <h3>Choose an area to investigate.</h3>
+          <h3>Start with your map.</h3>
           <p>
-            Select a census tract in Explore, review its evidence, and add it here. No zones are
-            added automatically.
+            Pick areas on the map to build a list for outreach, warming centers, or backup power.
           </p>
           <button className="primary-button" onClick={onExplore}>
-            Explore census tract zones <Arrow direction="right" />
+            Explore areas <Arrow direction="right" />
           </button>
         </div>
       ) : (
@@ -90,6 +88,10 @@ export function Preparation({
           </div>
         </>
       )}
+      <details className="county-import-disclosure">
+        <summary>Add county resource data (CSV)</summary>
+        <CountyData zones={zones} record={record} />
+      </details>
       {undo && (
         <div className="undo-banner" role="status">
           Shortlist cleared.

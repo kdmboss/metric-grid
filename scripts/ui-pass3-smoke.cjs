@@ -1,0 +1,120 @@
+/* Chrome and WebKit visual checks; standalone is emulated, not a physical iOS installation. */
+const { chromium, webkit } = require(process.env.PLAYWRIGHT_MODULE || '../.venv/lib/python3.12/site-packages/playwright/driver/package');
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+const out = process.env.REVIEW_DIR || 'docs/figures/ui-pass3';
+fs.mkdirSync(out, { recursive: true });
+const base = process.env.PREVIEW_URL || 'http://127.0.0.1:5175';
+const errors = [], external = [], checks = [];
+async function ready(page, query = '') {
+  await page.goto(base + '/' + query);
+  await page.locator('.people-results').waitFor();
+}
+async function shot(page, name) { await page.screenshot({ path: `${out}/${name}.png` }); }
+function watch(page) {
+  page.on('pageerror', e => errors.push(e.message));
+  page.on('request', r => { if (!r.url().startsWith(base) && !r.url().startsWith('data:')) external.push(r.url()); });
+}
+(async () => {
+  const browser = await chromium.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: true });
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } }); watch(page);
+  await ready(page);
+  assert.equal(await page.locator('.desktop-selection').count(), 0);
+  await shot(page, 'desktop-default');
+  await page.locator('.map-canvas:visible').first().scrollIntoViewIfNeeded();
+  const width = await page.locator('.map-canvas:visible').first().evaluate(e => e.clientWidth);
+  await page.locator('.map-canvas:visible path[data-zone]').first().click({ force: true });
+  // Explicit deep links also exercise selecting a known tract without depending on polygon centroids.
+  await ready(page, '?zone=69');
+  await page.locator('.map-canvas:visible').first().scrollIntoViewIfNeeded();
+  assert.equal(Math.round((await page.locator('.desktop-selection').boundingBox()).width), 360);
+  assert.equal(await page.locator('.map-canvas:visible').first().evaluate(e => e.clientWidth), width);
+  await shot(page, 'desktop-selected-drawer');
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('.desktop-selection').count(), 0);
+  checks.push('No initial selection; deep link drawer is 360px and does not reflow maps; Escape closes.');
+  await page.locator('#place-search').fill('Albemarle');
+  await page.getByRole('option', { name: 'Albemarle', exact: true }).click();
+  assert.match(await page.locator('.town-summary').innerText(), /Albemarle.*areas/);
+  assert.ok(await page.locator('.map-canvas:visible .selection-outline').count() > 0);
+  await shot(page, 'desktop-town-albemarle');
+  checks.push('Albemarle lookup returns a local result with multiple zone outlines.');
+  await page.getByRole('tab', { name: 'Explore', exact: true }).click();
+  await page.locator('#panel-explore .map-canvas').scrollIntoViewIfNeeded();
+  assert.equal(await page.locator('#panel-explore .map-canvas').evaluate(e => e.clientHeight), 640);
+  await shot(page, 'desktop-explore');
+  await page.getByRole('tab', { name: 'Prepare', exact: true }).click();
+  assert.equal(await page.locator('.scenario-controls').count(), 0);
+  assert.equal(await page.locator('.people-results').count(), 0);
+  await page.locator('#panel-prepare').scrollIntoViewIfNeeded();
+  assert.equal(await page.locator('.county-import-disclosure').getAttribute('open'), null);
+  await shot(page, 'desktop-prepare-empty');
+  await page.getByRole('tab', { name: 'Evidence', exact: true }).click();
+  await page.getByRole('tab', { name: 'Robustness', exact: true }).click();
+  await page.locator('#evidence-robust').scrollIntoViewIfNeeded();
+  await shot(page, 'desktop-robustness');
+  await ready(page, '?present=1');
+  assert.equal(await page.locator('.is-present').count(), 1);
+  await page.locator('.map-canvas:visible').first().scrollIntoViewIfNeeded();
+  await shot(page, 'desktop-presentation');
+  await page.keyboard.press('p');
+  assert.equal(await page.locator('.is-present').count(), 0);
+  await page.locator('#place-search').fill('p');
+  await page.keyboard.press('p');
+  assert.equal(await page.locator('.is-present').count(), 0);
+  checks.push('Presentation URL/keyboard toggle works and ignores search input.');
+  await browser.close();
+  const safari = await webkit.launch();
+  const phone = await safari.newPage({ viewport: { width: 393, height: 852 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true }); watch(phone);
+  await phone.addInitScript(() => {
+    const original = window.matchMedia.bind(window);
+    window.matchMedia = q => q === '(display-mode: standalone)' ? new Proxy(original(q), { get: (target, key) => key === 'matches' ? true : typeof target[key] === 'function' ? target[key].bind(target) : target[key] }) : original(q);
+    Object.defineProperty(navigator, 'standalone', { get: () => true });
+  });
+  await ready(phone); await shot(phone, 'webkit-standalone-compare-top');
+  assert.equal(await phone.locator('.mode-tabs').evaluate(e => getComputedStyle(e).position), 'fixed');
+  assert.equal(await phone.locator('.mode-tabs').evaluate(e => Math.round(e.getBoundingClientRect().bottom)), 852);
+  await ready(phone, '?zone=69');
+  await phone.locator('.map-canvas:visible').first().scrollIntoViewIfNeeded();
+  await phone.locator('.zone-sheet').waitFor();
+  assert.equal(await phone.locator('.zone-sheet').getAttribute('data-detent'), 'peek');
+  await shot(phone, 'webkit-standalone-map-peek');
+  await phone.getByRole('button', { name: 'Resize area details' }).click();
+  await phone.waitForTimeout(300);
+  assert.equal(await phone.locator('.zone-sheet').getAttribute('data-detent'), 'half');
+  await shot(phone, 'webkit-standalone-sheet-half');
+  await phone.getByRole('button', { name: 'Resize area details' }).click();
+  assert.equal(await phone.locator('.zone-sheet').getAttribute('data-detent'), 'full');
+  await phone.getByRole('button', { name: 'Close area details', exact: true }).click();
+  await ready(phone, '?zone=69');
+  await phone.locator('.map-canvas:visible').first().scrollIntoViewIfNeeded();
+  const handle = await phone.getByRole('button', { name: 'Resize area details' }).boundingBox();
+  await phone.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
+  await phone.mouse.down();
+  await phone.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2 + 90, { steps: 8 });
+  await phone.mouse.up();
+  assert.equal(await phone.locator('.zone-sheet').count(), 0);
+  checks.push('A downward handle drag dismisses the peek sheet.');
+  await phone.getByRole('tab', { name: 'Prepare', exact: true }).click();
+  await phone.locator('#panel-prepare').scrollIntoViewIfNeeded();
+  await shot(phone, 'webkit-standalone-prepare');
+  await shot(phone, 'webkit-standalone-bottom-tab-bar');
+  assert.equal(await phone.evaluate(() => document.documentElement.scrollWidth), 393);
+  checks.push('393×852 WebKit standalone emulation: fixed bottom navigation, peek/half/full sheet, no horizontal page overflow.');
+  const regular = await safari.newPage({ viewport: { width: 393, height: 852 }, isMobile: true, hasTouch: true }); watch(regular);
+  await ready(regular);
+  assert.equal(await regular.locator('.native-header').count(), 0);
+  assert.ok(await regular.locator('.appbar').isVisible());
+  await shot(regular, 'webkit-regular-safari');
+  checks.push('Regular WebKit browser keeps the browser-style header; installed-app shell is conditional.');
+  for (const width of [320, 375, 414, 768]) {
+    await regular.setViewportSize({ width, height: 900 });
+    await ready(regular);
+    assert.ok(await regular.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+  }
+  checks.push('No horizontal page overflow at 320, 375, 414 and 768px; Prepare omits comparison controls/results.');
+  await safari.close();
+  assert.deepEqual(errors, []); assert.deepEqual(external, []);
+  fs.writeFileSync(`${out}/checks.json`, JSON.stringify({ checks, errors, externalRequests: external, limitation: 'Standalone display mode is emulated in WebKit. Physical iOS installation and OS safe-area behavior require device review.' }, null, 2) + '\n');
+  console.log(checks.join('\n'));
+})().catch(e => { console.error(e); process.exit(1); });

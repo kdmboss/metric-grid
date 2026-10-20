@@ -1,3 +1,7 @@
+import { ScenarioRail } from './components/ScenarioRail.jsx';
+import { StandaloneHeader } from './components/StandaloneHeader.jsx';
+import { SelectionPanel } from './components/SelectionPanel.jsx';
+import { TownLookup } from './components/TownLookup.jsx';
 import { workspaceProps } from './hooks/workspaceProps.js';
 import { Footer } from './components/Footer.jsx';
 import { useWorkspace } from './hooks/useWorkspace.js';
@@ -29,13 +33,28 @@ export function Workspace({ data }) {
   const views = workspaceProps(workspace);
   return (
     <div
-      className={`planning-app ${workspace.printMode ? 'printing' : ''}`}
+      className={[
+        'planning-app',
+        workspace.printMode && 'printing',
+        workspace.standalone && 'is-standalone',
+        workspace.present && 'is-present',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      data-present={workspace.present}
       data-mode={workspace.mode}
     >
       <a className="skip-link" href="#workspace">
         Skip to workspace
       </a>
       <AppHeader {...views.AppHeader} />
+      {workspace.standalone && (
+        <StandaloneHeader
+          scrolled={workspace.scrolled}
+          mode={workspace.mode}
+          {...views.AppHeader}
+        />
+      )}
       <div className="workspace-nav">
         <ViewTabs
           items={MODES}
@@ -46,9 +65,25 @@ export function Workspace({ data }) {
         />
       </div>
       <main className="workspace-main">
-        <Hero {...views.Hero} />
-        <PeopleResults {...views.PeopleResults} />
-        <ScenarioControls {...views.ScenarioControls} />
+        {['compare', 'explore'].includes(workspace.mode) && (
+          <>
+            <Hero {...views.Hero} />
+            <ScenarioRail record={workspace.record}>
+              <ScenarioControls {...views.ScenarioControls} />
+              {['compare', 'explore'].includes(workspace.mode) && (
+                <TownLookup
+                  places={data.places || []}
+                  zones={workspace.zones}
+                  record={workspace.record}
+                  selected={workspace.selectedPlace}
+                  onPick={workspace.selectPlace}
+                  onClear={workspace.clearPlace}
+                />
+              )}
+            </ScenarioRail>
+            {workspace.mode === 'compare' && <PeopleResults {...views.PeopleResults} />}
+          </>
+        )}
         {workspace.viewResult.note && (
           <p className="notice" role="status">
             {workspace.viewResult.note}
@@ -64,6 +99,7 @@ export function Workspace({ data }) {
             {workspace.storageError}
           </p>
         )}
+
         <div className="workspace-tools">
           {workspace.mode === 'compare' && (
             <ViewTabs
@@ -94,11 +130,21 @@ export function Workspace({ data }) {
           <EvidenceView {...views.EvidenceView} />
         </div>
 
-        {workspace.mobile && (
-          <ZoneSheet open={workspace.sheetOpen} close={() => workspace.setSheetOpen(false)}>
-            <ZoneDetail {...workspace.detailProps} id="sheet-zone" />
-          </ZoneSheet>
-        )}
+        {workspace.zone &&
+          ['compare', 'explore'].includes(workspace.mode) &&
+          (workspace.compact ? (
+            <ZoneSheet
+              key={workspace.zone.zone_id}
+              open={workspace.sheetOpen}
+              close={workspace.closeDetails}
+              zone={workspace.zone}
+              record={workspace.record}
+            >
+              <ZoneDetail {...workspace.detailProps} id="sheet-zone" />
+            </ZoneSheet>
+          ) : (
+            <SelectionPanel detailProps={workspace.detailProps} close={workspace.closeDetails} />
+          ))}
         <Footer {...views.Footer} />
       </main>
     </div>

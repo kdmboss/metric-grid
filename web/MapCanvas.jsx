@@ -3,7 +3,7 @@ import { useCountyLabels } from './hooks/useCountyLabels.js';
 import { MapControls } from './components/MapControls.jsx';
 import { MapTooltip } from './components/MapTooltip.jsx';
 import { MapTracts } from './components/MapTracts.jsx';
-import { viewportFrame, pathCentroid } from './mapGeometry.js';
+import { viewportFrame, pathCentroid, pathBounds } from './mapGeometry.js';
 import { useMapGestures } from './hooks/useMapGestures.js';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 export const LAYERS = {
@@ -46,6 +46,8 @@ export function MapCanvas({
   onZoomSelected,
   planLabel,
   active = true,
+  selectionIds = [],
+  present = false,
 }) {
   const canvas = useRef(null),
     svgRef = useRef(null);
@@ -55,7 +57,30 @@ export function MapCanvas({
       height: 390,
     });
   const { hint, dismissHint } = useMapHint();
-  const frame = useMemo(() => viewportFrame(paths.zones, size.width, size.height), [paths, size]);
+  const [cursor, setCursor] = useState({ x: 0, y: 0 });
+  function hoverAt(event) {
+    const bounds = canvas.current.getBoundingClientRect();
+    setCursor({
+      x: Math.min(bounds.width - 210, event.clientX - bounds.left + 12),
+      y: Math.min(bounds.height - 90, event.clientY - bounds.top + 12),
+    });
+  }
+  function clicked(event) {
+    if (event.type === 'pointerup') setHover(null);
+  }
+
+  const frame = useMemo(() => {
+    const fitted = viewportFrame(paths.zones, size.width, size.height);
+    const bounds = pathBounds(paths.zones);
+    const span = Math.max(fitted.width, bounds.width / 0.85);
+    const height = (span * size.height) / size.width;
+    return {
+      x: bounds.x + bounds.width / 2 - span / 2,
+      y: bounds.y + bounds.height / 2 - height / 2,
+      width: span,
+      height,
+    };
+  }, [paths, size]);
   const pixelWidth = size.width;
   function interact() {
     setHover(null);
@@ -78,6 +103,8 @@ export function MapCanvas({
   }, [active, layer, plan, changes, county, view]);
   const { displayLabels, labelSize } = useCountyLabels(paths, county, view, frame, pixelWidth);
   const selectedPath = paths.zones.find((z) => z.zone_id === selected);
+  const selectionSet = new Set(selected ? [selected] : selectionIds);
+  const selectedPaths = paths.zones.filter((z) => selectionSet.has(z.zone_id));
   const changedCut = changes
     ? Object.entries(changes.byId)
         .filter(([, zone]) => ['only-baseline', 'only-aware', 'both'].includes(zone.category))
@@ -92,7 +119,13 @@ export function MapCanvas({
       ? `${planLabel || 'Megawatts only'} plan`
       : definition.name;
   return (
-    <div className="map-canvas" ref={canvas} onMouseLeave={() => setHover(null)}>
+    <div
+      className="map-canvas"
+      ref={canvas}
+      onMouseMove={hoverAt}
+      onPointerUp={clicked}
+      onMouseLeave={() => setHover(null)}
+    >
       <svg
         className="interactive-map"
         ref={svgRef}
@@ -130,7 +163,8 @@ export function MapCanvas({
           setHover={setHover}
           plan={plan}
           boundaryVisible={boundaryVisible}
-          selectedPath={selectedPath}
+          selectedPaths={selectedPaths}
+          selectionSet={selectionSet}
         />
         <g className="county-labels" aria-hidden="true">
           {displayLabels.map((label) => (
@@ -187,8 +221,15 @@ export function MapCanvas({
         selectedPath={selectedPath}
         onZoomSelected={onZoomSelected}
       />
-      {active && hover && (
-        <MapTooltip hover={hover} changes={changes} plan={plan} counts={counts} n={n} />
+      {active && hover && !selected && !selectionIds.length && !present && (
+        <MapTooltip
+          cursor={cursor}
+          hover={hover}
+          changes={changes}
+          plan={plan}
+          counts={counts}
+          n={n}
+        />
       )}
       {id !== 'aware' && (
         <span className="map-gesture-hint" data-dismissed={!hint} aria-hidden={!hint}>

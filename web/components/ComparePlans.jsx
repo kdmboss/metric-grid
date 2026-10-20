@@ -4,7 +4,6 @@ import { DifferencePanel } from '../ComparisonPanels.jsx';
 import { MapCanvas, MapLegend } from '../MapCanvas.jsx';
 import { ResidentLayer } from '../ResidentLayer.jsx';
 import { awarePlanLabel } from '../presentation.js';
-import { ZoneDetail } from './ZoneDetail.jsx';
 export function ComparePlans({
   mode,
   compareTab,
@@ -26,12 +25,11 @@ export function ComparePlans({
   mobile,
   counts,
   data,
-  detailProps,
-  zone,
-  setSheetOpen,
   changes,
   differenceVisible,
   setDifferenceVisible,
+  selectionIds,
+  present,
 }) {
   return (
     <section
@@ -86,6 +84,8 @@ export function ComparePlans({
                     view={view}
                     setView={setView}
                     selected={state.zone}
+                    selectionIds={selectionIds}
+                    present={present}
                     onSelect={selectZone}
                     onZoomSelected={zoomSelected}
                     active={
@@ -120,18 +120,10 @@ export function ComparePlans({
               boundaryVisible={boundaryVisible}
             />
           </div>
-          <ZoneDetail {...detailProps} id="compare-zone" />
-          <button
-            className="button mobile-zone-open"
-            disabled={!zone}
-            onClick={() => setSheetOpen(true)}
-          >
-            Inspect selected zone {zone?.zone_id}
-          </button>
         </div>
 
         <details className="resident-disclosure">
-          <summary>Area lookup & winter tips</summary>
+          <summary>Winter outage tips</summary>
           <ResidentLayer places={data.places || []} zones={zones} record={record} />
         </details>
       </div>
@@ -156,6 +148,8 @@ export function ComparePlans({
             view,
             setView,
             selected: state.zone,
+            selectionIds,
+            present,
             onSelect: selectZone,
             onZoomSelected: zoomSelected,
             counts,

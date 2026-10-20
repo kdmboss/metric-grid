@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge, Status } from '../Evidence.jsx';
+import { Status } from '../Evidence.jsx';
 import { fmt, status } from '../model.js';
 import { awarePlanLabel } from '../presentation.js';
 import { Help } from './Help.jsx';
@@ -23,7 +23,6 @@ export function ZoneDetail({
     <aside className="selection-panel" key={zone?.zone_id || 0} data-selected={Boolean(zone)}>
       <div className="selection-heading">
         <span>Selected area</span>
-        <Badge>{zone?.protected ? 'Protected' : 'Modeled data'}</Badge>
       </div>
       <label className="sr-only" htmlFor={id}>
         Select census tract zone
@@ -48,11 +47,11 @@ export function ZoneDetail({
           </div>
           <div className="selected-statuses">
             <div>
-              <strong>Megawatts only:</strong>
+              <strong>Megawatts only</strong>
               <Status value={status(zone, r.baseline)} />
             </div>
             <div>
-              <strong>{awarePlanLabel(r)}:</strong>
+              <strong>{awarePlanLabel(r)}</strong>
               <Status value={status(zone, r.weighted)} />
             </div>
           </div>

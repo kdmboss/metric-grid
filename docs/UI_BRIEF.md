@@ -1,7 +1,7 @@
 # HEARTH UI brief
 
-Current UI pass 2 details and copy review: [UI_PASS2_REVIEW.md](UI_PASS2_REVIEW.md).
-Paired desktop maps fill the content row; selected-zone details sit beneath them. The app uses
+Current UI pass 3 details and verification: [UI_PASS3_REVIEW.md](UI_PASS3_REVIEW.md).
+Paired desktop maps fill the content row; selected-zone details use an overlay drawer, with a nonmodal sheet on compact screens. The app uses
 `web/app.css`, variable-only `tokens.css`, and dedicated components/hooks.
 
 ## Product name and purpose

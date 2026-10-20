@@ -1,7 +1,7 @@
 import React from 'react';
 import { Badge } from '../Evidence.jsx';
 import { fmt } from '../model.js';
-export function Hero({ c, startTime, data }) {
+export function Hero({ c, startTime, data, mode }) {
   return (
     <div className="workspace-hero">
       <div className="reference-label story-eyebrow">
@@ -11,10 +11,15 @@ export function Hero({ c, startTime, data }) {
         </span>
         <Badge>Modeled</Badge>
       </div>
-      <h1>Same power cut. Different people in the dark.</h1>
+      <h1>
+        {mode === 'explore'
+          ? 'Find an area. Understand its risks.'
+          : 'Same power cut. Different people in the dark.'}
+      </h1>
       <p>
-        When power has to be cut, HEARTH shows who ends up in the cold, and how a different plan
-        changes that.
+        {mode === 'explore'
+          ? 'Search a place or select a tract to inspect its community profile and add it to your shortlist.'
+          : 'Adjust the scenario. Compare who is affected. Select an area to understand the trade-off.'}
       </p>
     </div>
   );

@@ -78,8 +78,22 @@ export function LineChart({
         (_, i) => {
           const index = Math.round((i * (count - 1)) / (Math.min(count, 5) - 1));
           return (
-            <text key={i} x={x(index)} y="245" textAnchor="middle" className="axis-label">
-              {xLabels(index)}
+            <text
+              key={i}
+              x={x(index)}
+              y="245"
+              textAnchor={i === 0 ? 'start' : i === 4 ? 'end' : 'middle'}
+              className="axis-label"
+            >
+              {String(xLabels(index)).length > 14
+                ? String(xLabels(index))
+                    .split(/ (?=[^ ]+$)/)
+                    .map((line, row) => (
+                      <tspan key={row} x={x(index)} dy={row ? 12 : 0}>
+                        {line}
+                      </tspan>
+                    ))
+                : xLabels(index)}
             </text>
           );
         },

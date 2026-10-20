@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-10-20 · App hierarchy refinement (OpenAI Codex)
+
+- Moved desktop scenario/place controls into a side panel so the comparison maps and outcomes share the first screen.
+- Reduced the introduction, grouped results into a compact strip, and highlighted the household trade-off with the existing warm accent surface.
+- Focused Prepare/Evidence on their own tasks by omitting comparison controls and results; Explore has its own action-oriented introduction.
+- Preserved model outputs, actual MW, mandatory place disclaimer, deep links and phone interactions. Updated Chrome/WebKit screenshots and responsive checks. No push/deployment.
+
+
+## 2026-10-20 · UI pass 3 (OpenAI Codex)
+
+- Built the real 79-place Census lookup independently of scenario freezing; town selection highlights all matching zones.
+- Added the desktop overlay drawer, compact controls, centered map legend, five-step spacing, simpler map controls and plain priority labels.
+- Reworked phone details into a nonmodal peek/half/full sheet and added conditional installed-app header/bottom navigation, safe-area CSS, local line icons and horizontal KPI scrolling.
+- Added presentation mode, local preview screenshots, town regressions and Chrome/WebKit browser checks. No model/result changes or production deployment.
+
+
 ## 2026-10-19 · UI pass 2 (OpenAI Codex)
 
 - Enlarged paired maps, centered their fit, and moved zone details below them. Added stronger shared selection, centroid chips, blank-space/Escape clearing, pointer-centered wheel zoom and two-finger pinch.
@@ -89,3 +105,20 @@
 - Presentation redesign (v2): first screen with headline, four stat tiles, one controls bar and two large maps; maps are now inline SVG (no WebGL, no basemap, no external requests) after the pydeck maps rendered blank in a user's Chrome (not reproducible headless); pydeck removed from requirements; sections for distribution, priority table, zone lookup, robustness, forecasts; all technical text in Methods; browser test checks both maps draw in Chromium and WebKit.
 - Design system v3: dark theme (Inter + IBM Plex Mono bundled and embedded, no network), sidebar shell with section links, page header with the primary insight, mono tabular numbers, shared chart theme with hover tooltips, source/kind lines per section; Pillow pinned (favicon). Plotly deliberately not added (Vega-Lite already in Streamlit; keeps requirements minimal).
 - Maps: one amber cut color and the same SVI shading on both maps; contrast checked (scripts/contrast_check.py plus a computed-style scan of every text node at 1440 and 390 px, minimum 6.45:1).
+
+### iOS tab review and desktop navigation alignment
+
+- Verified separate Compare/Explore/Prepare/Evidence panels in WebKit standalone emulation at 393×852.
+- Corrected desktop header/navigation padding so the tabs align with the left edge of app content. Model and data unchanged.
+
+### Phone map-first interaction
+
+- Added a compact current-scenario summary with explicit Edit/Done controls on phones; the full existing controls and place lookup expand on demand.
+- Kept the four bottom tabs as distinct panels, introduced task titles in the installed-app header, and brought comparison maps onto the first phone screen.
+- Existing model, frozen results, and calculation logic are unchanged. Web tests (30), lint and build pass; phone tab screenshots use WebKit standalone emulation.
+
+### Clean iPhone surfaces
+
+- Fixed installed-app top/bottom geometry independently of spacing tokens; compact scenario editing remains explicit.
+- Show all three outcomes together on phones, retain the household trade-off, group Prepare actions, and highlight the selected bottom tab.
+- Reduced map toolbar height and phone map framing so the map enters the first screen. Four tab screenshots are under docs/figures/ios-clean/.

@@ -1,3 +1,5 @@
+import { useAppShell } from './useAppShell.js';
+import { useMapAnimation } from './useMapAnimation.js';
 import { useEffect, useRef, useState } from 'react';
 import { defaults } from '../model.js';
 import { HOME_VIEW, fitPaths } from '../mapGeometry.js';
@@ -55,15 +57,39 @@ export function useWorkspace(data) {
   const [printMode, setPrintMode] = useState(false);
   const [summaryCounty, setSummaryCounty] = useState('Union County');
   const [showAllPriority, setShowAllPriority] = useState(false);
+  const shell = useAppShell();
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const animateView = useMapAnimation(map.setView);
   const scenario = useScenario(data, navigation.state, map, shortlist.plan);
   const { state, setState, setMode, setEvidenceTab } = navigation;
   useWorkspaceKeys(setState, printMode, setPrintMode);
   const update = (patch) => setState((current) => ({ ...current, ...patch }));
   function selectZone(id) {
     update({ zone: id });
+    setSelectedPlace(null);
+    if (shell.present && id) {
+      const path = scenario.paths.zones.find((z) => z.zone_id === id);
+      if (path) animateView(fitPaths([path]));
+    }
     map.setQuery('');
     if (filtersRef.current) filtersRef.current.open = false;
-    if (sheet.mobile && id) sheet.setSheetOpen(true);
+    if (id) sheet.setSheetOpen(true);
+  }
+  function selectPlace(place) {
+    setSelectedPlace(place);
+    update({ zone: 0 });
+    sheet.setSheetOpen(false);
+    map.setCounty('');
+    const paths = scenario.paths.zones.filter((z) => place.zone_ids.includes(z.zone_id));
+    animateView(fitPaths(paths));
+  }
+  function clearPlace() {
+    setSelectedPlace(null);
+    map.setView(HOME_VIEW);
+  }
+  function closeDetails() {
+    update({ zone: 0 });
+    sheet.setSheetOpen(false);
   }
   function selectCounty(value) {
     map.setCounty(value);
@@ -84,7 +110,8 @@ export function useWorkspace(data) {
     setEvidenceTab(target);
   }
   function reset() {
-    setState(defaults(data));
+    setState({ ...defaults(data), zone: 0 });
+    setSelectedPlace(null);
     map.setView(HOME_VIEW);
     map.setCounty('');
     map.setQuery('');
@@ -105,6 +132,11 @@ export function useWorkspace(data) {
   };
   return {
     ...navigation,
+    ...shell,
+    selectedPlace,
+    selectPlace,
+    clearPlace,
+    closeDetails,
     ...map,
     ...shortlist,
     ...scenario,

@@ -4,7 +4,6 @@ import { Badge, Status } from '../Evidence.jsx';
 import { locate, status } from '../model.js';
 import { LAYERS, MapCanvas, MapLegend } from '../MapCanvas.jsx';
 import { awarePlanLabel } from '../presentation.js';
-import { ZoneDetail } from './ZoneDetail.jsx';
 import { PriorityTable } from './PriorityTable.jsx';
 export function ExploreView({
   mode,
@@ -22,9 +21,6 @@ export function ExploreView({
   counts,
   n,
   data,
-  detailProps,
-  zone,
-  setSheetOpen,
   setShowAllPriority,
   showAllPriority,
   record,
@@ -32,6 +28,8 @@ export function ExploreView({
   setMode,
   plan,
   addZone,
+  selectionIds,
+  present,
 }) {
   return (
     <section
@@ -59,6 +57,8 @@ export function ExploreView({
             view={view}
             setView={setView}
             selected={state.zone}
+            selectionIds={selectionIds}
+            present={present}
             onSelect={selectZone}
             onZoomSelected={zoomSelected}
             active={mode === 'explore'}
@@ -73,14 +73,6 @@ export function ExploreView({
             boundaryVisible={boundaryVisible}
           />
         </div>
-        <ZoneDetail {...detailProps} id="zone" />
-        <button
-          className="button mobile-zone-open"
-          disabled={!zone}
-          onClick={() => setSheetOpen(true)}
-        >
-          Inspect selected zone {zone?.zone_id}
-        </button>
       </div>{' '}
       <PriorityTable
         setShowAllPriority={setShowAllPriority}

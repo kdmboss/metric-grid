@@ -13,7 +13,8 @@ export function PeopleResults({ record: r }) {
     <div className="people-results" aria-live="polite">
       <article>
         <div className="result-label">
-          Electric-heat homes cut{' '}
+          <span className="desktop-copy">Electric-heat homes cut</span>
+          <span className="mobile-copy">Electric-heat cuts</span>{' '}
           <Help label="electric-heat homes">
             Homes heated mainly by electricity; the main number shows the {label.toLowerCase()}{' '}
             result.
@@ -24,7 +25,8 @@ export function PeopleResults({ record: r }) {
       </article>
       <article>
         <div className="result-label">
-          Vulnerability-weighted impact{' '}
+          <span className="desktop-copy">Vulnerability-weighted impact</span>
+          <span className="mobile-copy">Weighted impact</span>{' '}
           <Help label="vulnerability-weighted impact">
             A score that weights households by CDC social vulnerability and electric-heat share.
           </Help>
@@ -42,7 +44,10 @@ export function PeopleResults({ record: r }) {
         </p>
       </article>
       <article className="honest-result">
-        <div className="result-label">Total homes cut · the trade-off</div>
+        <div className="result-label">
+          <span className="desktop-copy">Total homes cut · the trade-off</span>
+          <span className="mobile-copy">Total homes cut</span>
+        </div>
         <strong>{homes === 0 ? '0' : signed(homes)}</strong>
         <p>
           {homes === 0 ? 'Same total' : `${homes > 0 ? 'More' : 'Fewer'} homes cut`} ·{' '}

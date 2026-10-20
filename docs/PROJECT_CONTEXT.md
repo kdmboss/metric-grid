@@ -40,3 +40,8 @@ Quotes are bundled from `docs/quotes.yaml`; only permission-approved, fully attr
 Update `CHANGELOG.md`, `docs/AI_DISCLOSURE.md`, `docs/VIDEO_SHOTLIST.md` and review screenshots with UI changes. Keep every AI tool and file disclosed; author-review fields belong to the owners. The video names Python for data/optimization and React/JavaScript for the interface, explains precomputed results, starts on Compare and keeps the household trade-off visible. See `docs/VIDEO_SHOTLIST.md` for the current sequence. Stop for owner review after checks and screenshots; keep production unchanged.
 
 The current visual cleanup uses the owner-specified warm light theme, Inter only, a wordmark-only header, three KPI tiles, collapsed filters, and mobile map toggles with a zone detail sheet. Shared tokens are in `tokens.css`; visual verification is `node scripts/cleanup-smoke.cjs` with the configured Playwright module. Home-screen metadata uses a standalone manifest and original H icons; no service worker or background data refresh was added.
+
+
+## UI pass 3 (2026-10-20)
+
+Current local UI uses Apple system fonts first, five shared spacing tokens, a 360px desktop detail drawer and a nonmodal phone sheet with peek/half/full detents. Installed-app mode adds the collapsing header and bottom tabs; regular browser navigation remains available. Presentation mode is `?present=1` or P outside inputs. The separately generated Census lookup now has 79 places; `make places` builds it without rerunning any scenario/model pipeline. Only `data/frozen/places.json` is new; other frozen inputs/results and Python modules remain unchanged. See `UI_PASS3_REVIEW.md` for browser checks and physical-device limitations. Production is unchanged by this pass.

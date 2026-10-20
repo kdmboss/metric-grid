@@ -5,6 +5,7 @@ export function workspaceProps(workspace) {
       exportScenario: workspace.exportScenario,
     },
     Hero: {
+      mode: workspace.mode,
       c: workspace.c,
       startTime: workspace.startTime,
       data: workspace.data,
@@ -42,6 +43,8 @@ export function workspaceProps(workspace) {
       setBoundaryVisible: workspace.setBoundaryVisible,
     },
     ExploreView: {
+      selectionIds: workspace.selectedPlace?.zone_ids || [],
+      present: workspace.present,
       mode: workspace.mode,
       layer: workspace.layer,
       paths: workspace.paths,
@@ -69,6 +72,8 @@ export function workspaceProps(workspace) {
       addZone: workspace.addZone,
     },
     ComparePlans: {
+      selectionIds: workspace.selectedPlace?.zone_ids || [],
+      present: workspace.present,
       mode: workspace.mode,
       compareTab: workspace.compareTab,
       mobilePlan: workspace.mobilePlan,

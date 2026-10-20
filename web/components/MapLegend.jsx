@@ -1,31 +1,23 @@
 import React from 'react';
-import { fmt } from '../model.js';
 import { LAYERS } from '../MapCanvas.jsx';
-export function MapLegend({ layer, compare, data, protectedVisible, boundaryVisible }) {
-  const definition = LAYERS[layer];
-  const max = layer === 'load' ? Math.max(...data.zones.features.map((f) => f.properties.L_mw)) : 1;
+export function MapLegend({ layer, compare, protectedVisible, boundaryVisible }) {
   return (
     <div className="workspace-legend">
-      <div>
-        <span>
-          {definition.name}
-          {layer === 'load' ? ' · modeled MW' : ''}
-        </span>
+      <div className="legend-ramp">
+        <span>{LAYERS[layer].name}</span>
+        <span>Lower</span>
         <div className="ramp" aria-hidden="true">
           {[0, 1, 2, 3, 4].map((i) => (
             <i key={i} className={`ramp-${i}`} />
           ))}
         </div>
-        <div className="ramp-labels">
-          <span>{layer === 'load' ? '0 MW' : '0'}</span>
-          <span>{layer === 'load' ? `${fmt(max, 1)} MW` : layer === 'heat' ? '100%' : '1'}</span>
-        </div>
+        <span>Higher</span>
       </div>
       <div className="legend">
         {compare && (
           <span>
             <i className="swatch cut" />
-            Cut in this plan
+            Cut
           </span>
         )}
         {protectedVisible && (

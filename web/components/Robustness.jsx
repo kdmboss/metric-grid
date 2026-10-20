@@ -1,3 +1,4 @@
+import { priorityName } from '../planning.js';
 import { Section, DataTable, LineChart } from './EvidencePrimitives.jsx';
 import React from 'react';
 import { fmt, signed } from '../model.js';
@@ -26,8 +27,8 @@ export function Robustness({ section, solved, sens, data }) {
             </p>
           </div>
           <p>
-            At α = 0, the objective weighs business cost only. Lower interruption cost can come with
-            higher human harm.
+            Business cost only gives the human-impact score zero weight. Lower interruption cost can
+            come with higher human harm.
           </p>
           <p>
             In{' '}
@@ -76,13 +77,21 @@ export function Robustness({ section, solved, sens, data }) {
             }))}
             domain={[-100, 100]}
             labels={(v) => `${v > 0 ? '+' : ''}${fmt(v)}%`}
-            xLabels={(i) => ['Cost', 'α .25', 'α .50', 'α .75', 'People'][i]}
+            xLabels={(i) =>
+              [
+                'Business cost only',
+                'Mostly cost',
+                'Balanced',
+                'Mostly people',
+                'People at risk only',
+              ][i]
+            }
             ariaLabel={
               'Sensitivity of human harm, cost, and total households to the planning ' +
               'priority. Below zero means lower than the typical load-only plan.'
             }
           />
-          <p className="fine">Below zero = less. The chart reports the frozen alpha sweep.</p>
+          <p className="fine">Below zero means less than the typical MW-only plan.</p>
         </article>
       </div>
       <details className="details">
@@ -91,7 +100,7 @@ export function Robustness({ section, solved, sens, data }) {
           label="Sensitivity settings"
           headings={[
             'Setting',
-            'Alpha',
+            'Planning priority',
             'SVI weight',
             'Human harm change',
             'Cost change',
@@ -101,7 +110,7 @@ export function Robustness({ section, solved, sens, data }) {
           {solved.map((row, i) => (
             <tr key={i}>
               <td>{row.setting}</td>
-              <td>{row.alpha}</td>
+              <td>{priorityName(row.alpha)}</td>
               <td>{row.w_svi}</td>
               <td>{fmt(row.human_change_pct, 1)}%</td>
               <td>{fmt(row.econ_change_pct, 1)}%</td>

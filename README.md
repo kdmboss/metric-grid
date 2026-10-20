@@ -20,7 +20,7 @@ Optional testimonials are read from `docs/quotes.yaml` at build time; only entri
 
 ## Technical walkthrough for reviewers
 
-Prepare → **County data** accepts a local CSV of county-supplied resources (warming centers, backup power, outreach, or other resources). Download the empty template, preserve tract GEOIDs as eleven digits, and include a resource name/type, named source and update date. Optional capacity is in people. The app validates every row against its tract catalog, derives the county, and previews current modeled plan statuses. Files remain in memory for the browser session; importing a replacement replaces the list, failed imports keep the previous list, and Remove imported data clears it. Uploaded resources do not change model inputs, optimization results or protected-zone exclusions and are not independently verified. No server or new dependency is used.
+Prepare → **Add county resource data (CSV)** accepts a local CSV of county-supplied resources (warming centers, backup power, outreach, or other resources). Download the empty template, preserve tract GEOIDs as eleven digits, and include a resource name/type, named source and update date. Optional capacity is in people. The app validates every row against its tract catalog, derives the county, and previews current modeled plan statuses. Files remain in memory for the browser session; importing a replacement replaces the list, failed imports keep the previous list, and Remove imported data clears it. Uploaded resources do not change model inputs, optimization results or protected-zone exclusions and are not independently verified. No server or new dependency is used.
 
 | Area | What to demonstrate | Source evidence |
 |---|---|---|
@@ -182,3 +182,10 @@ Optional hardware prototype (ESP32 outage + indoor temperature logger) is in pro
 - Stochastic scenarios.
 
 The current review interface uses a warm light theme, self-hosted Inter, three outcome cards and compact filters. On a phone, the two plans share one map with a toggle and tract details open in a bottom sheet. The α = 0 column is labeled Business-cost optimized; the model and outcomes are unchanged.
+
+
+### Local place lookup and iOS review
+
+Run `make places` to build only `data/frozen/places.json` from the official 2024 NC TIGER place polygons and the existing frozen district/tract geometry. It reuses the existing ingest/intersection functions; it does not run the optimizer or rebuild scenarios. Then run `npm run data:export` (also included in development/build commands). The current lookup contains 79 places, including Albemarle, Rockingham, Laurinburg and Lumberton. Census place boundaries intersect aggregate tract zones; this is not an address lookup.
+
+UI pass 3 adds a desktop overlay drawer, compact scenario controls, a nonmodal phone sheet, conditional installed-app navigation, and `?present=1` (or P outside text inputs) for recording. Review screenshots and verification limits: [UI pass 3 review](docs/UI_PASS3_REVIEW.md). No physical iOS installation is claimed.

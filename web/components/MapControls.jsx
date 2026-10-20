@@ -1,16 +1,7 @@
 import { Arrow } from './Arrow.jsx';
 import { HOME_VIEW, fitPaths, zoomView } from '../mapGeometry.js';
 import React from 'react';
-export function MapControls({
-  setHover,
-  onInteract,
-  id,
-  setView,
-  county,
-  paths,
-  selectedPath,
-  onZoomSelected,
-}) {
+export function MapControls({ setHover, onInteract, id, setView, county, paths }) {
   return (
     <div
       onClick={onInteract}
@@ -34,14 +25,6 @@ export function MapControls({
         }
       >
         <Arrow direction="reset" />
-      </button>
-      <button
-        aria-label={`Zoom to selected zone on ${id} map`}
-        title="Zoom to selected zone"
-        disabled={!selectedPath}
-        onClick={() => (onZoomSelected ? onZoomSelected() : setView(fitPaths([selectedPath])))}
-      >
-        ⌖
       </button>
     </div>
   );
