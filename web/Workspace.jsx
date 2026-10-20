@@ -1,177 +1,106 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Badge, Brand, DataTable, Evidence, Status, StripChart } from './Evidence.jsx';
-import { change, cutCounts, defaults, enrichZones, fmt, getView, locate, mapPaths, readState, signed, status, targets } from './model.js';
-import { DifferencePanel, CountySummary } from './ComparisonPanels.jsx';
-import { planChanges } from './comparison.js';
-import { HOME_VIEW, LAYERS, MapCanvas, MapLegend, fitPaths } from './MapCanvas.jsx';
-import { ResidentLayer } from './ResidentLayer.jsx';
-import { CountyData } from './CountyData.jsx';
-import { awarePlanLabel, comparisonDirection, objectiveExplanation, initialNavigation } from './presentation.js';
-import { FOLLOWUPS, LIMITATION, STORAGE_KEY, comparisonLabel, download, exportRows, priorityName, sanitizePlan, shortlistCsv } from './planning.js';
-
-const MODES = [['compare', 'Compare'], ['explore', 'Explore'], ['prepare', 'Prepare'], ['evidence', 'Evidence']];
-const COMPARE_VIEWS = [['plans', 'Two plans'], ['changes', 'What changed?']];
-const EVIDENCE_VIEWS = [['counties', 'County summary'], ['range', 'Plan range'], ['robust', 'Robustness'], ['forecast', 'Forecast'], ['methods', 'Methods & sources']];
-
-function ViewTabs({ items, value, onChange, label, prefix }) {
-  return <div className="view-tabs" role="tablist" aria-label={label}>{items.map(([id, title], i) => <button key={id} role="tab" id={`${prefix}-tab-${id}`} aria-controls={`${prefix}-${id}`} aria-selected={value === id} tabIndex={value === id ? 0 : -1} onClick={() => onChange(id)} onKeyDown={event => { if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return; event.preventDefault(); const next = event.key === 'Home' ? 0 : event.key === 'End' ? items.length - 1 : (i + (event.key === 'ArrowRight' ? 1 : -1) + items.length) % items.length; onChange(items[next][0]); document.getElementById(`${prefix}-tab-${items[next][0]}`)?.focus(); }}>{title}</button>)}</div>;
-}
-
-const MEASURES = [['electric_heat_households', 'Electric-heat homes cut', 'Homes'], ['h_human', 'Vulnerability-weighted impact', 'Weighted households'], ['h_econ', 'Modeled interruption cost', '2013 dollars · 1 hour'], ['households', 'Total homes cut', 'Homes']];
-
-function Help({ label, children }) {
-  return <details className="inline-help"><summary aria-label={`Explain ${label}`}>i</summary><p>{children}</p></details>;
-}
-
-function PeopleResults({ record: r }) {
-  const b = r.baseline, w = r.weighted, human = change(b.h_human, w.h_human), homes = w.households - b.households;
-  const direction = comparisonDirection(b.h_human, w.h_human), label = awarePlanLabel(r);
-  return <div className="people-results" aria-live="polite">
-    <article><div className="result-label">Electric-heat homes cut <Help label="electric-heat homes">Households whose main heating fuel is electricity. These are modeled census tract selections, not household outage predictions. The main number is the {label.toLowerCase()} result.</Help></div><strong>{fmt(w.electric_heat_households)}</strong><p>vs. {fmt(b.electric_heat_households)} · megawatts only</p></article>
-    <article><div className="result-label">Vulnerability-weighted impact <Help label="vulnerability-weighted impact">Households weighted by CDC Social Vulnerability Index and electric-heat share. This is a modeled score, not a count of specific people protected.</Help></div><strong>{direction === 'unchanged' ? '0%' : `${fmt(Math.abs(human), Math.abs(human) < 1 ? 1 : 0)}%`}</strong><p>{direction === 'unchanged' ? 'Unchanged from' : `${direction[0].toUpperCase()}${direction.slice(1)} than`} the typical megawatts-only plan</p></article>
-    <article className="honest-result"><div className="result-label">Total homes cut · the trade-off</div><strong>{homes === 0 ? '0' : signed(homes)}</strong><p>{homes === 0 ? 'Same total' : `${homes > 0 ? 'More' : 'Fewer'} homes cut`} · {fmt(w.households)} vs. {fmt(b.households)}</p></article>
-  </div>;
-}
-
-function ScenarioControls({ data, state, record, update, reset }) {
-  const grid = data.config.optimizer.alpha_grid, index = grid.indexOf(state.alpha);
-  return <><div className="scenario-controls">
-    <fieldset><legend>Power shortage</legend><div className="segments">{targets(data).map(target => <button key={target} className={state.target === target ? 'selected' : ''} aria-pressed={state.target === target} onClick={() => update({ target })}>{target === 'elliott' ? 'Elliott' : `${target}%`}</button>)}</div></fieldset>
-    <div className="priority-control"><label htmlFor="alpha">Planning priority</label><div className="priority-slider"><output htmlFor="alpha" style={{ left: `calc(${index / (grid.length - 1) * 100}% + ${22 - index / (grid.length - 1) * 44}px)` }}>{priorityName(state.alpha)}</output><input id="alpha" type="range" min="0" max={grid.length - 1} step="1" value={index} aria-valuetext={priorityName(state.alpha)} onChange={event => update({ alpha: grid[Number(event.target.value)] })}/></div><div className="range-labels"><span>Business cost</span><span>People at risk</span></div>
-    <details className="more-options"><summary>More options{state.cap ? ' · county cap on' : ''}</summary><label className="switch-label"><input type="checkbox" checked={state.cap} onChange={event => update({ cap: event.target.checked })}/><span>Limit county concentration<small>At most {fmt(data.config.optimizer.county_cap.max_share * 100)}% of each plan’s cut in one county</small></span></label></details></div>
-    <div className="control-actions"><button className="button" onClick={reset}>Reset</button><details className="how-to-help"><summary>How to use</summary><ol><li>Pick a cut size.</li><li>Slide toward people at risk.</li><li>Click a zone to see why.</li></ol></details></div>
-  </div><p className="shared-target">Shared target {fmt(record.target_mw, 1)} MW · band {fmt(record.band_lo_mw, 1)}–{fmt(record.band_hi_mw, 1)} MW. Actual: megawatts only {fmt(record.baseline.mw_shed, 1)} MW; {awarePlanLabel(record).toLowerCase()} {fmt(record.weighted.mw_shed, 1)} MW.</p>{(record.alpha === 0 || record.alpha === 1) && <p className="objective-note" role="status">{objectiveExplanation(record)}</p>}</>;
-}
-
-function ZoneSheet({ open, close, children }) {
-  const ref = useRef(null);
-  useEffect(() => { const dialog = ref.current; if (open && !dialog.open) dialog.showModal(); else if (!open && dialog.open) dialog.close(); }, [open]);
-  return <dialog ref={ref} className="zone-sheet" aria-label="Selected zone details" onClose={close} onCancel={close}><div className="sheet-heading"><h2>Zone details</h2><button className="button" autoFocus onClick={close}>Close</button></div>{children}</dialog>;
-}
-
-function ZoneDetail({ zone, record: r, data, counts, n, onAdd, listed, id, zones, onSelect }) {
-  return <aside className="selection-panel"><div className="selection-heading"><span>Selected census tract</span><Badge>{zone?.protected ? 'Protected' : 'Modeled data'}</Badge></div><label className="sr-only" htmlFor={id}>Select census tract zone</label><select id={id} value={zone?.zone_id || 0} onChange={event => onSelect(Number(event.target.value))}><option value="0">Choose a zone…</option>{zones.map(z => <option key={z.zone_id} value={z.zone_id}>Zone {z.zone_id} · {z.COUNTY}</option>)}</select>
-    {zone ? <><div className="selected-place"><h2>Zone {zone.zone_id}</h2><p>{zone.COUNTY}</p><span>Tract {zone.GEOID}</span></div><div className="selected-statuses"><div><span>Megawatts only</span><Status value={status(zone, r.baseline)}/></div><div><span>{awarePlanLabel(r)}</span><Status value={status(zone, r.weighted)}/></div></div>
-      <dl className="selected-facts"><div><dt>Households</dt><dd>{fmt(zone.occupied_units)}</dd></div><div><dt>Electric-heat homes</dt><dd>{fmt(zone.heat_electricity)}</dd></div><div><dt>Electric-heat share</dt><dd>{zone.share_electric_heat == null ? 'No data' : `${fmt(zone.share_electric_heat * 100)}%`}</dd></div><div><dt>Social vulnerability <Help label="social vulnerability">CDC/ATSDR Social Vulnerability Index (SVI): a relative measure from lower to higher vulnerability. Missing values stay missing.</Help></dt><dd>{fmt(zone.RPL_THEMES, 2)}<small> / 1</small></dd></div><div><dt>Estimated zone load</dt><dd>{fmt(zone.L_mw, 2)}<small> MW</small></dd></div><div><dt>Load-only selection frequency</dt><dd>{counts[zone.zone_id] || 0}<small> / {n}</small></dd></div></dl>
-      <p className="small-note">Load is a modeled district estimate. Selection frequencies are indicative, not a uniform sample.</p>
-      {zone.protected && <p className="zone-note">Contains protected facilities; excluded from both plans. Facility coverage may be incomplete.</p>}
-      {zone.svi_missing && <p className="zone-note">SVI is missing. {zone.occupied_units === 0 ? 'With zero occupied households, vulnerability-weighted households are zero by definition—not an imputed SVI value.' : 'Human impact is unknown; no zero-fill is used.'}</p>}
-      <button className="primary-button add-zone" aria-label={listed ? 'Added to shortlist' : 'Add to shortlist'} disabled={listed} onClick={() => onAdd(zone.zone_id)}>{listed ? 'Added to shortlist' : 'Add to shortlist'}<span aria-hidden="true">{listed ? '✓' : '+'}</span></button><p className="small-note">For outreach and resilience investigation.</p>
-      <details className="arithmetic"><summary>How this zone’s score is calculated</summary><pre>{`Weighted households\n${fmt(zone.occupied_units)} × (${data.config.harm.w_svi} × ${fmt(zone.RPL_THEMES, 3)}\n+ ${data.config.harm.w_eheat} × ${fmt(zone.share_electric_heat, 3)})\n= ${fmt(zone.human, 1)}\n\nInterruption cost\n$${fmt(zone.econ)} · 2013 dollars · ${data.config.harm.h_hours} hour\n\nBlended score\n${r.alpha} × ${fmt(zone.humanNorm, 3)}\n+ ${1 - r.alpha} × ${fmt(zone.econNorm, 3)}\n= ${zone.humanNorm == null ? 'No data' : fmt(r.alpha * zone.humanNorm + (1 - r.alpha) * zone.econNorm, 3)}`}</pre></details>
-    </> : <div className="empty-state">Select a zone on the map or use the zone selector to inspect its evidence.</div>}</aside>;
-}
-
-function Preparation({ rows, plan, setPlan, data, record, zones, counts, onExplore, undo, clear, restore, printMode, setPrintMode }) {
-  return <div className="preparation"><div className="prepare-intro"><div><span className="workspace-kicker">From comparison to preparation</span><h2>A shortlist for the next conversation.</h2><p>Collect places to investigate for outreach, warming centers, and backup power. Add your own notes; this app does not calculate the benefit of an intervention.</p></div><div className="prepare-actions"><button className="button" disabled={!rows.length} onClick={() => download(shortlistCsv(rows), 'hearth-planning-shortlist.csv')}>Export CSV ↓</button><button className="button" disabled={!rows.length} onClick={() => setPrintMode(!printMode)}>{printMode ? 'Close print view' : 'Print view'}</button></div></div>
-    <CountyData zones={zones} record={record}/>
-    <div className="local-storage-note">Notes stay in this browser. Export a copy to share or keep a backup. Nothing is sent to a server.</div>
-    {printMode && <div className="print-sheet"><div className="print-actions"><button className="primary-button" onClick={() => window.print()}>Print / save PDF</button><button className="button" onClick={() => setPrintMode(false)}>Close print view</button></div><h2>HEARTH · Planning shortlist</h2><p>Reference: {data.constants.scenario.date} · Data built: {data.constants.built_utc.slice(0, 10)}</p><p>{priorityName(record.alpha)} · Target {fmt(record.target_mw, 1)} MW · County cap {record.cap ? 'on' : 'off'} · Band {fmt(record.band_lo_mw, 1)}–{fmt(record.band_hi_mw, 1)} MW</p><p>Actual cut: megawatts only {fmt(record.baseline.mw_shed, 1)} MW; {awarePlanLabel(record).toLowerCase()} {fmt(record.weighted.mw_shed, 1)} MW.</p>
-      {rows.map(row => <article className="print-zone" key={row.zone_id}><h3>Zone {row.zone_id} · {row.county} · {row.tract_geoid}</h3><p>{fmt(row.households)} households · Electric heat {row.electric_heat_share == null ? 'No data' : `${fmt(row.electric_heat_share * 100)}%`} · SVI {fmt(row.social_vulnerability_index, 2)} · Estimated zone load {fmt(row.estimated_zone_load_mw, 2)} modeled MW</p><p>Protected: {row.protected ? 'yes' : 'no'} · SVI missing: {row.svi_missing ? 'yes' : 'no'} · Weighted households: {fmt(row.vulnerability_weighted_households, 1)} · Cost: ${fmt(row.interruption_cost_2013_usd_1h)} (2013 dollars, 1 hour)</p><p>Megawatts only: {row.loadonly_status}; {awarePlanLabel(record).toLowerCase()}: {row.aware_status}; load-only selection frequency: {row.loadonly_cut_count} / {row.loadonly_plan_count}.</p><p><strong>{row.followup}</strong></p><p className="user-note">{row.note || 'No note entered.'}</p></article>)}<p className="print-limitations">{LIMITATION}</p></div>}
-    {!plan.length ? <div className="empty-shortlist"><span aria-hidden="true">＋</span><h3>Start with a place, not a conclusion.</h3><p>Select a census tract in Explore, review its evidence, and add it here. No zones are added automatically.</p><button className="primary-button" onClick={onExplore}>Explore census tract zones →</button></div> : <><div className="shortlist-count"><h3>{plan.length} {plan.length === 1 ? 'zone' : 'zones'} to investigate</h3><button className="text-button" onClick={clear}>Clear shortlist</button></div><div className="shortlist-items">{plan.map(item => { const z = zones.find(z => z.zone_id === item.zone); return <article className="shortlist-item" key={item.zone}><div className="shortlist-item-heading"><div><h3>Zone {z.zone_id} <span>{z.COUNTY}</span></h3><p>Tract {z.GEOID}</p></div><button className="text-button" onClick={() => setPlan(plan.filter(p => p.zone !== item.zone))} aria-label={`Remove zone ${z.zone_id}`}>Remove</button></div><div className="shortlist-evidence"><span>{fmt(z.occupied_units)} households</span><span>Electric heat {z.share_electric_heat == null ? 'No data' : `${fmt(z.share_electric_heat * 100)}%`}</span><span>SVI {fmt(z.RPL_THEMES, 2)}</span><span>{fmt(z.L_mw, 1)} modeled MW</span><span>{counts[z.zone_id] || 0} / {data.loadonly.sets[record.loadonly_key].plans.length} load-only selections</span></div><div className="shortlist-status"><span>Megawatts only <Status value={status(z, record.baseline)}/></span><span>{awarePlanLabel(record)} <Status value={status(z, record.weighted)}/></span>{z.protected && <Badge>Protected</Badge>}</div><div className="note-fields"><label>Follow-up for zone {z.zone_id}<select aria-label={`Follow-up for zone ${z.zone_id}`} value={item.followup} onChange={event => setPlan(plan.map(p => p.zone === item.zone ? { ...p, followup: event.target.value } : p))}>{FOLLOWUPS.map(f => <option key={f}>{f}</option>)}</select></label><label>Planning note for zone {z.zone_id}<textarea aria-label={`Planning note for zone ${z.zone_id}`} rows="3" maxLength="4000" placeholder="What would you want to investigate or discuss?" value={item.note} onChange={event => setPlan(plan.map(p => p.zone === item.zone ? { ...p, note: event.target.value } : p))}/></label></div></article>; })}</div></>}
-    {undo && <div className="undo-banner" role="status">Shortlist cleared.<button className="text-button" onClick={restore}>Undo clear</button></div>}
-    <p className="planning-limitations">{LIMITATION}</p></div>;
-}
-
+import { workspaceProps } from './hooks/workspaceProps.js';
+import { Footer } from './components/Footer.jsx';
+import { useWorkspace } from './hooks/useWorkspace.js';
+import { EvidenceView } from './components/EvidenceView.jsx';
+import { ExploreView } from './components/ExploreView.jsx';
+import { ComparePlans } from './components/ComparePlans.jsx';
+import { MapFilters } from './components/MapFilters.jsx';
+import { Hero } from './components/Hero.jsx';
+import { AppHeader } from './components/AppHeader.jsx';
+import { ViewTabs } from './components/ViewTabs.jsx';
+import { Preparation } from './components/Preparation.jsx';
+import { ZoneDetail } from './components/ZoneDetail.jsx';
+import { ZoneSheet } from './components/ZoneSheet.jsx';
+import { ScenarioControls } from './components/ScenarioControls.jsx';
+import { PeopleResults } from './components/PeopleResults.jsx';
+import React from 'react';
+const MODES = [
+  ['compare', 'Compare'],
+  ['explore', 'Explore'],
+  ['prepare', 'Prepare'],
+  ['evidence', 'Evidence'],
+];
+const COMPARE_VIEWS = [
+  ['plans', 'Two plans'],
+  ['changes', 'What changed?'],
+];
 export function Workspace({ data }) {
-  const [state, setState] = useState(() => readState(data, window.location.search));
-  const [mode, setMode] = useState(() => initialNavigation(location.search).mode);
-  const [compareTab, setCompareTab] = useState(() => initialNavigation(location.search).compareTab);
-  const [evidenceTab, setEvidenceTab] = useState(() => initialNavigation(location.search).evidenceTab);
-  const [mobilePlan, setMobilePlan] = useState('typical'), [sheetOpen, setSheetOpen] = useState(false);
-  const [mobile, setMobile] = useState(() => matchMedia('(max-width:700px)').matches);
-  const filtersRef = useRef(null);
-  const [differenceVisible, setDifferenceVisible] = useState(true), [summaryCounty, setSummaryCounty] = useState('Union County');
-  const [layer, setLayer] = useState('vulnerability'), [county, setCounty] = useState(''), [query, setQuery] = useState('');
-  const [protectedVisible, setProtectedVisible] = useState(true), [boundaryVisible, setBoundaryVisible] = useState(true);
-  const [view, setView] = useState(HOME_VIEW), [printMode, setPrintMode] = useState(false);
-  const [storageError, setStorageError] = useState(''), [undo, setUndo] = useState(null);
-  const searchRef = useRef(null);
-  const zones = useMemo(() => enrichZones(data), [data]), paths = useMemo(() => mapPaths(data.zones, data.district), [data]);
-  const validIds = useMemo(() => new Set(zones.map(z => z.zone_id)), [zones]);
-  const [plan, setPlan] = useState(() => { try { const value = localStorage.getItem(STORAGE_KEY); return value ? sanitizePlan(JSON.parse(value), new Set(data.zones.features.map(f => f.properties.zone_id))) : []; } catch { return []; } });
-  const viewResult = getView(data, state), record = viewResult.record, c = data.constants;
-  const changes = useMemo(() => planChanges(zones, record), [zones, record]);
-  const plans = data.loadonly.sets[record.loadonly_key].plans, n = plans.length;
-  const counts = useMemo(() => cutCounts(plans), [plans]);
-  const zone = zones.find(z => z.zone_id === state.zone);
-  const counties = useMemo(() => [...new Set(zones.map(z => z.COUNTY))].sort(), [zones]);
-  const update = patch => setState(s => ({ ...s, ...patch }));
-  const results = zones.filter(z => (!county || z.COUNTY === county) && (!query.trim() || `${z.zone_id} ${z.GEOID} ${z.COUNTY} zone ${z.zone_id}`.toLowerCase().includes(query.trim().toLowerCase())));
-  const priority = zones.filter(z => !z.protected && (z.RPL_THEMES >= data.config.priority_list.svi_min || z.share_electric_heat >= data.config.priority_list.electric_heat_min)).sort((a, b) => (counts[b.zone_id] || 0) - (counts[a.zone_id] || 0) || (b.RPL_THEMES ?? -1) - (a.RPL_THEMES ?? -1) || a.zone_id - b.zone_id).slice(0, data.config.priority_list.max_rows);
-  const [showAllPriority, setShowAllPriority] = useState(false);
-  const rows = useMemo(() => exportRows(data, record, zones, plan), [data, record, zones, plan]);
-  const distribution = useMemo(() => plans.map(ids => {
-    const chosen = new Set(ids);
-    return zones.filter(z => chosen.has(z.zone_id)).reduce((m, z) => ({ households: m.households + z.occupied_units, electric_heat_households: m.electric_heat_households + z.heat_electricity, h_human: m.h_human + z.human, h_econ: m.h_econ + z.econ }), { households: 0, electric_heat_households: 0, h_human: 0, h_econ: 0 });
-  }), [plans, zones]);
-  const concentration = useMemo(() => { const counties = {}; zones.filter(z => record.weighted.zone_ids.includes(z.zone_id)).forEach(z => { counties[z.COUNTY] = (counties[z.COUNTY] || 0) + z.L_mw; }); return Object.entries(counties).sort((a, b) => b[1] - a[1]); }, [record, zones]);
-  const costChange = change(record.baseline.h_econ, record.weighted.h_econ);
-  const startHour = Number(c.scenario.shed_start_local.slice(0, 2));
-  const startTime = `${startHour % 12 || 12}:${c.scenario.shed_start_local.slice(3)} ${startHour < 12 ? 'a.m.' : 'p.m.'}`;
-
-  useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitizePlan(plan, validIds))); setStorageError(''); }
-    catch { setStorageError('Browser storage is unavailable. Your shortlist works for this session; export a copy before leaving.'); }
-  }, [plan, validIds]);
-  useEffect(() => {
-    const query = new URLSearchParams(window.location.search);
-    query.set('alpha', state.alpha); query.set('pct', state.target === 'elliott' ? 100 * c.T_NC08_mw / c.D_NC08_mw : state.target);
-    query.set('section', mode === 'evidence' ? evidenceTab : compareTab);
-    query.set('cap', state.cap ? '1' : '0'); query.set('zone', state.zone); query.set('mode', mode);
-    history.replaceState(null, '', `${location.pathname}?${query}${location.hash}`);
-  }, [state, mode, compareTab, evidenceTab, c]);
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [mode]);
-  useEffect(() => {
-    const pop = () => { const nav = initialNavigation(location.search); setState(readState(data, location.search)); setMode(nav.mode); setCompareTab(nav.compareTab); setEvidenceTab(nav.evidenceTab); };
-    window.addEventListener('popstate', pop);
-    return () => window.removeEventListener('popstate', pop);
-  }, [data]);
-  useEffect(() => { if (printMode) { const onAfter = () => setPrintMode(false); window.addEventListener('afterprint', onAfter); return () => window.removeEventListener('afterprint', onAfter); } }, [printMode]);
-
-  useEffect(() => { const mq = matchMedia('(max-width:700px)'); const listener = () => { setMobile(mq.matches); if (!mq.matches) setSheetOpen(false); }; mq.addEventListener('change', listener); return () => mq.removeEventListener('change', listener); }, []);
-  useEffect(() => { setSheetOpen(false); if (filtersRef.current) filtersRef.current.open = false; }, [mode, compareTab]);
-  function selectZone(id) { update({ zone: id }); setQuery(''); if (filtersRef.current) filtersRef.current.open = false; if (mobile && id) setSheetOpen(true); }
-  function addZone(id) { setPlan(current => current.some(p => p.zone === id) ? current : [...current, { zone: id, note: '', followup: FOLLOWUPS[0] }]); }
-  function zoomSelected() { const path = paths.zones.find(z => z.zone_id === state.zone); if (path) { setCounty(''); setView(fitPaths([path])); } }
-  function selectCounty(value) { setCounty(value); setQuery(''); setView(value ? fitPaths(paths.zones.filter(z => z.COUNTY === value)) : HOME_VIEW); }
-  function showEvidence(target = 'robust') {
-    setMode('evidence'); setEvidenceTab(target);
-  }
-  function exportScenario() { download(JSON.stringify({ app_name: 'HEARTH', limitations: LIMITATION, requested: state, displayed: record, note: viewResult.note, data_built: c.built_utc, reference_date: c.scenario.date }, null, 2), 'hearth-scenario.json', 'application/json'); }
-  const detailProps = { zone, record, data, counts, n, onAdd: addZone, listed: plan.some(p => p.zone === state.zone), zones, onSelect: selectZone };
-
-  return <div className={`planning-app ${printMode ? 'printing' : ''}`} data-mode={mode}><a className="skip-link" href="#workspace">Skip to workspace</a>
-    <header className="appbar"><Brand/><div className="appbar-district">NC-08</div><div className="appbar-actions"><button className="text-button" aria-label="Methods & sources" onClick={() => showEvidence('methods')}><span className="desktop-copy">Methods & sources</span><span className="mobile-copy">Methods</span></button><button className="button" onClick={exportScenario}>Export</button></div></header>
-      <div className="workspace-nav"><div role="tablist" aria-label="Planning modes">{MODES.map(([id, label]) => <button key={id} id={`tab-${id}`} role="tab" aria-selected={mode === id} aria-controls={`panel-${id}`} tabIndex={mode === id ? 0 : -1} onClick={() => setMode(id)} onKeyDown={event => { if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return; event.preventDefault(); const i = MODES.findIndex(([m]) => m === id); const next = event.key === 'Home' ? 0 : event.key === 'End' ? MODES.length - 1 : (i + (event.key === 'ArrowRight' ? 1 : -1) + MODES.length) % MODES.length; setMode(MODES[next][0]); document.getElementById(`tab-${MODES[next][0]}`)?.focus(); }}>{label}{id === 'prepare' && plan.length > 0 && <span className="count-pill">{plan.length}</span>}</button>)}</div></div>
-    <main className="workspace-main"><div className="workspace-hero"><div className="reference-label story-eyebrow"><span>Christmas Eve {c.scenario.date.slice(0, 4)} · {startTime} · about {fmt(data.panel?.elliott.temp_f)} °F</span><Badge>Modeled scenario</Badge></div><h1>Same power cut. Different people in the dark.</h1><p>When power has to be cut, HEARTH shows who ends up in the cold, and how a different plan changes that.</p></div>
-      <PeopleResults record={record}/><ScenarioControls data={data} state={state} record={record} update={update} reset={() => { setState(defaults(data)); setView(HOME_VIEW); setCounty(''); setQuery(''); }}/>
-      {viewResult.note && <p className="notice" role="status">{viewResult.note}</p>}{record.widened && <p className="notice">Shared band widened to {record.delta_pct_used}% to find a feasible result.</p>}
-      {storageError && <p className="notice" role="status">{storageError}</p>}
-<div className="workspace-tools">{mode === 'compare' && <ViewTabs items={COMPARE_VIEWS} value={compareTab} onChange={setCompareTab} label="Comparison views" prefix="compare"/>}{(mode === 'explore' || (mode === 'compare' && ['plans', 'changes'].includes(compareTab))) && <details className="map-filters" ref={filtersRef} onKeyDown={event => { if (event.key === 'Escape') event.currentTarget.open = false; }}><summary>Filters</summary><div className="map-toolbar"><div className="map-search"><label className="sr-only" htmlFor="zone-search">Search county, zone ID, or tract GEOID</label><span aria-hidden="true">⌕</span><input id="zone-search" ref={searchRef} placeholder="Search county, zone, or tract…" value={query} onChange={event => setQuery(event.target.value)} onKeyDown={event => { if (event.key === 'Escape') setQuery(''); if (event.key === 'Enter' && results.length) selectZone(results[0].zone_id); }}/>{query && <div className="search-results" role="region" aria-label="Zone search results">{results.length ? results.slice(0, 12).map(z => <button key={z.zone_id} onClick={() => selectZone(z.zone_id)}>Zone {z.zone_id}<span>{z.COUNTY} · {z.GEOID}</span></button>) : <p>No matching zones. Try a county name or tract GEOID.</p>}</div>}</div>
-        <label className="sr-only" htmlFor="county-filter">Filter county</label><select id="county-filter" value={county} onChange={event => selectCounty(event.target.value)}><option value="">All counties</option>{counties.map(county => <option key={county}>{county}</option>)}</select>
-        <label className="sr-only" htmlFor="map-layer">Map layer</label><select id="map-layer" value={layer} onChange={event => setLayer(event.target.value)}>{Object.entries(LAYERS).map(([key, value]) => <option key={key} value={key}>{value.name}</option>)}</select>
-        <details className="map-options"><summary>Map overlays</summary><div>{mode === 'compare' && <label><input type="checkbox" checked={compareTab === 'changes' && differenceVisible} onChange={event => { setDifferenceVisible(event.target.checked); if (event.target.checked) setCompareTab('changes'); event.currentTarget.closest('details').open = false; }}/>Difference map</label>}<label><input type="checkbox" checked={protectedVisible} onChange={event => setProtectedVisible(event.target.checked)}/>Protected facilities</label><label><input type="checkbox" checked={boundaryVisible} onChange={event => setBoundaryVisible(event.target.checked)}/>District boundary</label></div></details></div></details>}</div>
-      <div id="workspace" className="workspace-body">
-
-      <section id="panel-explore" role="tabpanel" aria-labelledby="tab-explore" hidden={mode !== 'explore'}><div className="explore-layout"><div className="geography"><div className="canvas-heading"><div><h2>Who lives here?</h2><p>Explore the communities behind the comparison.</p></div><Badge>{LAYERS[layer].name}</Badge></div><MapCanvas paths={paths} zones={zones} layer={layer} county={county} protectedVisible={protectedVisible} boundaryVisible={boundaryVisible} view={view} setView={setView} selected={state.zone} onSelect={selectZone} onZoomSelected={zoomSelected} active={mode === 'explore'} id="explore" counts={counts} n={n}/><MapLegend layer={layer} data={data} protectedVisible={protectedVisible} boundaryVisible={boundaryVisible}/></div><ZoneDetail {...detailProps} id="zone"/><button className="button mobile-zone-open" disabled={!zone} onClick={() => setSheetOpen(true)}>Inspect selected zone {zone?.zone_id}</button></div>      <section className="priority-section"><div className="section-head"><div><h2>Which zones deserve a closer look?</h2><p>Vulnerable zones most often cut when only megawatts count. Ranked from the current plan set; these frequencies are indicative.</p></div><button className="button" onClick={() => setShowAllPriority(!showAllPriority)}>{showAllPriority ? 'Show fewer' : 'Show all zones'}</button></div><div className="panel"><DataTable label="Vulnerable zones most often cut when only megawatts count" headings={['Zone / county', 'SVI', 'Electric heat', 'Households', 'Load-only cut frequency', awarePlanLabel(record), 'Planning shortlist']}>{priority.slice(0, showAllPriority ? priority.length : 8).map(z => <tr key={z.zone_id}><td><button className="zone-link" onClick={() => { selectZone(z.zone_id); setMode('explore'); document.getElementById('workspace').scrollIntoView(); }}>Zone {z.zone_id}</button><span className="cell-sub">{z.COUNTY.replace(' County', '')}</span></td><td>{fmt(z.RPL_THEMES, 2)}</td><td>{z.share_electric_heat == null ? 'No data' : `${fmt(z.share_electric_heat * 100)}%`}</td><td>{fmt(z.occupied_units)}</td><td>{fmt((counts[z.zone_id] || 0) / n * 100)}% <small>({counts[z.zone_id] || 0}/{n})</small></td><td><Status value={status(z, record.weighted)}/></td><td><button className="button" disabled={plan.some(p => p.zone === z.zone_id)} onClick={() => addZone(z.zone_id)}>{plan.some(p => p.zone === z.zone_id) ? 'Added' : 'Add zone +'}</button></td></tr>)}</DataTable><p className="panel-note">Qualifies at SVI ≥ {data.config.priority_list.svi_min} or electric-heat share ≥ {fmt(data.config.priority_list.electric_heat_min * 100)}%. Not a finding about specific households or a switching recommendation.</p></div></section>
-      <details className="details examples-disclosure"><summary>Explore the example public buildings</summary><div className="example-locations">{data.config.example_locations.map(location => { const id = locate(data.zones.features, [location.lon, location.lat]), z = zones.find(z => z.zone_id === id); return <article key={location.label}><h3>{location.label}</h3>{z && <><button className="zone-link" onClick={() => { selectZone(id); setMode('explore'); document.getElementById('workspace').scrollIntoView(); }}>Inspect zone {id} →</button><p>Megawatts only <Status value={status(z, record.baseline)}/> · {awarePlanLabel(record)} <Status value={status(z, record.weighted)}/></p></>}<p className="small-note">Status describes the census tract, not this building’s actual power supply.</p></article>; })}</div></details>
-</section>
-      <section id="panel-compare" role="tabpanel" aria-labelledby="tab-compare" hidden={mode !== 'compare'}><div id="compare-plans" role="tabpanel" aria-labelledby="compare-tab-plans" hidden={compareTab !== 'plans'}><div className="mobile-plan-toggle" role="group" aria-label="Displayed plan"><button aria-pressed={mobilePlan === 'typical'} onClick={() => setMobilePlan('typical')}>MW-only</button><button aria-pressed={mobilePlan === 'aware'} onClick={() => setMobilePlan('aware')}>{record.alpha === 0 ? 'Business cost' : 'Vulnerability-aware'}</button></div><div className="compare-layout" data-mobile-plan={mobilePlan}><div><div className="comparison-maps">{[['typical', 'Megawatts only', `Typical of ${n} equivalent plans`, record.baseline], ['aware', awarePlanLabel(record), record.alpha === 0 ? 'Interruption-cost objective only' : 'Same MW band, different priorities', record.weighted]].map(([id, title, subtitle, plan]) => <article className="compare-map" data-plan={id} key={id}><div className="compare-map-title"><div><h2>{title}</h2><p>{subtitle}</p></div><span>{plan.zone_ids.length} zones cut</span></div><MapCanvas paths={paths} zones={zones} layer={layer} county={county} protectedVisible={protectedVisible} boundaryVisible={boundaryVisible} view={view} setView={setView} selected={state.zone} onSelect={selectZone} onZoomSelected={zoomSelected} active={mode === 'compare' && compareTab === 'plans' && (!mobile || mobilePlan === id)} plan={plan} planLabel={title} id={id} counts={counts} n={n}/><div className="compare-map-totals"><strong>{fmt(plan.mw_shed, 1)} MW <small>actual cut</small></strong><span>{fmt(plan.households)} homes · {fmt(plan.electric_heat_households)} electric heat</span><span>${fmt(plan.h_econ)} · 2013 dollars · {data.config.harm.h_hours} hour</span></div></article>)}</div><MapLegend layer={layer} compare data={data} protectedVisible={protectedVisible} boundaryVisible={boundaryVisible}/><p className="small-note">Both plans cut within {fmt(record.band_lo_mw, 1)}–{fmt(record.band_hi_mw, 1)} MW. Map views and selections are synchronized. County filtering changes the map, not district-wide plan totals.</p></div><ZoneDetail {...detailProps} id="compare-zone"/><button className="button mobile-zone-open" disabled={!zone} onClick={() => setSheetOpen(true)}>Inspect selected zone {zone?.zone_id}</button></div>
-      <div className="why-strip"><article><span>Prepare</span><h3>Start the right conversations.</h3><p>Identify areas to investigate for warming centers, outreach calls, and backup power.</p></article><article><span>Understand exposure</span><h3>Make the trade-offs visible.</h3><p>Compare electric-heat homes and communities with higher social vulnerability.</p></article><article><span>Compare costs</span><h3>{comparisonDirection(record.baseline.h_econ, record.weighted.h_econ) === 'unchanged' ? 'Unchanged modeled cost.' : `${fmt(Math.abs(costChange))}% ${comparisonDirection(record.baseline.h_econ, record.weighted.h_econ)} modeled cost.`}</h3><p>Interruption cost vs. the typical plan · 2013 dollars · {data.config.harm.h_hours} hour. An estimate, not realized savings.</p></article></div>
-
-        <details className="resident-disclosure"><summary>Area lookup & winter tips</summary><ResidentLayer places={data.places || []} zones={zones} record={record}/></details></div><div id="compare-changes" role="tabpanel" aria-labelledby="compare-tab-changes" hidden={compareTab !== 'changes'}><DifferencePanel changes={changes} visible={differenceVisible} setVisible={setDifferenceVisible} mapProps={{ active: mode === 'compare' && compareTab === 'changes', paths, zones, layer, county, protectedVisible, boundaryVisible, view, setView, selected: state.zone, onSelect: selectZone, onZoomSelected: zoomSelected, counts, n }}/>
-        </div>
-      </section>
-      <section id="panel-prepare" role="tabpanel" aria-labelledby="tab-prepare" hidden={mode !== 'prepare'}><Preparation rows={rows} plan={plan} setPlan={setPlan} data={data} record={record} zones={zones} counts={counts} onExplore={() => setMode('explore')} undo={undo} clear={() => { setUndo(plan); setPlan([]); }} restore={() => { setPlan(current => [...current, ...undo.filter(item => !current.some(saved => saved.zone === item.zone))]); setUndo(null); }} printMode={printMode} setPrintMode={setPrintMode}/></section>
-      <section id="panel-evidence" role="tabpanel" aria-labelledby="tab-evidence" hidden={mode !== 'evidence'}><ViewTabs items={EVIDENCE_VIEWS.filter(([id]) => id !== 'forecast' || data.panel)} value={evidenceTab} onChange={setEvidenceTab} label="Evidence views" prefix="evidence"/>{!['counties', 'range'].includes(evidenceTab) && <div id={`evidence-${evidenceTab}`} role="tabpanel" aria-labelledby={`evidence-tab-${evidenceTab}`}><Evidence data={data} record={record} section={evidenceTab}/></div>}<div id="evidence-counties" role="tabpanel" aria-labelledby="evidence-tab-counties" hidden={evidenceTab !== 'counties'}><CountySummary zones={zones} record={record} counties={counties} county={summaryCounty} setCounty={setSummaryCounty}/>
-        <div className="concentration-strip"><div><span>Where does the burden land?</span><strong>{fmt(concentration[0][1] / record.weighted.mw_shed * 100)}% <small>of the {awarePlanLabel(record).toLowerCase()} reduction falls in {concentration[0][0]}.</small></strong></div><p>{record.cap ? `The ${fmt(data.config.optimizer.county_cap.max_share * 100)}% county cap is applied to both plans. It limits concentration by county; it does not resolve every fairness concern.` : `Try the county cap to limit each county to ${fmt(data.config.optimizer.county_cap.max_share * 100)}% of the MW cut in both plans.`}</p></div>
-        </div><div id="evidence-range" role="tabpanel" aria-labelledby="evidence-tab-range" hidden={evidenceTab !== 'range'}><div className="distribution-section"><div className="section-head"><div><h2>One result. {n} ways to compare it.</h2><p>Each neutral dot is a megawatts-only plan. The large marker shows the {awarePlanLabel(record).toLowerCase()} result. A lower value means fewer modeled consequences on that measure.</p></div></div><div className="legend"><span><i className="swatch dot baseline"/>Each megawatts-only plan</span><span><i className="swatch diamond"/>Typical plan</span><span><i className="swatch dot aware"/>{awarePlanLabel(record)}</span><span><i className="swatch cut"/>Total-home trade-off</span></div><div className="distribution-rows">{MEASURES.map(([key, title, unit]) => <div key={key} className={`distribution-row ${key === 'households' ? 'household-distribution' : ''}`}><div className="distribution-label"><h3>{title}</h3><span className="measure-unit">{unit}</span><strong>{key === 'h_econ' ? '$' : ''}{fmt(record.weighted[key])}</strong><p>{comparisonLabel(record.loadonly[key], n)}</p></div><StripChart metric={key} title={title} awareLabel={awarePlanLabel(record)} unit={unit} values={distribution.map(m => m[key])} baseline={record.baseline[key]} weighted={record.weighted[key]} summary={record.loadonly[key]}/></div>)}</div><p className="small-note">The plan set is reproducible, not a uniform sample of all possible plans. Lower modeled harm does not mean fewer total homes cut.</p><details className="details changed-zones"><summary>{record.zones_differ.length} zones differ between the displayed plans</summary><div className="detail-body two-columns">{[['Kept on instead', record.baseline.zone_ids.filter(id => !record.weighted.zone_ids.includes(id))], ['Cut instead', record.weighted.zone_ids.filter(id => !record.baseline.zone_ids.includes(id))]].map(([label, ids]) => <div key={label}><h3>{label}</h3><div className="zone-chips">{ids.map(id => <button key={id} className="button" onClick={() => { selectZone(id); setMode('explore'); }}>Zone {id}</button>)}</div></div>)}</div></details></div>
-        </div>      {data.content?.quotes?.length > 0 && <section className="community-section"><h2>What people in NC-08 said</h2>{data.content.quotes.map((quote, i) => <figure key={i}><blockquote>{quote.quote}</blockquote><figcaption>{quote.name} · {quote.role}</figcaption></figure>)}</section>}
-      {data.content?.story && <section className="author-story"><h2>Why I built this</h2>{data.content.story.split(/\n\s*\n/).map((text, i) => <p key={i}>{text}</p>)}</section>}
-</section>
+  const workspace = useWorkspace(data);
+  const views = workspaceProps(workspace);
+  return (
+    <div
+      className={`planning-app ${workspace.printMode ? 'printing' : ''}`}
+      data-mode={workspace.mode}
+    >
+      <a className="skip-link" href="#workspace">
+        Skip to workspace
+      </a>
+      <AppHeader {...views.AppHeader} />
+      <div className="workspace-nav">
+        <ViewTabs
+          items={MODES}
+          value={workspace.mode}
+          onChange={workspace.setMode}
+          label="Planning modes"
+          modeTabs
+        />
       </div>
-      <p className="workspace-disclaimer">Modeled planning scenario · not Duke Energy’s method · not an operational switching tool. Zones are census tracts, not utility boundaries. <button className="text-button" onClick={() => showEvidence('methods')}>Methods & sources ↗</button></p>
-      {mobile && <ZoneSheet open={sheetOpen} close={() => setSheetOpen(false)}><ZoneDetail {...detailProps} id="sheet-zone"/></ZoneSheet>}
-      <footer><Brand/><span>Public data. Explicit assumptions. Modeled consequences.</span><span>Reference {c.scenario.date} · Data {c.built_utc.slice(0, 10)}</span></footer>
-    </main></div>;
+      <main className="workspace-main">
+        <Hero {...views.Hero} />
+        <PeopleResults {...views.PeopleResults} />
+        <ScenarioControls {...views.ScenarioControls} />
+        {workspace.viewResult.note && (
+          <p className="notice" role="status">
+            {workspace.viewResult.note}
+          </p>
+        )}
+        {workspace.record.widened && (
+          <p className="notice">
+            Shared band widened to {workspace.record.delta_pct_used}% to find a feasible result.
+          </p>
+        )}
+        {workspace.storageError && (
+          <p className="notice" role="status">
+            {workspace.storageError}
+          </p>
+        )}
+        <div className="workspace-tools">
+          {workspace.mode === 'compare' && (
+            <ViewTabs
+              items={COMPARE_VIEWS}
+              value={workspace.compareTab}
+              onChange={workspace.setCompareTab}
+              label="Comparison views"
+              prefix="compare"
+            />
+          )}
+          {(workspace.mode === 'explore' ||
+            (workspace.mode === 'compare' &&
+              ['plans', 'changes'].includes(workspace.compareTab))) && (
+            <MapFilters {...views.MapFilters} />
+          )}
+        </div>
+        <div id="workspace" className="workspace-body">
+          <ExploreView {...views.ExploreView} />
+          <ComparePlans {...views.ComparePlans} />
+          <section
+            id="panel-prepare"
+            role="tabpanel"
+            aria-labelledby="tab-prepare"
+            hidden={workspace.mode !== 'prepare'}
+          >
+            <Preparation {...views.Preparation} />
+          </section>
+          <EvidenceView {...views.EvidenceView} />
+        </div>
+
+        {workspace.mobile && (
+          <ZoneSheet open={workspace.sheetOpen} close={() => workspace.setSheetOpen(false)}>
+            <ZoneDetail {...workspace.detailProps} id="sheet-zone" />
+          </ZoneSheet>
+        )}
+        <Footer {...views.Footer} />
+      </main>
+    </div>
+  );
 }

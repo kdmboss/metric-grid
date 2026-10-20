@@ -1,5 +1,5 @@
 {
-  "name": "metric-grid",
+  "name": "hearth",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,9 @@
     "dev": "npm run data:export && vite --host 127.0.0.1",
     "build": "npm run data:export && vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "test": "npm run data:export && node --test web/*.test.js"
+    "test": "npm run data:export && node --test web/*.test.js",
+    "lint": "eslint web --max-warnings 0 && node scripts/check-ui-source.mjs",
+    "format": "prettier --write \"web/**/*.{js,jsx,css}\" tokens.css"
   },
   "dependencies": {
     "react": "^19.2.0",
@@ -19,6 +21,11 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.4",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
     "vite": "^7.1.12",
     "yaml": "^2.8.1"
   }

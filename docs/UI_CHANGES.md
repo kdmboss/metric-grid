@@ -1,5 +1,11 @@
 # UI changes · 2026-10-19
 
+## Current review · UI pass 2
+
+See [UI_PASS2_REVIEW.md](UI_PASS2_REVIEW.md) for the complete copy inventory, screenshots, code structure and checks. Maps now fill the content row, the selected zone is clear on both maps, repeated caveats live in Methods, and arrows and hyphens align. This pass is local only.
+
+The warm-light section below records the prior pass.
+
 ## Current review · warm light cleanup
 
 This section describes the current owner-requested cleanup. Sections below it record earlier iterations and their historical screenshots/validation.

@@ -1,8 +1,12 @@
 # HEARTH UI brief
 
+Current UI pass 2 details and copy review: [UI_PASS2_REVIEW.md](UI_PASS2_REVIEW.md).
+Paired desktop maps fill the content row; selected-zone details sit beneath them. The app uses
+`web/app.css`, variable-only `tokens.css`, and dedicated components/hooks.
+
 ## Product name and purpose
 
-**HEARTH** — outage planning that remembers who's home.
+**HEARTH** — Outage planning that remembers who's home.
 
 HEARTH helps emergency planners and community stakeholders compare how load-only and vulnerability-aware outage scenarios could distribute risk across North Carolina's 8th District.
 
@@ -11,7 +15,7 @@ HEARTH helps emergency planners and community stakeholders compare how load-only
 - Use HEARTH in all visible application branding, browser metadata, print output, downloads and the retained legacy interface.
 - Use the HEARTH wordmark alone in the header and footer. The favicon and home-screen icon use an original geometric H. All assets are local.
 - Keep the app tagline out of the compact header; show only the wordmark and NC-08 pill.
-- Keep the repository name, package name, Vercel hostname, folder names and Python identifiers stable.
+- Keep the repository name, Vercel hostname, folder names and Python identifiers stable; the npm package is `hearth` as requested in UI pass 2.
 
 ## Product experience
 

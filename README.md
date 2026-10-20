@@ -40,6 +40,8 @@ Requires Node.js 22.12+ (Node 24 also works).
 npm ci
 npm run dev       # http://127.0.0.1:5173
 npm test          # parity checks against every original precomputed scenario
+npm run lint     # React/hooks lint and stale-style checks
+npm run format   # Prettier, 100-column target
 npm run build    # production output in dist/
 npm run preview  # serve the production build locally
 ```
@@ -59,7 +61,7 @@ npx vercel          # preview deployment; authenticate when prompted
 npx vercel --prod   # production deployment
 ```
 
-`npm test` checks all 40 precomputed scenarios, comparison distributions, target bands, county caps, protected zones, example buildings, and deep links. For browser acceptance checks, install Playwright in your development environment and run `node scripts/cleanup-smoke.cjs`. `PLAYWRIGHT_MODULE` can select a bundled Playwright module; `BROWSER_EXECUTABLE` can select another Chromium executable (default: Chrome). `SMOKE_URL` selects a deployed or production-preview URL. Screenshots and downloads are saved to ignored `artifacts/`.
+`npm test` checks all 40 precomputed scenarios, comparison distributions, target bands, county caps, protected zones, example buildings, and deep links. For browser acceptance checks, install Playwright in your development environment and run `SMOKE_URL=http://127.0.0.1:5173 node scripts/ui-pass2-smoke.cjs`. `PLAYWRIGHT_MODULE` can select a bundled Playwright module; Chromium uses the installed Google Chrome; WebKit uses Playwright’s downloaded build. `SMOKE_URL` selects a deployed or production-preview URL. UI pass 2 screenshots are saved to `docs/figures/ui-pass2/`. Install Playwright WebKit for the Safari-engine checks; `PLAYWRIGHT_BROWSERS_PATH` can select a local browser cache.
 
 ![HEARTH comparison interface](docs/figures/ui_first_screen_1440.png)
 

@@ -1,6 +1,13 @@
 [
   {
     "date": "2026-10-19",
+    "macrostructure": "Map / Diagram",
+    "theme": "owner-specified warm light",
+    "enrichment": "none",
+    "brief": "UI pass 2: full-width maps, clear shared selection, consolidated copy, aligned arrows, readable components, Safari sheet verification."
+  },
+  {
+    "date": "2026-10-19",
     "scope": "app",
     "macrostructure": "Map / Diagram",
     "theme": "owner-specified warm light",

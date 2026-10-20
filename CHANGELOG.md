@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-19 · UI pass 2 (OpenAI Codex)
+
+- Enlarged paired maps, centered their fit, and moved zone details below them. Added stronger shared selection, centroid chips, blank-space/Escape clearing, pointer-centered wheel zoom and two-finger pinch.
+- Removed repeated caveats and generic marketing cards; retained one footer line and a full Methods explanation. Shortened useful zone notes without inventing protected facility types.
+- Fixed Inter hyphen spacing by limiting tabular numerals to numbers; aligned SVG arrows and disclosure/select controls.
+- Split the workspace into components/hooks, grouped map state in a reducer, merged CSS, and added Prettier/ESLint/source checks. Renamed the npm package to hearth.
+- Added priority/concentration/zoom regressions and Chrome/WebKit screenshot checks. Model data and calculations are unchanged; no push or deployment in this pass.
+
 ## 2026-10-19 · Warm light visual cleanup (OpenAI Codex)
 
 - Applied the owner’s warm paper/ember palette, self-hosted Inter only, 400/600 weights, shared tokens, 8 px spacing, three KPI cards, and a compact wordmark-only header.

@@ -1,5 +1,92 @@
 # AI disclosure
 
+## UI pass 2 (2026-10-19)
+
+OpenAI Codex implemented the owner’s UI brief and arrow-alignment request. It refactored React
+components and hooks, consolidated styles, adjusted map presentation/gestures, shortened copy,
+added formatting/lint tools and new regressions, and generated Chrome/WebKit review screenshots.
+Existing model calculations, frozen files and test expectations were preserved; the locked
+JavaScript modules and existing tests received formatting only. The previous three stylesheets
+were removed after consolidation into `web/app.css`. No push or deployment was performed in this
+pass. Owner-review fields remain for the owners to complete.
+
+| File | Status | What I changed |
+|---|---|---|
+| `docs/UI_BRIEF.md` | AI-assisted (OpenAI Codex); current UI structure, package name and audit-safe tagline capitalization | TODO (author) |
+| `scripts/ui-style-inventory.mjs` | AI-assisted (OpenAI Codex); class/tag inventory for UI pass 2 | TODO (author) |
+| `web/components/LineChart.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `.hallmark/log.json` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `.prettierrc.json` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `CHANGELOG.md` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `README.md` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `docs/UI_CHANGES.md` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `docs/UI_PASS2_REVIEW.md` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `docs/VIDEO_SHOTLIST.md` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `eslint.config.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `package-lock.json` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `package.json` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `scripts/check-ui-source.mjs` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `scripts/ui-pass2-smoke.cjs` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `tokens.css` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/ComparisonPanels.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/CountyData.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/Evidence.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/MapCanvas.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/ResidentLayer.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/Workspace.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/app.css` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/comparison.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/AppHeader.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/Arrow.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/ComparePlans.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/EvidencePrimitives.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/EvidenceRange.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/EvidenceView.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/ExploreView.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/Footer.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/Forecast.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/Help.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/Hero.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/MapControls.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/MapFilters.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/MapLegend.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/MapTooltip.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/MapTracts.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/PeopleResults.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/Preparation.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/PrintSheet.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/PriorityTable.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/Robustness.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/ScenarioControls.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/ShortlistItem.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/ViewTabs.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/ZoneDetail.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/components/ZoneSheet.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/content.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/countyData.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/hooks/scenarioSelectors.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/hooks/useCountyLabels.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/hooks/useMapGestures.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/hooks/useMapHint.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/hooks/useMapUI.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/hooks/useMobileSheet.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/hooks/useNavigation.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/hooks/useScenario.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/hooks/useShortlist.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/hooks/useWorkspace.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/hooks/workspaceProps.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/main.jsx` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/mapGeometry.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/model.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/model.test.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/planning.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/presentation.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/presentation.test.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+| `web/scenario.test.js` | AI-assisted (OpenAI Codex); UI pass 2 | TODO (author) |
+
+`docs/figures/ui-pass2/*.png` are generated browser captures; `docs/UI_PASS2_CHECKS.txt` records command output.
+
+
 ## Warm light visual cleanup (2026-10-19)
 
 OpenAI Codex applied the owner-supplied cleanup brief to the existing React components and CSS. Codex added shared theme tokens, a compact hero/three-card comparison, disclosures, updated tab placement, a mobile plan toggle, a native zone detail dialog, dynamic objective labels, and local home-screen assets. Codex retained all model and frozen data files and left existing test files intact during this pass; the new presentation test covers objective labels, outcome directions and navigation migration. The new browser script captures the requested desktop and phone states. Existing author-review fields are still for the owners to complete.

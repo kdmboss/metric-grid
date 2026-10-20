@@ -1,0 +1,95 @@
+HEARTH UI pass 2 — final command output
+
+$ npm test
+
+> hearth@1.0.0 test
+> npm run data:export && node --test web/*.test.js
+
+
+> hearth@1.0.0 data:export
+> node scripts/export-web-data.mjs
+
+Exported 183 zones and 40 scenarios for the web app.
+✔ county CSV preserves quoted content, matches counties and leaves model inputs untouched (8.354791ms)
+✔ county CSV rejects unknown tracts, ambiguous rows, invalid capacity and invalid dates (2.23975ms)
+✔ county import enforces size and row limits before accepting a resource list (6.51425ms)
+✔ retired visible brand names are absent from browser source and built assets (13.775209ms)
+✔ every precomputed scenario preserves original plan metrics, MW bands, and facility exclusions (9.483792ms)
+✔ every control combination selects the corresponding original record (2.75275ms)
+✔ all comparison distributions reproduce stored extrema and plan counts (191.3545ms)
+✔ default headline matches the original Elliott result (0.326334ms)
+✔ malformed deep links fall back safely and legacy deep links still work (0.521084ms)
+✔ missing or infeasible settings visibly disclose the nearest result and retain the cap when possible (89.860167ms)
+✔ example building locations match original tract assignments (7.570291ms)
+✔ map geometry is finite and zero-household missing SVI stays visibly missing (18.526292ms)
+✔ content export hides empty/unapproved/unattributed quotes and retains author text without interpreting HTML (0.364959ms)
+✔ saved plans discard malformed and duplicate entries without changing valid notes (0.305209ms)
+✔ CSV exports provenance, the current scenario, truthful evidence, and safely escaped notes (1.065209ms)
+✔ plain-language priorities disclose both objective extremes (0.164542ms)
+✔ web interface copy preserves the required sentence and excludes prohibited claims or typed headline outcomes (134.73075ms)
+✔ difference categories partition every zone and match both plans across all supported scenarios (5.579125ms)
+✔ county totals reproduce plan totals and heating shares use the summed ACS denominator (28.63775ms)
+✔ swap explanation reverses or becomes neutral when improvement is unsupported (1.10625ms)
+✔ local county labels have unique finite anchors within the map (83.750375ms)
+✔ benefit copy only claims lower cold exposure when both measures support it (0.297584ms)
+✔ responsive map frames contain every original tract point without cropping (218.410584ms)
+✔ objective labels and outcome directions remain honest across every supported priority (36.580375ms)
+✔ county and range deep links migrate to Evidence while explicit Explore links stay put (1.104958ms)
+✔ priority ranking excludes protected zones and resolves frequency ties by SVI then zone ID (1.603625ms)
+✔ concentration accounts for every displayed MW and keeps the highest county first (20.68575ms)
+✔ cursor zoom holds the pointed map coordinate fixed and viewport padding stays symmetric (0.681625ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 960.598875
+
+$ npm run lint
+
+> hearth@1.0.0 lint
+> eslint web --max-warnings 0 && node scripts/check-ui-source.mjs
+
+UI source checks passed: one stylesheet, no !important, no stale class or tag selectors.
+
+$ npm run build
+
+> hearth@1.0.0 build
+> npm run data:export && vite build
+
+
+> hearth@1.0.0 data:export
+> node scripts/export-web-data.mjs
+
+Exported 183 zones and 40 scenarios for the web app.
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 78 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   1.22 kB │ gzip:  0.62 kB
+dist/assets/index-Co4GtOKr.css   91.22 kB │ gzip: 15.37 kB
+dist/assets/index-DpuM4Wop.js   314.35 kB │ gzip: 98.09 kB
+✓ built in 956ms
+
+$ Chrome + WebKit screenshot checks
+Chromium: maps, arrows, shared selection, zoom, all modes and widths passed.
+WebKit iPhone: actual tract tap, bottom sheet, pinch, plan toggle and widths passed.
+No browser errors or external runtime requests.
+
+Locked-module parity: all 40 scenario results, county summaries, fallback copy and exports match HEAD.
+
+Frozen data and Python model diff: empty.
+Git diff whitespace check: passed.
+
+$ .venv/bin/python -m pytest tests/test_audit.py -q
+.....................                                                    [100%]
+=============================== warnings summary ===============================
+tests/test_audit.py::test_readme_default_scenario_table_matches_the_model
+  /Users/karthikmalireddy/Documents/ChatGPT/Metric/src/metric_grid/model/harm.py:65: MissingDataWarning: Zone 9 has no SVI data but 0 occupied households, so its H_human is 0 by definition (not a zero-fill); it is included in normalization as 0 and shown grey on the maps.
+    warnings.warn(f"Zone {ids} has no SVI data but 0 occupied households, so its H_human is 0 by definition (not a zero-fill); "
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+21 passed, 1 warning in 3.23s
