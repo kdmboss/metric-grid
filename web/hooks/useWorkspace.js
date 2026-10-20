@@ -81,7 +81,12 @@ export function useWorkspace(data) {
     sheet.setSheetOpen(false);
     map.setCounty('');
     const paths = scenario.paths.zones.filter((z) => place.zone_ids.includes(z.zone_id));
-    animateView(fitPaths(paths));
+    const fitted = fitPaths(paths);
+    animateView({
+      scale: fitted.scale / 1.25,
+      x: 320 - (320 - fitted.x) / 1.25,
+      y: 195 - (195 - fitted.y) / 1.25,
+    });
   }
   function clearPlace() {
     setSelectedPlace(null);

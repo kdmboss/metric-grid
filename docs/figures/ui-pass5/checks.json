@@ -1,0 +1,9 @@
+{
+  "checks": [
+    "Choice persists without welcome; query overrides storage; Switch view reopens the choice card.",
+    "Blocked storage keeps both choices usable and shows welcome on the next unqualified visit. Cooling is absent normally; injected test fixture is explicitly labeled.",
+    "Existing deployed Vercel release cold-loaded in a fresh private context with no console errors; app.json returned 200. This local pass is not deployed.",
+    "Resident phone app has no planner tabs/sliders, ignores planner alpha/target query settings, and switches to the full planner."
+  ],
+  "errors": []
+}

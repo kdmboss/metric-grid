@@ -50,7 +50,7 @@ export function Robustness({ section, solved, sens, data }) {
         </article>
         <article className="panel">
           <h3>The priority trade-off</h3>
-          <p className="fine">Elliott target · county cap off · change vs. typical plan</p>
+          <p className="fine">Elliott cut · compared with the typical MW-only plan</p>
           <div className="legend">
             <span>
               <i className="swatch dot aware" />

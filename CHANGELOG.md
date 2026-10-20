@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-10-20 · Pass 5, feature freeze (OpenAI Codex)
+
+- Added local resident/planner entry choice, query overrides, menu switching and a fixed Elliott/Balanced resident town page with one map and readiness tips.
+- Added an independent serial-log cooling fitter and optional card; no real measurements shipped. Demo output is marked and blocked from runtime export. Corrected WHO attribution to 18°C/64.4°F while retaining the requested 64°F test line.
+- Fixed town combobox/map accessibility and mount only active planner screens/maps to reduce startup work. Existing numerical computations, datasets and test expectations retained.
+- Added entry/cooling/browser checks, production-build Lighthouse reports, pass-4 screenshot rechecks and a private-window check of the existing live release. No deployment. Feature freeze after this pass.
+
+
+## 2026-10-20 · UI pass 4 (OpenAI Codex)
+
+- Fixed shared status pill geometry, removed nested area-panel framing, and keep both maps and all results visible beside the 360px panel.
+- Restored full-width desktop controls and Explore town search; aligned KPI rows and preserved the household trade-off tint.
+- Added context around town fits, map town labels and an in-field clear button.
+- Fixed regular Safari tab stacking and short copy, added reachable app-mode Changes, tint-only bottom selection and touch hints.
+- Added task-oriented guidance, an actual visible-path WebKit touch check, pill clipping assertions, aligned-KPI assertions and seven review screenshots. No model/data changes or deployment.
+
+
 ## 2026-10-20 · App hierarchy refinement (OpenAI Codex)
 
 - Moved desktop scenario/place controls into a side panel so the comparison maps and outcomes share the first screen.

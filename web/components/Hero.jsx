@@ -19,7 +19,7 @@ export function Hero({ c, startTime, data, mode }) {
       <p>
         {mode === 'explore'
           ? 'Search a place or select a tract to inspect its community profile and add it to your shortlist.'
-          : 'Adjust the scenario. Compare who is affected. Select an area to understand the trade-off.'}
+          : 'Compare the trade-offs, then select an area to build your preparation shortlist.'}
       </p>
     </div>
   );

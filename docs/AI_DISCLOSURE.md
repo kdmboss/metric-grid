@@ -361,3 +361,86 @@ OpenAI Codex updated `web/app.css`, `CHANGELOG.md` and this disclosure for the o
 OpenAI Codex implemented the phone map-first refinement in `web/components/ScenarioRail.jsx` (new), `web/Workspace.jsx`, `web/components/StandaloneHeader.jsx`, `web/app.css`, `CHANGELOG.md` and this disclosure. Inspiration was Apple's public Maps place-card interaction and Weather's at-a-glance hierarchy; no Apple assets or logos were copied. Generated screenshots: `docs/figures/ios-map-first/*.png`. Existing model/data and results unchanged. Physical iOS installation unverified. Owner changes: TODO (author).
 
 OpenAI Codex refined `web/components/PeopleResults.jsx`, `web/components/Preparation.jsx`, `web/app.css`, `CHANGELOG.md` and this disclosure for clean iPhone styling. New `docs/figures/ios-clean/*.png` are generated WebKit standalone-emulation screenshots. Responsive labels are shorter while full labels/definitions remain in desktop and Methods; all three current outcomes and the household trade-off remain visible. No model or data changes. Owner changes: TODO (author).
+
+
+## UI pass 4 (2026-10-20)
+
+OpenAI Codex implemented the owner-supplied final-polish brief and the subsequent request to make the interface more user-oriented. No model/data/numeric calculations or existing test expectations changed. The interface keeps current result directions and the household trade-off, and guides users toward a preparation shortlist. No personal claims or user impact were invented. Browser checks include actual visible-path touchscreen selection and pill clipping. Phone app mode is emulated in WebKit; physical installation remains unverified. No commit/push/deployment in this pass.
+
+| File | Status | What I changed |
+|---|---|---|
+| `CHANGELOG.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/UI_PASS4_REVIEW.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/VIDEO_SHOTLIST.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `scripts/ui-pass4-smoke.cjs` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `tokens.css` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/MapCanvas.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/Workspace.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/app.css` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/AppHeader.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ComparePlans.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ExploreView.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/Hero.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/MapFilters.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/PeopleResults.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/PriorityTable.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/Robustness.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/TownLookup.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ZoneDetail.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/hooks/useWorkspace.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/hooks/workspaceProps.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+
+This disclosure was updated by Codex. `docs/figures/ui-pass4/*.png`, `checks.json`, and validation outputs are generated review artifacts. Owner fields remain for the owners.
+
+
+## Pass 5 — resident/planner entry, optional independent cooling test, feature freeze (2026-10-20)
+
+OpenAI Codex implemented the owner-supplied brief. Residents use the existing fixed Elliott/Balanced/cap-off record and status results; planner calculations and datasets are unchanged. The separate serial-log utility and optional card use no real measurement in this release. Demo output is explicitly marked, blocked from runtime directories, and rejected by the data exporter. The cooling fixture screenshot injects data only into a private test page. Codex verified the official preparedness URLs and WHO source, correcting 18°C to 64.4°F while keeping 64°F as a test reference. Planner startup was improved by mounting only active screens/maps and reusing display bounds; map accessibility and combobox semantics were corrected. No owner experiences or community quotes were invented. Features are frozen; no push/deployment in this pass.
+
+| File | Status | What I changed |
+|---|---|---|
+| `CHANGELOG.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `README.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/ASSUMPTIONS.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/DATA_SOURCES.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/PROJECT_CONTEXT.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/SPEC.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/UI_BRIEF.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/UI_PASS4_REVIEW.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/UI_PASS5_REVIEW.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/VIDEO_SHOTLIST.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `scripts/cooling_from_log.py` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `scripts/export-web-data.mjs` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `scripts/ui-pass4-smoke.cjs` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `scripts/ui-pass5-smoke.cjs` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `tests/test_cooling_log.py` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `tokens.css` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/App.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/MapCanvas.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/ResidentView.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/Workspace.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/app.css` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/AppHeader.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ComparePlans.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/CoolingCard.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ExploreView.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/Hero.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/MapFilters.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/MapTracts.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/PeopleResults.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/PriorityTable.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/Robustness.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/StandaloneHeader.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/TownLookup.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ViewTabs.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/Welcome.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ZoneDetail.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/entry.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/entry.test.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/hooks/useWorkspace.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/hooks/workspaceProps.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/main.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/mapGeometry.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/resident.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+
+Codex updated this disclosure. Generated review artifacts under `docs/figures/ui-pass5/` include screenshots, Lighthouse HTML/JSON reports, source-audit/check summaries and command outputs. Pass-4 rechecks are in its `pass4/` subdirectory. Owner-review fields remain the owners’ responsibility.

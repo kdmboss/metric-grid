@@ -99,3 +99,13 @@ For a clean recording, open Compare with `?present=1` or press P outside a text 
 ### App hierarchy refinement
 
 On desktop, scenario controls and town search now sit in the left panel. Show a priority change there while the result strip and paired maps remain visible beside it. Prepare and Evidence open directly into their own tools without repeating the comparison controls. The smaller introduction preserves the purpose; the amber household trade-off remains beside the other outcomes.
+
+
+## UI pass 4 recording update
+
+Desktop scenario controls are again a full-width card above the results; town search sits at the right. Opening Area details shrinks the content beside a 360px panel, keeping both maps and the household trade-off visible. Show Albemarle's contextual zoom and map label, then the in-field clear button. In phone installed-app mode, Changes is the third plan selector option; selecting a tract opens peek. Keep the story tied to the user task: compare choices, select an area, save it for preparation. The feature supports planning discussion; it does not allocate real resources or predict a home's outage.
+
+
+## Pass 5 entry and optional cooling footage
+
+Open `?view=planner` for the main comparison recording so the welcome does not interrupt. A brief resident segment can show `?view=resident`, search Albemarle and read the aggregate areas-cut comparison plus the household disclaimer. The resident example stays Elliott/Balanced. No measurements have been supplied, so leave cooling footage out of the submission. If a real test is later supplied, describe it as “heat off, power on, one room, one home,” unrelated to the planning model. Do not use test-fixture screenshots as measurements or claim the device works through an outage. Features are frozen after this pass.

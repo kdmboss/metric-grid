@@ -32,9 +32,8 @@ export function pathBounds(paths) {
   };
 }
 /** Preserve sixteen screen pixels around the projected district at any panel size. */
-export function viewportFrame(paths, width, height) {
-  const bounds = pathBounds(paths),
-    ratio = width / height;
+export function viewportFrame(paths, width, height, bounds = pathBounds(paths)) {
+  const ratio = width / height;
   const span = Math.max(
     bounds.width / (1 - 32 / Math.max(64, width)),
     (bounds.height / (1 - 32 / Math.max(64, height))) * ratio,

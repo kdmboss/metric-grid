@@ -21,9 +21,6 @@ export function ZoneDetail({
       : fmt(r.alpha * zone.humanNorm + (1 - r.alpha) * zone.econNorm, 3);
   return (
     <aside className="selection-panel" key={zone?.zone_id || 0} data-selected={Boolean(zone)}>
-      <div className="selection-heading">
-        <span>Selected area</span>
-      </div>
       <label className="sr-only" htmlFor={id}>
         Select census tract zone
       </label>

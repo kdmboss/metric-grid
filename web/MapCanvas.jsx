@@ -47,6 +47,7 @@ export function MapCanvas({
   planLabel,
   active = true,
   selectionIds = [],
+  selectionLabel = '',
   present = false,
 }) {
   const canvas = useRef(null),
@@ -69,9 +70,10 @@ export function MapCanvas({
     if (event.type === 'pointerup') setHover(null);
   }
 
+  const districtBounds = useMemo(() => pathBounds(paths.zones), [paths]);
   const frame = useMemo(() => {
-    const fitted = viewportFrame(paths.zones, size.width, size.height);
-    const bounds = pathBounds(paths.zones);
+    const bounds = districtBounds;
+    const fitted = viewportFrame(paths.zones, size.width, size.height, bounds);
     const span = Math.max(fitted.width, bounds.width / 0.85);
     const height = (span * size.height) / size.width;
     return {
@@ -80,7 +82,7 @@ export function MapCanvas({
       width: span,
       height,
     };
-  }, [paths, size]);
+  }, [paths, size, districtBounds]);
   const pixelWidth = size.width;
   function interact() {
     setHover(null);
@@ -105,6 +107,8 @@ export function MapCanvas({
   const selectedPath = paths.zones.find((z) => z.zone_id === selected);
   const selectionSet = new Set(selected ? [selected] : selectionIds);
   const selectedPaths = paths.zones.filter((z) => selectionSet.has(z.zone_id));
+  const townBounds = pathBounds(selectedPaths);
+  const touch = matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0;
   const changedCut = changes
     ? Object.entries(changes.byId)
         .filter(([, zone]) => ['only-baseline', 'only-aware', 'both'].includes(zone.category))
@@ -188,6 +192,26 @@ export function MapCanvas({
             </g>
           ))}
         </g>
+        {selectionLabel && selectedPaths.length > 0 && (
+          <g
+            className="town-map-label"
+            aria-hidden="true"
+            transform={`translate(${
+              view.x + (townBounds.x + townBounds.width / 2) * view.scale
+            } ${view.y + townBounds.y * view.scale}) scale(${frame.width / pixelWidth})`}
+          >
+            <rect
+              x={-selectionLabel.length * 3.8 - 10}
+              y="-30"
+              width={selectionLabel.length * 7.6 + 20}
+              height="24"
+              rx="8"
+            />
+            <text y="-14" textAnchor="middle">
+              {selectionLabel}
+            </text>
+          </g>
+        )}
         {selectedPath && (
           <g
             className="zone-pin"
@@ -233,7 +257,7 @@ export function MapCanvas({
       )}
       {id !== 'aware' && (
         <span className="map-gesture-hint" data-dismissed={!hint} aria-hidden={!hint}>
-          Drag to move · scroll or +/− to zoom
+          {touch ? 'Pinch to zoom · drag to move' : 'Drag to move · scroll or +/− to zoom'}
         </span>
       )}
     </div>

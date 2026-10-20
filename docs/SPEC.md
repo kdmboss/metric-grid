@@ -19,6 +19,7 @@ The brief below is kept as written. These are the places where the build differs
 | 2026-10-19 | Added a winter demand model and the panel "Why forecasts aren't enough" (not in the brief); the empty `nodes/` stubs were deleted | Shows that a validated temperature model still missed the Elliott morning by 12.6%; the stubs were unused |
 | 2026-10-19 | Renamed METRIC-Grid → HEARTH | Updated visible app branding while retaining repository, package and Python module identifiers |
 | 2026-10-19 | Added a resident information layer: Census-place-to-tract lookup and winter preparedness tips | Provides aggregate scenario context without making household predictions or changing the model |
+| 2026-10-20 | Added resident/planner entry and an optional real one-room cooling-test card; feature freeze after pass 5 | Resident example stays Elliott/Balanced; independent heat-off/power-on measurement never enters the model; no real measurements shipped |
 
 ---
 

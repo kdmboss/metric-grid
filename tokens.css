@@ -2,6 +2,7 @@
  * Pre-emit critique: P4 H4 E4 S5 R5 V4. Owner-directed cleanup; existing app structure retained.
  */
 :root {
+  --color-kept: #efe9e1;
   --color-paper: #f6f3ee;
   --color-sidebar: #ffffff;
   --color-panel: #ffffff;

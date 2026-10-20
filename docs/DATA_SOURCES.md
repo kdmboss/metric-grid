@@ -30,3 +30,11 @@ The approximate customer count in the introduction comes from [Duke Energy’s D
 ## Census place lookup (UI pass 3, 2026-10-20)
 
 Official source: [Census TIGER/Line 2024 North Carolina places ZIP](https://www2.census.gov/geo/tiger/TIGER2024/PLACE/tl_2024_37_place.zip). `make places` runs `scripts/build_places.py`, reusing `load_tiger_places` and `place_zone_lookup`. The existing frozen district and tract geometry constrain the spatial intersections. The generated `data/frozen/places.json` contains 79 named places and valid zone IDs; Albemarle, Rockingham, Laurinburg and Lumberton were verified. Runtime search is local and makes no geocoding requests. This build changes only the lookup, not demand, harm values, or precomputed plans.
+
+## Optional one-room cooling measurement (pass 5)
+
+Owner-supplied serial readings, when supplied, are the sole source for `node_cooling.json`; none are shipped now. The utility selects the stated heat-off window, fits temperature against elapsed hours by least squares, and stores the observations, first observed temperature, cooling slope, R² and extrapolated hours to 64°F from that first reading. A nonpositive cooling slope yields no crossing estimate; a room already at/below the reference yields zero. This independent demonstration never enters optimization inputs or results. No claim is made that the plugged-in device works during an outage.
+
+[WHO Housing and Health Guidelines](https://www.who.int/publications/i/item/9789241550376), section 4.1, proposes 18°C (64.4°F) for general populations in cold seasons; higher temperatures may be needed for vulnerable groups. The requested 64°F test line is separately labeled, not attributed as an exact WHO threshold. Source checked October 20, 2026.
+
+Preparedness URLs `https://www.readync.gov/winter-weather` and `https://www.ready.gov/winter-weather` both returned HTTP 200 on October 20, 2026. They are navigation links, not runtime data requests.

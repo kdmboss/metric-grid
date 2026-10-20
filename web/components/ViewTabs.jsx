@@ -28,7 +28,7 @@ export function ViewTabs({ items, value, onChange, label, prefix, modeTabs = fal
           key={id}
           role="tab"
           id={tabId(id)}
-          aria-controls={panelId(id)}
+          aria-controls={value === id ? panelId(id) : undefined}
           aria-selected={value === id}
           tabIndex={value === id ? 0 : -1}
           data-tab={id}

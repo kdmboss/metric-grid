@@ -1,3 +1,4 @@
+import { residentCounts } from '../resident.js';
 import React, { useState } from 'react';
 import { Status } from './EvidencePrimitives.jsx';
 import { status, fmt } from '../model.js';
@@ -10,9 +11,10 @@ export function townSummary(place, record) {
     `${count(record.weighted)} cut in ${awarePlanLabel(record).toLowerCase()} plan`
   );
 }
-export function TownLookup({ places, zones, record, selected, onPick, onClear }) {
+export function TownLookup({ places, zones, record, selected, onPick, onClear, resident = false }) {
   const [query, setQuery] = useState(''),
     [searching, setSearching] = useState(false);
+  const counts = selected ? residentCounts(selected, zones, record) : null;
   const matches =
     query.trim().length > 1
       ? places.filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase())).slice(0, 10)
@@ -35,21 +37,36 @@ export function TownLookup({ places, zones, record, selected, onPick, onClear })
   return (
     <section className="town-lookup" aria-label="Check your area" data-area-lookup-card>
       <div className="town-search-row">
-        <label htmlFor="place-search">Find your area</label>
+        <label htmlFor="place-search">{resident ? 'Check my area' : 'Find your area'}</label>
         <div className="resident-search">
           <input
             id="place-search"
             type="search"
-            placeholder="Town or place…"
+            role="combobox"
+            aria-autocomplete="list"
+            placeholder={resident ? 'Type your town…' : 'Town or place…'}
             autoComplete="off"
             value={query}
             onChange={change}
             onFocus={() => setSearching(true)}
             onKeyDown={keyboard}
             disabled={!places.length}
-            aria-controls="place-results"
+            aria-controls={searching && matches.length > 0 ? 'place-results' : undefined}
             aria-expanded={searching && matches.length > 0}
           />
+          {selected && (
+            <button
+              className="clear-town"
+              aria-label="Clear town"
+              onClick={() => {
+                setQuery('');
+                setSearching(false);
+                onClear();
+              }}
+            >
+              ×
+            </button>
+          )}
           {searching && matches.length > 0 && (
             <div
               id="place-results"
@@ -70,50 +87,69 @@ export function TownLookup({ places, zones, record, selected, onPick, onClear })
             </div>
           )}
         </div>
-        {selected && (
-          <button className="text-button" onClick={onClear}>
-            Clear town
-          </button>
-        )}
       </div>
       {!places.length && <p role="status">Place search could not load; try Explore.</p>}
       {selected && (
         <>
-          <p className="town-summary" aria-live="polite">
-            {townSummary(selected, record)}
-          </p>
-          <details className="town-zone-details">
-            <summary>View area details</summary>
-            <div className="resident-zone-list">
-              {selected.zone_ids.map((id) => {
-                const zone = zones.find((z) => z.zone_id === id);
-                return (
-                  <article key={id}>
-                    <div>
-                      <strong>Zone {id}</strong>
-                      <span>{zone.COUNTY}</span>
-                    </div>
-                    <div>
-                      <span>MW-only</span>
-                      <Status value={status(zone, record.baseline)} />
-                    </div>
-                    <div>
-                      <span>{awarePlanLabel(record)}</span>
-                      <Status value={status(zone, record.weighted)} />
-                    </div>
-                    <div>
-                      <span>Households</span>
-                      <strong>{fmt(zone.occupied_units)}</strong>
-                    </div>
-                    <div>
-                      <span>Electric heat</span>
-                      <strong>{fmt(zone.share_electric_heat * 100)}%</strong>
-                    </div>
-                  </article>
-                );
-              })}
+          {resident && (
+            <div className="resident-result-card" aria-live="polite">
+              <h2>
+                {selected.name} · {counts.total} areas
+              </h2>
+              <p>
+                In the MW-only plan: <strong>{counts.baseline} areas lose power</strong>
+              </p>
+              <p>
+                In the people-first plan: <strong>{counts.aware} areas lose power</strong>
+              </p>
+              <p className="fine">
+                Across the district, total homes cut: {fmt(record.weighted.households)} people-first
+                vs {fmt(record.baseline.households)} MW-only.
+              </p>
+              <p className="fine">
+                Modeled comparison, not a forecast. “People-first” weighs vulnerability and cost.
+              </p>
             </div>
-          </details>
+          )}
+          {!resident && (
+            <p className="town-summary" aria-live="polite">
+              {townSummary(selected, record)}
+            </p>
+          )}
+          {!resident && (
+            <details className="town-zone-details">
+              <summary>View area details</summary>
+              <div className="resident-zone-list">
+                {selected.zone_ids.map((id) => {
+                  const zone = zones.find((z) => z.zone_id === id);
+                  return (
+                    <article key={id}>
+                      <div>
+                        <strong>Zone {id}</strong>
+                        <span>{zone.COUNTY}</span>
+                      </div>
+                      <div>
+                        <span>MW-only</span>
+                        <Status value={status(zone, record.baseline)} />
+                      </div>
+                      <div>
+                        <span>{awarePlanLabel(record)}</span>
+                        <Status value={status(zone, record.weighted)} />
+                      </div>
+                      <div>
+                        <span>Households</span>
+                        <strong>{fmt(zone.occupied_units)}</strong>
+                      </div>
+                      <div>
+                        <span>Electric heat</span>
+                        <strong>{fmt(zone.share_electric_heat * 100)}%</strong>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </details>
+          )}
         </>
       )}
       <p className="area-disclaimer" data-area-disclaimer>

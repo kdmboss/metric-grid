@@ -21,7 +21,12 @@ export function PeopleResults({ record: r }) {
           </Help>
         </div>
         <strong>{fmt(w.electric_heat_households)}</strong>
-        <p>vs. {fmt(b.electric_heat_households)} · megawatts only</p>
+        <p>
+          <span className="desktop-copy">
+            vs. {fmt(b.electric_heat_households)} · megawatts only
+          </span>
+          <span className="mobile-copy">vs {fmt(b.electric_heat_households)} MW-only</span>
+        </p>
       </article>
       <article>
         <div className="result-label">
@@ -37,10 +42,20 @@ export function PeopleResults({ record: r }) {
             : `${fmt(Math.abs(human), Math.abs(human) < 1 ? 1 : 0)}%`}
         </strong>
         <p>
-          {direction === 'unchanged'
-            ? 'Unchanged from'
-            : `${direction[0].toUpperCase()}${direction.slice(1)} than`}{' '}
-          the typical megawatts-only plan
+          <span className="desktop-copy">
+            {direction === 'unchanged'
+              ? 'Unchanged from'
+              : `${direction[0].toUpperCase()}${direction.slice(1)} than`}{' '}
+            the typical megawatts-only plan
+          </span>
+          <span className="mobile-copy">
+            {direction === 'unchanged'
+              ? 'Same as'
+              : direction === 'lower'
+                ? 'Lower than'
+                : 'Higher than'}{' '}
+            MW-only
+          </span>
         </p>
       </article>
       <article className="honest-result">
@@ -50,8 +65,14 @@ export function PeopleResults({ record: r }) {
         </div>
         <strong>{homes === 0 ? '0' : signed(homes)}</strong>
         <p>
-          {homes === 0 ? 'Same total' : `${homes > 0 ? 'More' : 'Fewer'} homes cut`} ·{' '}
-          {fmt(w.households)} vs. {fmt(b.households)}
+          <span className="desktop-copy">
+            {homes === 0 ? 'Same total' : `${homes > 0 ? 'More' : 'Fewer'} homes cut`} ·{' '}
+            {fmt(w.households)} vs. {fmt(b.households)}
+          </span>
+          <span className="mobile-copy">
+            {homes > 0 ? 'More homes cut · ' : homes < 0 ? 'Fewer homes cut · ' : ''}
+            {fmt(w.households)} vs {fmt(b.households)}
+          </span>
         </p>
       </article>
     </div>

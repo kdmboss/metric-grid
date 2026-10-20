@@ -50,6 +50,7 @@ export function MapTracts(props) {
           key={z.zone_id}
           d={z.d}
           data-zone={z.zone_id}
+          role="img"
           aria-label={tractDescription(z, props)}
           fillRule="evenodd"
           vectorEffect="non-scaling-stroke"

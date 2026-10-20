@@ -189,3 +189,17 @@ The current review interface uses a warm light theme, self-hosted Inter, three o
 Run `make places` to build only `data/frozen/places.json` from the official 2024 NC TIGER place polygons and the existing frozen district/tract geometry. It reuses the existing ingest/intersection functions; it does not run the optimizer or rebuild scenarios. Then run `npm run data:export` (also included in development/build commands). The current lookup contains 79 places, including Albemarle, Rockingham, Laurinburg and Lumberton. Census place boundaries intersect aggregate tract zones; this is not an address lookup.
 
 UI pass 3 adds a desktop overlay drawer, compact scenario controls, a nonmodal phone sheet, conditional installed-app navigation, and `?present=1` (or P outside text inputs) for recording. Review screenshots and verification limits: [UI pass 3 review](docs/UI_PASS3_REVIEW.md). No physical iOS installation is claimed.
+
+## Resident and planner entry (feature freeze)
+
+The first visit asks “What brings you here?” with resident/planner choices. The choice stays locally in the browser; no account is needed. `?view=resident` and `?view=planner` override it, and “Switch view” is in the ⋯ menu. Residents see a fixed Elliott/Balanced example, town context and preparedness tips; planners retain the comparison, exploration, preparation and evidence tools. No search text or personal data is submitted. This pass freezes features; remaining work is validation, bug fixes, owner review and submission preparation.
+
+## How to run the cooling test
+
+1. Plug the device in; power stays on throughout this one-room test.
+2. Note the time and turn only the heat off, only when safe; restore heat before anyone feels cold.
+3. Wait 1–2 hours and note the end time.
+4. Save the Serial Monitor output (`H:MM AM/PM | NN.N F`) to `data/raw/cooling_log.txt` (git-ignored).
+5. Run `python3 scripts/cooling_from_log.py --date YYYY-MM-DD --start "6:00 PM" --end "8:00 PM"`, then `npm run data:export` and rebuild.
+
+The optional card appears only after real `data/frozen/node_cooling.json` is supplied. It is a heating-off, power-on test, not an outage-powered logger, and never affects the planning model. No real measurements are shipped in this pass. `--demo` is for tests only: it marks data as a fixture and refuses runtime-data output locations; the web exporter also rejects demo/unverified cooling files. Use a temporary output path for tests. The 64°F line is a test reference; WHO's cold-season reference is 18°C (64.4°F), with warmer conditions potentially needed for vulnerable groups. Straight-line extrapolation from one room is not a prediction.

@@ -1,0 +1,5 @@
+
+> hearth@1.0.0 lint
+> eslint web --max-warnings 0 && node scripts/check-ui-source.mjs
+
+UI source checks passed: one stylesheet, no !important, no stale class or tag selectors.

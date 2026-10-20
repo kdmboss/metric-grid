@@ -44,6 +44,7 @@ export function workspaceProps(workspace) {
     },
     ExploreView: {
       selectionIds: workspace.selectedPlace?.zone_ids || [],
+      selectionLabel: workspace.selectedPlace?.name || '',
       present: workspace.present,
       mode: workspace.mode,
       layer: workspace.layer,
@@ -72,7 +73,9 @@ export function workspaceProps(workspace) {
       addZone: workspace.addZone,
     },
     ComparePlans: {
+      setCompareTab: workspace.setCompareTab,
       selectionIds: workspace.selectedPlace?.zone_ids || [],
+      selectionLabel: workspace.selectedPlace?.name || '',
       present: workspace.present,
       mode: workspace.mode,
       compareTab: workspace.compareTab,

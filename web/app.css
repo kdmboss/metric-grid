@@ -1202,11 +1202,6 @@ footer .brand {
   scrollbar-width: thin;
   scrollbar-color: var(--color-dot) var(--color-panel);
 }
-.selection-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 .selected-place h2 {
   font-weight: 600;
 }
@@ -1806,12 +1801,6 @@ footer .brand {
     max-height: 500px;
     padding: var(--space-3);
   }
-  .selection-heading {
-    font-size: var(--text-label);
-  }
-  .selection-heading .badge {
-    font-size: var(--text-label);
-  }
   .selected-facts dt {
     font-size: var(--text-label);
   }
@@ -1990,12 +1979,6 @@ footer .brand {
     border-top: 1px solid var(--color-border);
     max-height: none;
     padding: var(--space-3);
-  }
-  .selection-heading {
-    font-size: var(--text-label);
-  }
-  .selection-heading .badge {
-    font-size: var(--text-label);
   }
   .selection-panel select {
     font-size: var(--text-label);
@@ -2326,7 +2309,7 @@ footer .brand {
     content: 'Households';
   }
   .priority-section td:nth-child(5):before {
-    content: 'Load-only cut frequency';
+    content: 'Cut in MW-only plans';
   }
   .priority-section td:nth-child(6):before {
     content: attr(data-plan-label);
@@ -3661,17 +3644,6 @@ footer .brand {
   max-height: 720px;
   position: static;
 }
-.selection-heading {
-  font-size: var(--text-label);
-  color: var(--color-secondary);
-  flex-wrap: wrap;
-  gap: var(--space-1);
-}
-.selection-heading .badge {
-  font-size: var(--text-label);
-  padding: 0 var(--space-1);
-  line-height: 24px;
-}
 .selection-panel select {
   min-height: 44px;
   font-size: var(--text-control);
@@ -4345,9 +4317,6 @@ footer {
   padding: 0;
   max-height: none;
   overflow: visible;
-}
-.zone-sheet .selection-heading {
-  display: none;
 }
 html:has(.zone-sheet[open]) {
   overflow-y: clip;
@@ -5248,7 +5217,6 @@ select {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   column-gap: var(--space-5);
 }
-.compare-layout > .selection-panel > .selection-heading,
 .compare-layout > .selection-panel > select {
   grid-column: 1/-1;
 }
@@ -6570,4 +6538,610 @@ button:active {
     height: 40svh;
     min-height: 300px;
   }
+}
+/* UI pass 4: consolidate shared pills and keep both desktop maps visible. */
+.planning-app .status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
+  width: auto;
+  height: auto;
+  min-width: max-content;
+  max-width: none;
+  min-height: 0;
+  flex: 0 0 auto;
+  overflow: visible;
+}
+.planning-app .status.cut {
+  background: var(--color-ink);
+  color: var(--color-panel);
+}
+.planning-app .status.kept {
+  background: var(--color-kept);
+  color: var(--color-ink);
+}
+.desktop-selection {
+  padding: var(--space-4);
+}
+.desktop-selection .selection-panel {
+  border: 0;
+  box-shadow: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  margin: var(--space-3) 0 0;
+  width: 100%;
+}
+.selection-bar .icon-button {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+}
+.selection-bar .icon-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+.selected-statuses > div {
+  min-width: 0;
+}
+.selected-statuses > div > strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.clear-town {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: transparent;
+  border: 0;
+  font-size: 22px;
+}
+.resident-search:has(.clear-town) input {
+  padding-right: 44px;
+}
+.town-map-label rect {
+  fill: var(--color-panel);
+  stroke: var(--color-border);
+}
+.town-map-label text {
+  fill: var(--color-ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+.town-map-label {
+  pointer-events: none;
+}
+.app-only {
+  display: none;
+}
+@media (min-width: 1100px) {
+  .planning-app[data-mode='compare'] .workspace-main,
+  .planning-app[data-mode='explore'] .workspace-main {
+    display: block;
+  }
+  .scenario-rail {
+    position: static;
+    border: 0;
+    padding: 0;
+    background: transparent;
+  }
+  .scenario-rail .rail-heading {
+    display: none;
+  }
+  .scenario-rail .scenario-editor {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 270px;
+    align-items: start;
+    gap: 0 var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-panel);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+  }
+  .scenario-rail .scenario-controls,
+  .is-present .scenario-rail .scenario-controls {
+    grid-column: 1;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: 240px minmax(320px, 1fr) auto;
+    align-items: center;
+    gap: var(--space-4);
+    padding: 0;
+    min-height: 90px;
+  }
+  .scenario-rail .scenario-controls .priority-control {
+    min-width: 0;
+  }
+  .scenario-rail .control-actions {
+    justify-content: flex-end;
+    gap: var(--space-1);
+  }
+  .scenario-rail .segments {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .scenario-rail .segments button {
+    min-height: 36px;
+    height: 36px;
+    padding: 0 var(--space-1);
+    white-space: nowrap;
+  }
+  .scenario-rail .town-lookup {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .scenario-rail .shared-target {
+    grid-column: 1;
+    grid-row: 2;
+    margin: var(--space-1) 0 0;
+  }
+  .scenario-rail .objective-note {
+    grid-column: 1 / -1;
+  }
+  .scenario-rail .scenario-menu .menu-content {
+    left: auto;
+    right: 0;
+  }
+  .planning-app[data-mode='compare'] .people-results {
+    margin: var(--space-3) 0;
+  }
+  .people-results article {
+    display: grid;
+    grid-template-rows: 32px 40px auto;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+  }
+  .people-results article .result-label {
+    align-self: center;
+  }
+  .people-results article strong {
+    align-self: center;
+    margin: 0;
+  }
+  .people-results article p {
+    align-self: start;
+    margin: 0;
+  }
+  .workspace-body {
+    width: 100%;
+    transition: width 200ms ease-out;
+  }
+  .has-area-panel[data-mode='compare'] .workspace-body,
+  .has-area-panel[data-mode='explore'] .workspace-body {
+    width: calc(100% - 380px);
+  }
+  .desktop-selection {
+    right: max(var(--space-4), calc((100vw - 1360px) / 2));
+    top: 120px;
+    width: 360px;
+  }
+  .planning-app[data-mode='explore'] .scenario-editor {
+    display: block;
+    padding: var(--space-3);
+  }
+  .planning-app[data-mode='explore'] .scenario-controls,
+  .planning-app[data-mode='explore'] .shared-target,
+  .planning-app[data-mode='explore'] .objective-note {
+    display: none;
+  }
+  .planning-app[data-mode='explore'] .town-search-row {
+    flex-wrap: nowrap;
+  }
+  .planning-app[data-mode='explore'] .resident-search {
+    flex: 1;
+  }
+}
+@media (max-width: 700px) {
+  .planning-app[data-mode='compare'] .workspace-tools {
+    height: auto;
+    min-height: 44px;
+    margin: var(--space-2) 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-1);
+  }
+  .planning-app[data-mode='compare'] .workspace-tools .map-filters {
+    position: relative;
+    inset: auto;
+  }
+  .workspace-tools .view-tabs {
+    min-width: 0;
+    gap: var(--space-2);
+  }
+  .workspace-tools .view-tabs button {
+    font-size: 13px;
+    white-space: nowrap;
+    padding-inline: 0;
+  }
+  .map-filters > summary {
+    font-size: 0;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+  }
+  .map-filters > summary::after {
+    content: '☷';
+    font-size: 22px;
+    position: static;
+    transform: none;
+    border: 0;
+    width: auto;
+    height: auto;
+  }
+  .mobile-plan-toggle {
+    width: 100%;
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+  .mobile-plan-toggle button {
+    font-size: 13px;
+  }
+  .is-standalone .mobile-plan-toggle .app-only {
+    display: block;
+  }
+  .is-standalone .mobile-plan-toggle {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .is-standalone .mode-tabs button[aria-selected='true'] {
+    background: transparent;
+    color: var(--color-accent);
+  }
+  .appbar-actions > .button {
+    display: none;
+  }
+  .people-results .mobile-copy {
+    display: inline;
+  }
+  .people-results article p {
+    font-size: 11px;
+  }
+  .people-results strong,
+  .people-results .honest-result strong {
+    font-size: clamp(18px, 5.8vw, 24px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-body {
+    transition: none;
+  }
+}
+.browser-menu {
+  display: none;
+}
+@media (max-width: 700px) {
+  .browser-menu {
+    display: block;
+  }
+  .appbar-actions > .text-button {
+    display: none;
+  }
+}
+@media (min-width: 1100px) {
+  .people-results article,
+  .people-results article + article {
+    display: grid;
+    grid-template-rows: 32px 40px auto;
+    gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+  }
+}
+@media (min-width: 1100px) {
+  .planning-app[data-mode='compare'] .workspace-main,
+  .planning-app[data-mode='explore'] .workspace-main {
+    transition: width 200ms ease-out;
+  }
+  .has-area-panel[data-mode='compare'] .workspace-main,
+  .has-area-panel[data-mode='explore'] .workspace-main {
+    width: calc(100% - 460px);
+    max-width: 980px;
+    margin-left: max(40px, calc((100% - 1360px) / 2));
+    margin-right: 0;
+  }
+  .has-area-panel[data-mode='compare'] .workspace-body,
+  .has-area-panel[data-mode='explore'] .workspace-body {
+    width: 100%;
+  }
+  .has-area-panel .scenario-rail .scenario-editor {
+    grid-template-columns: minmax(0, 1fr) 200px;
+  }
+  .has-area-panel .scenario-rail .scenario-controls {
+    grid-template-columns: 180px minmax(160px, 1fr) auto;
+    gap: var(--space-2);
+  }
+  .has-area-panel .scenario-rail .control-actions .button {
+    padding-inline: var(--space-2);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .planning-app .workspace-main {
+    transition: none;
+  }
+}
+@media (min-width: 1100px) {
+  .people-results article .result-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 32px;
+    line-height: 20px;
+  }
+  .people-results article > strong {
+    font-size: 30px;
+    line-height: 1.2;
+  }
+}
+@media (min-width: 1100px) {
+  .people-results article,
+  .people-results article + article {
+    border: 0;
+    grid-template-rows: 32px 40px 24px;
+  }
+  .people-results article + article {
+    border-left: 1px solid var(--color-border);
+  }
+  .people-results article .result-label {
+    margin: 0;
+  }
+  .people-results article > strong,
+  .people-results .honest-result strong {
+    font-size: 30px;
+    line-height: 36px;
+  }
+}
+.map-task-hint {
+  font-size: 12px;
+  color: var(--color-secondary);
+  margin: 0 0 var(--space-2);
+}
+.filters-icon {
+  display: none;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+@media (max-width: 700px) {
+  .people-results .desktop-copy {
+    display: none;
+  }
+  .map-filters > summary::after {
+    display: none;
+  }
+  .map-filters > summary .filters-icon {
+    display: block;
+  }
+  .map-task-hint {
+    margin-top: var(--space-1);
+  }
+}
+@media (min-width: 1100px) {
+  .has-area-panel .scenario-rail .scenario-controls {
+    grid-template-columns: 220px minmax(140px, 1fr) auto;
+  }
+}
+/* Pass 5: two local entry paths, without accounts or runtime services. */
+.welcome-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: var(--space-3);
+  background: var(--color-overlay);
+  backdrop-filter: blur(8px);
+}
+.welcome-card {
+  width: min(100%, 480px);
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  padding: var(--space-5);
+  box-shadow: 0 16px 48px var(--color-overlay);
+}
+.welcome-card h1 {
+  font-size: 28px;
+  margin: var(--space-2) 0 var(--space-4);
+}
+.welcome-card > button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 100px;
+  gap: var(--space-1);
+  text-align: left;
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-paper);
+}
+.welcome-card > button strong {
+  font-size: 18px;
+  color: var(--color-accent);
+}
+.welcome-card > button span,
+.welcome-card > p {
+  color: var(--color-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.welcome-card > p {
+  margin: var(--space-3) 0 0;
+}
+.resident-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) max(var(--space-3), calc((100% - 900px) / 2));
+  border-bottom: 1px solid var(--color-border);
+}
+.resident-header > strong {
+  font-size: 22px;
+}
+.resident-main {
+  max-width: 900px;
+  width: calc(100% - 32px);
+  margin: var(--space-5) auto;
+}
+.resident-main > h1 {
+  font-size: 34px;
+  margin: 0 0 var(--space-2);
+}
+.resident-main > p {
+  color: var(--color-secondary);
+}
+.resident-main .town-lookup {
+  padding: var(--space-4);
+  margin: var(--space-4) 0;
+}
+.resident-main .town-search-row {
+  display: block;
+}
+.resident-main .town-search-row label {
+  display: block;
+  margin-bottom: var(--space-2);
+}
+.resident-main input[type='search'] {
+  font-size: 18px;
+  height: 56px;
+}
+.resident-main .clear-town {
+  top: 6px;
+}
+.resident-result-card {
+  padding-top: var(--space-3);
+}
+.resident-result-card h2 {
+  font-size: 24px;
+}
+.resident-result-card p {
+  margin: var(--space-2) 0;
+}
+.resident-map-card,
+.cooling-card {
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: var(--space-4);
+  margin: var(--space-5) 0;
+}
+.resident-map-card .map-canvas {
+  height: 430px;
+}
+.resident-map-card > h2 {
+  margin: 0;
+}
+.resident-main .winter-ready {
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: var(--space-4);
+  margin: var(--space-5) 0;
+}
+.resident-main .winter-ready ul {
+  padding-left: var(--space-4);
+}
+.resident-main .winter-ready li {
+  margin: var(--space-2) 0;
+  line-height: 1.6;
+}
+.resident-planner-link {
+  min-height: 44px;
+}
+.cooling-card h2 {
+  margin: 0 0 var(--space-2);
+}
+.cooling-card > svg {
+  display: block;
+  width: 100%;
+  max-height: 280px;
+  margin: var(--space-3) 0;
+}
+.cooling-card svg text {
+  fill: var(--color-secondary);
+  font-size: 12px;
+}
+.cooling-line {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 2;
+}
+.cooling-point {
+  fill: var(--color-accent);
+}
+.cooling-reference {
+  stroke: var(--color-baseline);
+  stroke-width: 1;
+  stroke-dasharray: 6 4;
+}
+.fixture-label {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+.browser-menu {
+  display: block;
+}
+@media (max-width: 700px) {
+  .welcome-card {
+    padding: var(--space-4);
+  }
+  .welcome-card h1 {
+    font-size: 25px;
+  }
+  .resident-app.is-standalone {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .resident-app .native-header {
+    display: flex;
+  }
+  .resident-main {
+    margin-top: var(--space-4);
+  }
+  .resident-app.is-standalone .resident-main > h1 {
+    display: none;
+  }
+  .resident-main .town-lookup {
+    padding: var(--space-3);
+  }
+  .resident-map-card,
+  .cooling-card {
+    padding: var(--space-3);
+  }
+  .resident-map-card .map-canvas {
+    height: 42svh;
+    min-height: 300px;
+  }
+  .resident-result-card h2 {
+    font-size: 21px;
+  }
+}
+.resident-search input[type='search']::-webkit-search-cancel-button {
+  appearance: none;
+  -webkit-appearance: none;
 }

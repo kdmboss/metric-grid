@@ -21,6 +21,17 @@ try { data.panel = await readFrozen('demand_panel.json'); }
 catch (error) { if (error.code !== 'ENOENT') throw error; data.panel = null; }
 try { data.places = await readFrozen('places.json'); }
 catch (error) { if (error.code !== 'ENOENT') throw error; data.places = []; }
+try {
+  const cooling = await readFrozen('node_cooling.json');
+  if (cooling.is_demo !== false) throw new Error('Refusing to bundle an unverified/demo cooling fixture');
+  if (!Array.isArray(cooling.readings) || cooling.readings.length < 2 ||
+      !cooling.readings.every(r => Number.isFinite(r.temp_f) && Number.isFinite(Date.parse(r.time))) ||
+      Date.parse(cooling.readings[0]?.time) >= Date.parse(cooling.readings.at(-1)?.time) ||
+      ![cooling.start_temp_f, cooling.cooling_rate_f_per_hour, cooling.r_squared].every(Number.isFinite)) {
+    throw new Error('Invalid cooling test data');
+  }
+  data.node_cooling = cooling;
+} catch (error) { if (error.code !== 'ENOENT') throw error; }
 // Match PyYAML's last-key-wins behavior for the retained source configuration.
 const config = parse(await readFile(resolve(root, 'config.yaml'), 'utf8'), { uniqueKeys: false });
 data.config = { harm: config.harm, optimizer: config.optimizer, priority_list: config.priority_list, example_locations: config.example_locations };

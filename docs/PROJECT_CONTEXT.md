@@ -45,3 +45,8 @@ The current visual cleanup uses the owner-specified warm light theme, Inter only
 ## UI pass 3 (2026-10-20)
 
 Current local UI uses Apple system fonts first, five shared spacing tokens, a 360px desktop detail drawer and a nonmodal phone sheet with peek/half/full detents. Installed-app mode adds the collapsing header and bottom tabs; regular browser navigation remains available. Presentation mode is `?present=1` or P outside inputs. The separately generated Census lookup now has 79 places; `make places` builds it without rerunning any scenario/model pipeline. Only `data/frozen/places.json` is new; other frozen inputs/results and Python modules remain unchanged. See `UI_PASS3_REVIEW.md` for browser checks and physical-device limitations. Production is unchanged by this pass.
+
+
+## Pass 5 and feature freeze
+
+The public interface has a local resident/planner welcome choice with URL overrides and a menu switch. Resident mode is a fixed Elliott/Balanced, cap-off example and never uses retained planner controls to change its result. Planner mode retains its scenarios and four tabs. The optional independent cooling card is hidden without real heat-off/power-on measurements; no real data ships yet. Test fixtures are blocked from runtime export. WHO's reference is 18°C (64.4°F); 64°F is a separately labeled test line. Features are now frozen; follow-up work is bug fixes, validation and submission preparation. No production deployment in pass 5.

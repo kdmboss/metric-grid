@@ -1,0 +1,3 @@
+welcome: Performance 88, Accessibility 100
+resident: Performance 91, Accessibility 100
+planner: Performance 88, Accessibility 100

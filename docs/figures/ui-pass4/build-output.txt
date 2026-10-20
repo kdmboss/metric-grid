@@ -1,0 +1,18 @@
+
+> hearth@1.0.0 build
+> npm run data:export && vite build
+
+
+> hearth@1.0.0 data:export
+> node scripts/export-web-data.mjs
+
+Exported 183 zones and 40 scenarios for the web app.
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 85 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   1.22 kB │ gzip:   0.62 kB
+dist/assets/index-CI6JD5N0.css  118.43 kB │ gzip:  18.87 kB
+dist/assets/index-D-HzsDEm.js   323.00 kB │ gzip: 100.96 kB
+✓ built in 1.95s

@@ -1,7 +1,7 @@
 import './app.css';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Workspace } from './Workspace.jsx';
+import { App } from './App.jsx';
 import { Brand } from './Evidence.jsx';
 class ErrorBoundary extends React.Component {
   state = {
@@ -43,7 +43,7 @@ fetch('/data/app.json')
   .then((data) =>
     root.render(
       <ErrorBoundary>
-        <Workspace data={data} />
+        <App data={data} />
       </ErrorBoundary>,
     ),
   )

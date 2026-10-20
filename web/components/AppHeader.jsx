@@ -1,6 +1,6 @@
 import React from 'react';
 import { Brand } from '../Evidence.jsx';
-export function AppHeader({ showEvidence, exportScenario }) {
+export function AppHeader({ showEvidence, exportScenario, onSwitchView }) {
   return (
     <header className="appbar">
       <Brand />
@@ -17,6 +17,14 @@ export function AppHeader({ showEvidence, exportScenario }) {
         <button className="button" onClick={exportScenario}>
           Export
         </button>
+        <details className="browser-menu native-menu">
+          <summary aria-label="App options">⋯</summary>
+          <div className="menu-content">
+            <button onClick={() => showEvidence('methods')}>Methods & sources</button>
+            <button onClick={exportScenario}>Export scenario</button>
+            <button onClick={onSwitchView}>Switch view</button>
+          </div>
+        </details>
       </div>
     </header>
   );

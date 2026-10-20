@@ -28,7 +28,7 @@ const COMPARE_VIEWS = [
   ['plans', 'Two plans'],
   ['changes', 'What changed?'],
 ];
-export function Workspace({ data }) {
+export function Workspace({ data, onSwitchView }) {
   const workspace = useWorkspace(data);
   const views = workspaceProps(workspace);
   return (
@@ -38,6 +38,7 @@ export function Workspace({ data }) {
         workspace.printMode && 'printing',
         workspace.standalone && 'is-standalone',
         workspace.present && 'is-present',
+        workspace.zone && !workspace.compact && 'has-area-panel',
       ]
         .filter(Boolean)
         .join(' ')}
@@ -47,11 +48,12 @@ export function Workspace({ data }) {
       <a className="skip-link" href="#workspace">
         Skip to workspace
       </a>
-      <AppHeader {...views.AppHeader} />
+      <AppHeader {...views.AppHeader} onSwitchView={onSwitchView} />
       {workspace.standalone && (
         <StandaloneHeader
           scrolled={workspace.scrolled}
           mode={workspace.mode}
+          onSwitchView={onSwitchView}
           {...views.AppHeader}
         />
       )}
@@ -117,17 +119,17 @@ export function Workspace({ data }) {
           )}
         </div>
         <div id="workspace" className="workspace-body">
-          <ExploreView {...views.ExploreView} />
-          <ComparePlans {...views.ComparePlans} />
+          {workspace.mode === 'explore' && <ExploreView {...views.ExploreView} />}
+          {workspace.mode === 'compare' && <ComparePlans {...views.ComparePlans} />}
           <section
             id="panel-prepare"
             role="tabpanel"
             aria-labelledby="tab-prepare"
             hidden={workspace.mode !== 'prepare'}
           >
-            <Preparation {...views.Preparation} />
+            {workspace.mode === 'prepare' && <Preparation {...views.Preparation} />}
           </section>
-          <EvidenceView {...views.EvidenceView} />
+          {workspace.mode === 'evidence' && <EvidenceView {...views.EvidenceView} />}
         </div>
 
         {workspace.zone &&

@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-export function StandaloneHeader({ scrolled, mode, showEvidence, exportScenario }) {
+export function StandaloneHeader({ scrolled, mode, showEvidence, exportScenario, onSwitchView }) {
   const menu = useRef(null);
   function methods() {
     showEvidence('methods');
@@ -18,8 +18,9 @@ export function StandaloneHeader({ scrolled, mode, showEvidence, exportScenario 
       <details className="native-menu" ref={menu}>
         <summary aria-label="App options">⋯</summary>
         <div className="menu-content">
-          <button onClick={methods}>Methods & sources</button>
-          <button onClick={exportData}>Export scenario</button>
+          {showEvidence && <button onClick={methods}>Methods & sources</button>}
+          {exportScenario && <button onClick={exportData}>Export scenario</button>}
+          <button onClick={onSwitchView}>Switch view</button>
         </div>
       </details>
     </header>

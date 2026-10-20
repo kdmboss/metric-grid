@@ -39,7 +39,12 @@ export function MapFilters({
         if (event.key === 'Escape') event.currentTarget.open = false;
       }}
     >
-      <summary>Filters</summary>
+      <summary aria-label="Map filters">
+        <span>Filters</span>
+        <svg className="filters-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16M4 17h16M9 4v6M15 14v6" />
+        </svg>
+      </summary>
       <div className="map-toolbar">
         <div className="map-search">
           <label className="sr-only" htmlFor="zone-search">

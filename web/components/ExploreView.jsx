@@ -29,6 +29,7 @@ export function ExploreView({
   plan,
   addZone,
   selectionIds,
+  selectionLabel,
   present,
 }) {
   return (
@@ -58,6 +59,7 @@ export function ExploreView({
             setView={setView}
             selected={state.zone}
             selectionIds={selectionIds}
+            selectionLabel={selectionLabel}
             present={present}
             onSelect={selectZone}
             onZoomSelected={zoomSelected}

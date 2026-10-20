@@ -36,9 +36,9 @@ export function PriorityTable({
             'SVI',
             'Electric heat',
             'Households',
-            'Load-only cut frequency',
+            'Cut in MW-only plans',
             awarePlanLabel(record),
-            'Planning shortlist',
+            'Shortlist',
           ]}
         >
           {priority.slice(0, showAllPriority ? priority.length : 8).map((z) => {

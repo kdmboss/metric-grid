@@ -332,3 +332,9 @@ Sensitivity of the shared-county rule: customer_spread D 1687 / T 91.9 MW; equal
 
 ## Data-source failures and fallbacks
 See the Phase 1 section above (TIGER file name, HIFLD -> OSM) the Phase 3 section (substation layer unavailable, tract zones), and the Phase 2 section (NREL bucket move, no ResStock county data, NCEI -> IEM for display temperature).
+
+## Pass 5: separate resident entry and optional cooling test
+
+Residents always see Elliott, Balanced (alpha 0.5), county cap off, independent of retained planner query settings. “People-first” names that fixed vulnerability/cost comparison; it does not count specific people protected. Counts are tract-zone statuses inside Census place intersections, not a household forecast. District total homes cut and the limitation remain visible beside results.
+
+The optional room test is heat off, power on, one room, one home; no battery/outage-running claim is made. No real test file is included. The brief's WHO attribution required correction: 18°C is 64.4°F, so the UI retains 64°F as a separate test reference. Extrapolated hours use the first selected observation, not an invented exact-start observation, and are floored at zero if already below the reference. No household, optimization or allocation data is changed.
