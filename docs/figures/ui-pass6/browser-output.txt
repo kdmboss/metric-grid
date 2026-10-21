@@ -1,0 +1,3 @@
+Desktop KPI left edges align; selected desktop maps stack at >=500px and remain beside the panel at 1440 and 1200px.
+Resident page has one replay disclaimer and the two requested count pills, without district totals or repeated map caveats.
+Phone tiles capped at 112px; filter and segmented control share a row; district begins on the first app screen.

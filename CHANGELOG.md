@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-20 · Pass 6, last cleanup (OpenAI Codex)
+
+- Consolidated resident caveats into one replay note and replaced text-heavy answers with shared count pills; removed the resident district totals as requested.
+- Aligned desktop KPI sub-lines, shortened phone copy, capped phone tiles and put the filter beside the plan selector.
+- Stack paired maps below 1280px of available content width, retaining shared view state and >=500px desktop map widths beside the open panel.
+- Added display regression checks and review screenshots. Updated the disclaimer copy assertion to the owner's new wording; numerical expectations, data and model logic unchanged. No push/deployment; feature freeze retained.
+
+
 ## 2026-10-20 · Pass 5, feature freeze (OpenAI Codex)
 
 - Added local resident/planner entry choice, query overrides, menu switching and a fixed Elliott/Balanced resident town page with one map and readiness tips.

@@ -49,9 +49,6 @@ export function ResidentView({ data, choose, switchView }) {
       <main className="resident-main">
         <h1>Check your area.</h1>
         <p>Find your town and get ready for winter outages.</p>
-        <p className="fine">
-          Based on the Christmas Eve 2022 storm. This is a fixed, balanced planning example.
-        </p>
         <TownLookup
           places={data.places || []}
           zones={zones}
@@ -64,7 +61,6 @@ export function ResidentView({ data, choose, switchView }) {
         {place && (
           <section className="resident-map-card" aria-label="Town planning context">
             <h2>{place.name}</h2>
-            <p>Darker areas may have a harder time coping with disruptions.</p>
             <MapCanvas
               paths={paths}
               zones={zones}
@@ -81,14 +77,14 @@ export function ResidentView({ data, choose, switchView }) {
               selectionLabel={place.name}
               active
             />
-            <p className="fine">
-              Hatched areas contain listed critical facilities and stay on in these scenarios.
-              Facility data may be incomplete.
-            </p>
-            <p className="fine">
-              Census tract zones (not utility service boundaries). A modeled planning scenario, not
-              a prediction for your home.
-            </p>
+            <div className="resident-legend" aria-label="Map legend">
+              <span>Lighter = lower vulnerability</span>
+              <span>Darker = higher</span>
+              <span>
+                <i className="swatch hatch" aria-hidden="true" />
+                Has a critical facility (stays on)
+              </span>
+            </div>
           </section>
         )}
         <ResidentLayer />
@@ -96,9 +92,6 @@ export function ResidentView({ data, choose, switchView }) {
         <button className="text-button resident-planner-link" onClick={() => choose('planner')}>
           See the full planning tool →
         </button>
-        <p className="fine">
-          Your search stays in this browser. No personal data is collected or sent.
-        </p>
       </main>
     </div>
   );

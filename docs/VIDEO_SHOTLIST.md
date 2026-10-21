@@ -109,3 +109,8 @@ Desktop scenario controls are again a full-width card above the results; town se
 ## Pass 5 entry and optional cooling footage
 
 Open `?view=planner` for the main comparison recording so the welcome does not interrupt. A brief resident segment can show `?view=resident`, search Albemarle and read the aggregate areas-cut comparison plus the household disclaimer. The resident example stays Elliott/Balanced. No measurements have been supplied, so leave cooling footage out of the submission. If a real test is later supplied, describe it as “heat off, power on, one room, one home,” unrelated to the planning model. Do not use test-fixture screenshots as measurements or claim the device works through an outage. Features are frozen after this pass.
+
+
+## Pass 6 recording cleanup
+
+Resident results now show two count pills and one event/replay note. Keep the resident example brief; district household totals remain in planner view. At narrow desktop widths or with Area details open, the paired maps stack vertically, so scroll between them while retaining the same shared view. Phone Compare uses compact KPI cards and a single row for plan selection/filter. No new capabilities were added.

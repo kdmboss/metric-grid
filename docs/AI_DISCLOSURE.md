@@ -444,3 +444,25 @@ OpenAI Codex implemented the owner-supplied brief. Residents use the existing fi
 | `web/resident.js` | AI-assisted (OpenAI Codex) | TODO (author) |
 
 Codex updated this disclosure. Generated review artifacts under `docs/figures/ui-pass5/` include screenshots, Lighthouse HTML/JSON reports, source-audit/check summaries and command outputs. Pass-4 rechecks are in its `pass4/` subdirectory. Owner-review fields remain the owners’ responsibility.
+
+
+## Pass 6 — last cleanup (2026-10-20)
+
+OpenAI Codex applied the owner's targeted cleanup. Removed repeated resident/controls caveats and resident district totals as explicitly requested, kept one replay note, and rendered the existing area counts as shared status pills. Adjusted KPI indentation/copy, phone tile height and filter placement, and stacked paired maps when the panel leaves less than 1280px of available width. Shared map state and all numerical/model/data logic remain unchanged. The existing copy regression now checks the new disclaimer rather than the retired wording; numerical tests were not changed. Feature freeze retained; no push/deployment.
+
+| File | Status | What I changed |
+|---|---|---|
+| `CHANGELOG.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/UI_BRIEF.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/UI_PASS6_REVIEW.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `docs/VIDEO_SHOTLIST.md` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `scripts/ui-pass6-smoke.cjs` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/ResidentView.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/app.css` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/ComparePlans.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/EvidencePrimitives.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/PeopleResults.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/components/TownLookup.jsx` | AI-assisted (OpenAI Codex) | TODO (author) |
+| `web/pass3.test.js` | AI-assisted (OpenAI Codex) | TODO (author) |
+
+Codex updated this disclosure. Screenshots, browser assertions and command outputs in `docs/figures/ui-pass6/` are generated review artifacts. Owner-review fields remain for the owners.

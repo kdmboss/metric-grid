@@ -7145,3 +7145,170 @@ button:active {
   appearance: none;
   -webkit-appearance: none;
 }
+/* Pass 6: one resident caveat, visual answers, compact phone comparison. */
+.resident-answer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: var(--space-3) 0;
+}
+.resident-answer-row > span:first-child {
+  font-weight: 600;
+}
+.resident-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  padding-top: var(--space-2);
+  color: var(--color-secondary);
+  font-size: 12px;
+}
+.resident-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+.workspace-body {
+  container-name: plan-space;
+  container-type: inline-size;
+}
+@container plan-space (max-width: 1279px) {
+  .comparison-maps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (min-width: 701px) {
+  .people-results article > p {
+    margin: 0;
+    padding: 0;
+    text-indent: 0;
+    justify-self: start;
+    white-space: nowrap;
+  }
+  .people-results article > p > .desktop-copy {
+    margin: 0;
+    padding: 0;
+    text-indent: 0;
+  }
+}
+@media (max-width: 700px) {
+  .people-results article,
+  .people-results article + article {
+    height: 112px;
+    max-height: 112px;
+    padding: var(--space-2);
+    display: grid;
+    grid-template-rows: 28px 30px 28px;
+    gap: 0;
+    align-content: start;
+  }
+  .people-results article .result-label {
+    min-height: 0;
+    margin: 0;
+    line-height: 14px;
+  }
+  .people-results article > strong,
+  .people-results .honest-result strong {
+    margin: 0;
+    line-height: 30px;
+  }
+  .people-results article > p {
+    margin: 0;
+    padding: 0;
+    font-size: 10px;
+    line-height: 13px;
+  }
+  .map-task-hint {
+    display: none;
+  }
+  .planning-app[data-mode='compare'] .workspace-tools {
+    position: relative;
+    margin: 0;
+  }
+  .planning-app[data-mode='compare'] .workspace-tools .map-filters {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+  }
+  .planning-app.is-standalone[data-mode='compare'] .workspace-tools {
+    height: 0;
+    min-height: 0;
+    margin: 0;
+  }
+  .mobile-plan-toggle {
+    width: calc(100% - 56px);
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+  .resident-answer-row {
+    gap: var(--space-1);
+    font-size: 13px;
+  }
+  .resident-answer-row .status {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+  .resident-legend {
+    font-size: 11px;
+  }
+}
+@media (max-width: 360px) {
+  .people-results {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+  .people-results article {
+    flex: 0 0 80%;
+    scroll-snap-align: start;
+  }
+  .people-results article > p {
+    font-size: 11px;
+  }
+  .resident-answer-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+@media (min-width: 701px) {
+  .planning-app .people-results article > p {
+    margin-inline: 0;
+    padding-inline: 0;
+    text-indent: 0;
+  }
+}
+@media (min-width: 1100px) and (max-width: 1279px) {
+  .has-area-panel .scenario-rail .scenario-editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .has-area-panel .scenario-rail .town-lookup {
+    grid-column: 1;
+    grid-row: 3;
+    margin-top: var(--space-2);
+  }
+  .has-area-panel .scenario-rail .scenario-controls {
+    grid-template-columns: 180px minmax(140px, 1fr) auto;
+  }
+}
+@media (min-width: 1100px) and (max-width: 1279px) {
+  .has-area-panel .people-results .desktop-copy {
+    display: none;
+  }
+  .has-area-panel .people-results .mobile-copy {
+    display: inline;
+  }
+}
+@media (max-width: 700px) {
+  .people-results article > p {
+    white-space: nowrap;
+    letter-spacing: -0.02em;
+    font-size: clamp(9px, 2.5vw, 10px);
+  }
+}
+@media (max-width: 360px) {
+  .people-results article > p {
+    font-size: 11px;
+    letter-spacing: normal;
+  }
+}

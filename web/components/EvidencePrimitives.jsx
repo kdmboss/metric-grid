@@ -40,10 +40,10 @@ export function DataTable({ headings, children, label }) {
     </div>
   );
 }
-export function Status({ value }) {
+export function Status({ value, tone }) {
   return (
     <span
-      className={`status ${value === 'Cut' ? 'cut' : value === 'Protected' ? 'protected' : 'kept'}`}
+      className={`status ${tone || (value === 'Cut' ? 'cut' : value === 'Protected' ? 'protected' : 'kept')}`}
     >
       {value}
     </span>

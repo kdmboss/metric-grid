@@ -41,9 +41,7 @@ export function ComparePlans({
       aria-labelledby="tab-compare"
       hidden={mode !== 'compare'}
     >
-      <p className="map-task-hint">
-        Select an area to see its community profile and save it for preparation.
-      </p>
+      <p className="map-task-hint">Select an area to see who lives there.</p>
       <div className="mobile-plan-toggle" role="group" aria-label="Displayed plan">
         <button
           aria-pressed={compareTab === 'plans' && mobilePlan === 'typical'}

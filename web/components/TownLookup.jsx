@@ -96,18 +96,31 @@ export function TownLookup({ places, zones, record, selected, onPick, onClear, r
               <h2>
                 {selected.name} · {counts.total} areas
               </h2>
-              <p>
-                In the MW-only plan: <strong>{counts.baseline} areas lose power</strong>
-              </p>
-              <p>
-                In the people-first plan: <strong>{counts.aware} areas lose power</strong>
-              </p>
-              <p className="fine">
-                Across the district, total homes cut: {fmt(record.weighted.households)} people-first
-                vs {fmt(record.baseline.households)} MW-only.
-              </p>
-              <p className="fine">
-                Modeled comparison, not a forecast. “People-first” weighs vulnerability and cost.
+              <div className="resident-answer-row">
+                <span>MW-only plan</span>
+                <Status
+                  tone={counts.baseline > 0 ? 'cut' : 'kept'}
+                  value={
+                    counts.baseline > 0
+                      ? `${counts.baseline} of ${counts.total} areas lose power`
+                      : `All ${counts.total} stay on`
+                  }
+                />
+              </div>
+              <div className="resident-answer-row">
+                <span>People-first plan</span>
+                <Status
+                  tone={counts.aware > 0 ? 'cut' : 'kept'}
+                  value={
+                    counts.aware > 0
+                      ? `${counts.aware} of ${counts.total} areas lose power`
+                      : `All ${counts.total} stay on`
+                  }
+                />
+              </div>
+              <p className="fine area-disclaimer" data-area-disclaimer>
+                Based on a modeled replay of the Christmas Eve 2022 storm. Not a prediction for your
+                home.
               </p>
             </div>
           )}
@@ -152,9 +165,6 @@ export function TownLookup({ places, zones, record, selected, onPick, onClear, r
           )}
         </>
       )}
-      <p className="area-disclaimer" data-area-disclaimer>
-        A modeled planning scenario, not a prediction for your home.
-      </p>
     </section>
   );
 }

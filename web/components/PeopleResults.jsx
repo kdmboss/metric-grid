@@ -14,7 +14,7 @@ export function PeopleResults({ record: r }) {
       <article>
         <div className="result-label">
           <span className="desktop-copy">Electric-heat homes cut</span>
-          <span className="mobile-copy">Electric-heat cuts</span>{' '}
+          <span className="mobile-copy">Electric-heat homes</span>{' '}
           <Help label="electric-heat homes">
             Homes heated mainly by electricity; the main number shows the {label.toLowerCase()}{' '}
             result.
@@ -46,7 +46,7 @@ export function PeopleResults({ record: r }) {
             {direction === 'unchanged'
               ? 'Unchanged from'
               : `${direction[0].toUpperCase()}${direction.slice(1)} than`}{' '}
-            the typical megawatts-only plan
+            the typical MW-only plan
           </span>
           <span className="mobile-copy">
             {direction === 'unchanged'
@@ -61,7 +61,9 @@ export function PeopleResults({ record: r }) {
       <article className="honest-result">
         <div className="result-label">
           <span className="desktop-copy">Total homes cut · the trade-off</span>
-          <span className="mobile-copy">Total homes cut</span>
+          <span className="mobile-copy">
+            {homes > 0 ? 'More homes cut' : homes < 0 ? 'Fewer homes cut' : 'Total homes cut'}
+          </span>
         </div>
         <strong>{homes === 0 ? '0' : signed(homes)}</strong>
         <p>
@@ -70,7 +72,6 @@ export function PeopleResults({ record: r }) {
             {fmt(w.households)} vs. {fmt(b.households)}
           </span>
           <span className="mobile-copy">
-            {homes > 0 ? 'More homes cut · ' : homes < 0 ? 'Fewer homes cut · ' : ''}
             {fmt(w.households)} vs {fmt(b.households)}
           </span>
         </p>

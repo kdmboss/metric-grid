@@ -1,0 +1,4 @@
+{
+  "user_facing_hits_after_existing_exemptions": [],
+  "note": "Existing test-list literals excluded; no existing numerical test expectations changed."
+}

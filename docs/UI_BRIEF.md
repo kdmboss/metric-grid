@@ -1,6 +1,6 @@
 # HEARTH UI brief
 
-Current pass 5 details and verification: [UI_PASS5_REVIEW.md](UI_PASS5_REVIEW.md). Features are frozen after this pass.
+Current last-cleanup verification: [UI_PASS6_REVIEW.md](UI_PASS6_REVIEW.md). Feature freeze remains in effect.
 Paired desktop maps fill the content row; selected-zone details use a panel beside the resized content, with a nonmodal sheet on compact screens. The app uses
 `web/app.css`, variable-only `tokens.css`, and dedicated components/hooks.
 

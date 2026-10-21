@@ -13,8 +13,12 @@ test('frozen town lookup is populated and every place maps to existing zones', (
     assert.ok(data.places.some((place) => place.name === name));
   }
 });
-test('town lookup keeps the household prediction disclaimer beside its results', () => {
-  const source = readFileSync('web/components/TownLookup.jsx', 'utf8');
-  assert.ok(source.includes('A modeled planning scenario, not a prediction for your home.'));
+test('resident town result keeps its single prediction disclaimer beside the answer', () => {
+  const source = readFileSync('web/components/TownLookup.jsx', 'utf8').replace(/\s+/g, ' ');
+  assert.ok(
+    source.includes(
+      'Based on a modeled replay of the Christmas Eve 2022 storm. Not a prediction for your home.',
+    ),
+  );
   assert.ok(source.includes('data-area-disclaimer'));
 });
