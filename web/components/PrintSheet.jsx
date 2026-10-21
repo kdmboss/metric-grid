@@ -1,3 +1,4 @@
+import { LogoMark } from './LogoMark.jsx';
 import React from 'react';
 import { fmt } from '../model.js';
 import { awarePlanLabel } from '../presentation.js';
@@ -13,7 +14,10 @@ export function PrintSheet({ setPrintMode, data, record, rows }) {
           Close print view
         </button>
       </div>
-      <h2>HEARTH · Planning shortlist</h2>
+      <h2 className="hearth-wordmark">
+        <LogoMark />
+        HEARTH · Planning shortlist
+      </h2>
       <p>
         Reference: {data.constants.scenario.date} · Data built:{' '}
         {data.constants.built_utc.slice(0, 10)}

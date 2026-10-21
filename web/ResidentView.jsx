@@ -1,3 +1,4 @@
+import { LogoMark } from './components/LogoMark.jsx';
 import { InterfaceIcon } from './components/InterfaceIcon.jsx';
 import React, { useMemo, useState } from 'react';
 import { enrichZones, mapPaths } from './model.js';
@@ -38,7 +39,10 @@ export function ResidentView({ data, choose, switchView }) {
         <StandaloneHeader scrolled={scrolled} mode="my area" onSwitchView={switchView} />
       ) : (
         <header className="resident-header">
-          <strong>HEARTH</strong>
+          <strong className="hearth-wordmark">
+            <LogoMark />
+            HEARTH
+          </strong>
           <details className="native-menu">
             <summary aria-label="App options">
               <InterfaceIcon name="more" />

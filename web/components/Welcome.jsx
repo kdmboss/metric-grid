@@ -1,3 +1,4 @@
+import { LogoMark } from './LogoMark.jsx';
 import { isNative } from '../platform.js';
 import React, { useEffect, useRef } from 'react';
 export function Welcome({ choose }) {
@@ -25,7 +26,10 @@ export function Welcome({ choose }) {
         aria-labelledby="welcome-title"
         onKeyDown={trap}
       >
-        <span className="workspace-kicker">HEARTH · NC-08</span>
+        <span className="workspace-kicker hearth-wordmark">
+          <LogoMark />
+          HEARTH · NC-08
+        </span>
         <h1 id="welcome-title">What brings you here?</h1>
         <button ref={first} onClick={() => choose('resident')}>
           <strong>Check my area</strong>

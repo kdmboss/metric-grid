@@ -1,3 +1,4 @@
+import { LogoMark } from './LogoMark.jsx';
 import { InterfaceIcon } from './InterfaceIcon.jsx';
 import React, { useRef } from 'react';
 export function StandaloneHeader({ scrolled, mode, showEvidence, exportScenario, onSwitchView }) {
@@ -13,7 +14,10 @@ export function StandaloneHeader({ scrolled, mode, showEvidence, exportScenario,
   return (
     <header className="native-header" data-scrolled={scrolled}>
       <div className="native-title">
-        <span>HEARTH</span>
+        <span className="hearth-wordmark">
+          <LogoMark />
+          HEARTH
+        </span>
         <h1>{mode[0].toUpperCase() + mode.slice(1)}</h1>
       </div>
       <details className="native-menu" ref={menu}>

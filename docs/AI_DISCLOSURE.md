@@ -248,3 +248,35 @@ artifacts are review evidence rather than authored measurements.
 | `web/presentation.test.js` | AI-assisted (OpenAI Codex); interface work | TODO (author): describe your review and changes. |
 | `web/resident.js` | AI-assisted (OpenAI Codex) | TODO (author): describe your review and changes. |
 | `web/scenario.test.js` | AI-assisted (OpenAI Codex); interface work | TODO (author): describe your review and changes. |
+
+## Home Flame logo installation — 2026-10-21
+
+Owner-supplied artwork installed with OpenAI Codex; no model or data changes. Owners retain responsibility for artwork rights and contribution statements.
+
+- `index.html`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `ios/App/App/Assets.xcassets/AppIcon.appiconset/Contents.json`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `ios/App/App/Base.lproj/LaunchScreen.storyboard`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `public/apple-touch-icon.png`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `public/favicon.svg`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `public/icon-192.png`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `public/icon-512.png`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `public/manifest.webmanifest`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `web/ResidentView.jsx`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `web/app.css`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `web/components/EvidencePrimitives.jsx`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `web/components/PrintSheet.jsx`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `web/components/StandaloneHeader.jsx`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `web/components/Welcome.jsx`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `brand/hearth_logo_A/app-icon.svg`: owner-supplied artwork; TODO (author): describe review.
+- `brand/hearth_logo_A/apple-touch-icon.png`: owner-supplied artwork; TODO (author): describe review.
+- `brand/hearth_logo_A/favicon.svg`: owner-supplied artwork; TODO (author): describe review.
+- `brand/hearth_logo_A/icon-1024.png`: owner-supplied artwork; TODO (author): describe review.
+- `brand/hearth_logo_A/icon-180.png`: owner-supplied artwork; TODO (author): describe review.
+- `brand/hearth_logo_A/icon-192.png`: owner-supplied artwork; TODO (author): describe review.
+- `brand/hearth_logo_A/icon-512.png`: owner-supplied artwork; TODO (author): describe review.
+- `brand/hearth_logo_A/logo-mark.svg`: owner-supplied artwork; TODO (author): describe review.
+- `ios/App/App/Assets.xcassets/AppIcon.appiconset/icon-1024.png`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `ios/App/App/Assets.xcassets/HomeFlame.imageset/Contents.json`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `ios/App/App/Assets.xcassets/HomeFlame.imageset/logo-mark.svg`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `public/logo-mark.svg`: Codex-assisted asset integration or documentation; TODO (author): describe review.
+- `web/components/LogoMark.jsx`: Codex-assisted asset integration or documentation; TODO (author): describe review.

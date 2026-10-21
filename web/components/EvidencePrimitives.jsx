@@ -1,8 +1,10 @@
+import { LogoMark } from './LogoMark.jsx';
 import React from 'react';
 import { fmt } from '../model.js';
 export function Brand() {
   return (
     <a className="brand" href="/" aria-label="HEARTH home">
+      <LogoMark />
       HEARTH
     </a>
   );

@@ -7507,3 +7507,7 @@ html[data-native-shell='true'][data-keyboard-open='true'] .native-header {
   width: 100%;
   margin: 0;
 }
+
+/* Supplied Home Flame identity. */
+.hearth-logo-mark { width: 22px; height: 22px; flex: 0 0 22px; display: block; }
+.hearth-wordmark, .brand { display: inline-flex; align-items: center; gap: 8px; }

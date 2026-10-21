@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-21 — Home Flame logo
+
+Installed the supplied Home Flame artwork in headers, loading screen, web icons and native iOS icon/launch assets. No model, data or navigation changes.
+
 ## 2026-10-21 — Repository documentation cleanup
 
 Removed retired UI briefs, iterative review reports and duplicate generated captures. Consolidated AI disclosures and contributor guidance; retained scientific documentation, verification scripts and native review limitations. No application, data or model changes.
