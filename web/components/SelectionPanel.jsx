@@ -1,3 +1,4 @@
+import { InterfaceIcon } from './InterfaceIcon.jsx';
 import React from 'react';
 import { ZoneDetail } from './ZoneDetail.jsx';
 export function SelectionPanel({ detailProps, close }) {
@@ -11,7 +12,7 @@ export function SelectionPanel({ detailProps, close }) {
       <div className="selection-bar">
         <h2>Area details</h2>
         <button className="icon-button" aria-label="Close area details" onClick={close}>
-          ×
+          <InterfaceIcon name="close" />
         </button>
       </div>
       <ZoneDetail {...detailProps} id="drawer-zone" />

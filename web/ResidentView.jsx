@@ -1,3 +1,4 @@
+import { InterfaceIcon } from './components/InterfaceIcon.jsx';
 import React, { useMemo, useState } from 'react';
 import { enrichZones, mapPaths } from './model.js';
 import { HOME_VIEW, fitPaths } from './mapGeometry.js';
@@ -39,7 +40,9 @@ export function ResidentView({ data, choose, switchView }) {
         <header className="resident-header">
           <strong>HEARTH</strong>
           <details className="native-menu">
-            <summary aria-label="App options">⋯</summary>
+            <summary aria-label="App options">
+              <InterfaceIcon name="more" />
+            </summary>
             <div className="menu-content">
               <button onClick={switchView}>Switch view</button>
             </div>

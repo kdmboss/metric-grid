@@ -7360,3 +7360,150 @@ html[data-native-shell='true'][data-keyboard-open='true'] .native-header {
   visibility: hidden;
   pointer-events: none;
 }
+
+/* Hallmark · component cleanup · existing paper/ember system
+ * Pre-emit critique: P4 H4 E4 S5 R5 V4. Shared rhythm and font-independent icons.
+ */
+.interface-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.native-menu summary .interface-icon,
+.scenario-menu summary .interface-icon {
+  width: 24px;
+  height: 24px;
+}
+.map-controls button,
+.icon-button,
+.clear-town {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.planning-app .preparation {
+  display: grid;
+  gap: var(--space-4);
+  padding: 0;
+}
+.workspace-main .prepare-intro {
+  margin: 0;
+  gap: var(--space-3);
+}
+.prepare-intro > div:first-child {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.prepare-intro h2,
+.prepare-intro p {
+  margin: 0;
+}
+.prepare-intro p {
+  line-height: 1.6;
+}
+.prepare-actions {
+  align-items: center;
+  gap: var(--space-2);
+}
+.empty-shortlist {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--space-5);
+}
+.empty-shortlist > span {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin: 0;
+  border-radius: 18px;
+  background: var(--color-accent-surface);
+  color: var(--color-accent);
+}
+.empty-shortlist > span .interface-icon {
+  width: 26px;
+  height: 26px;
+}
+.empty-shortlist h3,
+.empty-shortlist p {
+  margin: 0;
+}
+.empty-shortlist p {
+  max-width: 44ch;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+.empty-shortlist .primary-button {
+  justify-content: center;
+  margin-top: var(--space-1);
+  min-height: 44px;
+}
+.preparation .shortlist-count {
+  margin: 0;
+}
+.preparation .county-import-disclosure {
+  margin: 0;
+}
+.app-footer p {
+  margin: 0;
+}
+.app-footer .text-button {
+  white-space: nowrap;
+}
+.workspace-legend > div:first-child {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+}
+@media (max-width: 700px) {
+  .workspace-main .prepare-intro {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+  }
+  .empty-shortlist {
+    max-width: none;
+    padding: var(--space-4) var(--space-3);
+    gap: var(--space-3);
+  }
+  .empty-shortlist .primary-button {
+    width: 100%;
+  }
+  .native-header .native-menu summary {
+    padding: 0;
+    line-height: 1;
+  }
+  .workspace-legend > div:first-child {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .workspace-legend > div:first-child > strong {
+    grid-column: 1 / -1;
+  }
+}
+.workspace-legend .legend-ramp {
+  display: grid;
+  grid-template-columns: auto minmax(80px, 160px) auto;
+  justify-content: start;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+}
+.workspace-legend .legend-ramp > span:first-child {
+  grid-column: 1 / -1;
+}
+.workspace-legend .legend-ramp .ramp {
+  width: 100%;
+  margin: 0;
+}

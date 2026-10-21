@@ -1,3 +1,4 @@
+import { InterfaceIcon } from './InterfaceIcon.jsx';
 import React from 'react';
 import { LAYERS } from '../MapCanvas.jsx';
 export function MapFilters({
@@ -50,7 +51,9 @@ export function MapFilters({
           <label className="sr-only" htmlFor="zone-search">
             Search county, zone ID, or tract GEOID
           </label>
-          <span aria-hidden="true">⌕</span>
+          <span aria-hidden="true">
+            <InterfaceIcon name="search" />
+          </span>
           <input
             id="zone-search"
             ref={searchRef}

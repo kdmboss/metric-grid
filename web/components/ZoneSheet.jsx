@@ -1,3 +1,4 @@
+import { InterfaceIcon } from './InterfaceIcon.jsx';
 import React, { useRef, useState } from 'react';
 import { Status } from './EvidencePrimitives.jsx';
 import { status } from '../model.js';
@@ -87,7 +88,7 @@ export function ZoneSheet({ open, close, zone, record, children }) {
           <span aria-hidden="true" />
         </button>
         <button className="icon-button sheet-close" aria-label="Close area details" onClick={close}>
-          ×
+          <InterfaceIcon name="close" />
         </button>
       </div>
       <div className="sheet-peek">

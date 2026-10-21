@@ -1,3 +1,4 @@
+import { InterfaceIcon } from './InterfaceIcon.jsx';
 import React, { useRef } from 'react';
 export function StandaloneHeader({ scrolled, mode, showEvidence, exportScenario, onSwitchView }) {
   const menu = useRef(null);
@@ -16,7 +17,9 @@ export function StandaloneHeader({ scrolled, mode, showEvidence, exportScenario,
         <h1>{mode[0].toUpperCase() + mode.slice(1)}</h1>
       </div>
       <details className="native-menu" ref={menu}>
-        <summary aria-label="App options">⋯</summary>
+        <summary aria-label="App options">
+          <InterfaceIcon name="more" />
+        </summary>
         <div className="menu-content">
           {showEvidence && <button onClick={methods}>Methods & sources</button>}
           {exportScenario && <button onClick={exportData}>Export scenario</button>}

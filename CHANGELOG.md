@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-20 · iOS spacing and icon cleanup (OpenAI Codex)
+
+- Added consistent gaps between Prepare headings, export actions, empty state, shortlist, and county import. Centered the empty-state icon, text, and action.
+- Replaced font-dependent interface symbols with shared inline SVGs for menus, close, search, plus, and minus controls.
+- Aligned map legend labels and ramp; kept footer actions on one line. No data, model, or numerical expectation changes.
+- Verified all primary views at 320/375/414/768px and desktop; npm test/lint/build and the native Xcode build pass. See `docs/IOS_SPACING_REVIEW.md`.
+
 ## 2026-10-20 · iOS Simulator shell (OpenAI Codex)
 
 - Added an isolated `ios-shell` branch with exact Capacitor dependencies and an Xcode project using Swift Package Manager.

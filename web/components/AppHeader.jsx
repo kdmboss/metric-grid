@@ -1,3 +1,4 @@
+import { InterfaceIcon } from './InterfaceIcon.jsx';
 import React from 'react';
 import { Brand } from '../Evidence.jsx';
 export function AppHeader({ showEvidence, exportScenario, onSwitchView }) {
@@ -18,7 +19,9 @@ export function AppHeader({ showEvidence, exportScenario, onSwitchView }) {
           Export
         </button>
         <details className="browser-menu native-menu">
-          <summary aria-label="App options">⋯</summary>
+          <summary aria-label="App options">
+            <InterfaceIcon name="more" />
+          </summary>
           <div className="menu-content">
             <button onClick={() => showEvidence('methods')}>Methods & sources</button>
             <button onClick={exportScenario}>Export scenario</button>

@@ -1,3 +1,4 @@
+import { InterfaceIcon } from './InterfaceIcon.jsx';
 import { lightImpact } from '../platform.js';
 import React from 'react';
 import { fmt, targets } from '../model.js';
@@ -61,7 +62,9 @@ export function ScenarioControls({ data, state, record, update, reset }) {
             Reset
           </button>
           <details className="scenario-menu">
-            <summary aria-label="Scenario options">⋯</summary>
+            <summary aria-label="Scenario options">
+              <InterfaceIcon name="more" />
+            </summary>
             <div className="menu-content">
               <label className="switch-label">
                 <input

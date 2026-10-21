@@ -1,3 +1,4 @@
+import { InterfaceIcon } from './InterfaceIcon.jsx';
 import { isNative } from '../platform.js';
 import { residentCounts } from '../resident.js';
 import React, { useState } from 'react';
@@ -67,7 +68,7 @@ export function TownLookup({ places, zones, record, selected, onPick, onClear, r
                 onClear();
               }}
             >
-              ×
+              <InterfaceIcon name="close" />
             </button>
           )}
           {searching && matches.length > 0 && (

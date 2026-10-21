@@ -1,3 +1,4 @@
+import { InterfaceIcon } from './InterfaceIcon.jsx';
 import { isNative } from '../platform.js';
 import { ShortlistItem } from './ShortlistItem.jsx';
 import { PrintSheet } from './PrintSheet.jsx';
@@ -53,7 +54,9 @@ export function Preparation({
       )}
       {!plan.length ? (
         <div className="empty-shortlist">
-          <span aria-hidden="true">＋</span>
+          <span aria-hidden="true">
+            <InterfaceIcon name="plus" />
+          </span>
           <h3>Start with your map.</h3>
           <p>
             Pick areas on the map to build a list for outreach, warming centers, or backup power.
