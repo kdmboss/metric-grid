@@ -203,3 +203,7 @@ The first visit asks “What brings you here?” with resident/planner choices. 
 5. Run `python3 scripts/cooling_from_log.py --date YYYY-MM-DD --start "6:00 PM" --end "8:00 PM"`, then `npm run data:export` and rebuild.
 
 The optional card appears only after real `data/frozen/node_cooling.json` is supplied. It is a heating-off, power-on test, not an outage-powered logger, and never affects the planning model. No real measurements are shipped in this pass. `--demo` is for tests only: it marks data as a fixture and refuses runtime-data output locations; the web exporter also rejects demo/unverified cooling files. Use a temporary output path for tests. The 64°F line is a test reference; WHO's cold-season reference is 18°C (64.4°F), with warmer conditions potentially needed for vulnerable groups. Straight-line extrapolation from one room is not a prediction.
+
+## iOS Simulator branch
+
+The `ios-shell` branch adds a Capacitor wrapper for Xcode Simulator review. See [iOS Simulator setup](docs/IOS_SIMULATOR.md). The website remains the primary published app.

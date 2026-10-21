@@ -1,0 +1,12 @@
+........................................................................ [ 36%]
+.............s.........................................................s [ 72%]
+sss.........s................s..........................                 [100%]
+=============================== warnings summary ===============================
+tests/test_audit.py: 1 warning
+tests/test_loadonly.py: 1 warning
+tests/test_sensitivity_scenarios.py: 25 warnings
+  /Users/karthikmalireddy/Documents/ChatGPT/Metric/src/metric_grid/model/harm.py:65: MissingDataWarning: Zone 9 has no SVI data but 0 occupied households, so its H_human is 0 by definition (not a zero-fill); it is included in normalization as 0 and shown grey on the maps.
+    warnings.warn(f"Zone {ids} has no SVI data but 0 occupied households, so its H_human is 0 by definition (not a zero-fill); "
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+193 passed, 7 skipped, 27 warnings in 489.16s (0:08:09)

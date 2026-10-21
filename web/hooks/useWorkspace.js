@@ -1,3 +1,4 @@
+import { lightImpact } from '../platform.js';
 import { useAppShell } from './useAppShell.js';
 import { useMapAnimation } from './useMapAnimation.js';
 import { useEffect, useRef, useState } from 'react';
@@ -65,6 +66,7 @@ export function useWorkspace(data) {
   useWorkspaceKeys(setState, printMode, setPrintMode);
   const update = (patch) => setState((current) => ({ ...current, ...patch }));
   function selectZone(id) {
+    if (id) void lightImpact();
     update({ zone: id });
     setSelectedPlace(null);
     if (shell.present && id) {

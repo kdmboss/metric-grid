@@ -1,3 +1,4 @@
+import { isNative } from '../platform.js';
 import React, { useEffect, useRef } from 'react';
 export function Welcome({ choose }) {
   const first = useRef(null),
@@ -34,7 +35,9 @@ export function Welcome({ choose }) {
           <strong>Plan for an outage</strong>
           <span>Compare plans, explore areas, build a shortlist.</span>
         </button>
-        <p>No account needed. Your choice stays in this browser.</p>
+        <p>
+          No account needed. Your choice stays {isNative() ? 'on this device' : 'in this browser'}.
+        </p>
       </section>
     </div>
   );

@@ -1,3 +1,4 @@
+import { isNative } from '../platform.js';
 import { ShortlistItem } from './ShortlistItem.jsx';
 import { PrintSheet } from './PrintSheet.jsx';
 import { Arrow } from './Arrow.jsx';
@@ -35,17 +36,19 @@ export function Preparation({
           >
             Export CSV <Arrow direction="down" />
           </button>
-          <button
-            className="button"
-            disabled={!rows.length}
-            onClick={() => setPrintMode(!printMode)}
-          >
-            {printMode ? 'Close print view' : 'Print view'}
-          </button>
+          {!isNative() && (
+            <button
+              className="button"
+              disabled={!rows.length}
+              onClick={() => setPrintMode(!printMode)}
+            >
+              {printMode ? 'Close print view' : 'Print view'}
+            </button>
+          )}
         </div>
       </div>
 
-      {printMode && (
+      {printMode && !isNative() && (
         <PrintSheet setPrintMode={setPrintMode} data={data} record={record} rows={rows} />
       )}
       {!plan.length ? (

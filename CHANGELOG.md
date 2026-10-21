@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-20 · iOS Simulator shell (OpenAI Codex)
+
+- Added an isolated `ios-shell` branch with exact Capacitor dependencies and an Xcode project using Swift Package Manager.
+- Added native shell detection, cache-file sharing, in-app source links, light haptics, keyboard-aware navigation, portrait orientation, paper launch screen, and original app icons.
+- Kept website downloads and page zoom, and hid native printing. No model, data, or numerical test expectation changes; no production deployment.
+- Verification and Simulator limitations are recorded in `docs/IOS_REVIEW.md`.
+
 ## 2026-10-20 · Pass 6, last cleanup (OpenAI Codex)
 
 - Consolidated resident caveats into one replay note and replaced text-heavy answers with shared count pills; removed the resident district totals as requested.

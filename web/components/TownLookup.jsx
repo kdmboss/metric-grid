@@ -1,3 +1,4 @@
+import { isNative } from '../platform.js';
 import { residentCounts } from '../resident.js';
 import React, { useState } from 'react';
 import { Status } from './EvidencePrimitives.jsx';
@@ -33,6 +34,7 @@ export function TownLookup({ places, zones, record, selected, onPick, onClear, r
     setQuery(place.name);
     setSearching(false);
     onPick(place);
+    if (isNative()) document.getElementById('place-search')?.blur();
   }
   return (
     <section className="town-lookup" aria-label="Check your area" data-area-lookup-card>
@@ -46,6 +48,7 @@ export function TownLookup({ places, zones, record, selected, onPick, onClear, r
             aria-autocomplete="list"
             placeholder={resident ? 'Type your town…' : 'Town or place…'}
             autoComplete="off"
+            spellCheck={false}
             value={query}
             onChange={change}
             onFocus={() => setSearching(true)}

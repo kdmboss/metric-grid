@@ -1,8 +1,7 @@
+import { isAppShell } from '../platform.js';
 import { useEffect, useState } from 'react';
 export function useAppShell() {
-  const [standalone, setStandalone] = useState(
-    () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true,
-  );
+  const [standalone, setStandalone] = useState(() => isAppShell());
   const [scrolled, setScrolled] = useState(() => scrollY > 32);
   const [present, setPresent] = useState(
     () => new URLSearchParams(location.search).get('present') === '1',
@@ -10,7 +9,7 @@ export function useAppShell() {
   useEffect(() => {
     const media = matchMedia('(display-mode: standalone)');
     function display() {
-      setStandalone(media.matches || navigator.standalone === true);
+      setStandalone(isAppShell());
     }
     function scroll() {
       setScrolled(scrollY > 32);

@@ -14,3 +14,13 @@ public/fonts/
 public/methods/
 artifacts/
 .vercel
+
+# Capacitor generated bundles and local Xcode output
+ios/App/App/public/
+ios/App/App/capacitor.config.json
+ios/App/App/config.xml
+ios/App/build/
+ios/build/
+ios/DerivedData/
+ios/**/xcuserdata/
+ios/**/.build/

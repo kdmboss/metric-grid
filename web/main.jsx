@@ -1,3 +1,4 @@
+import { initializeNativeShell } from './platform.js';
 import './app.css';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
@@ -27,6 +28,7 @@ class ErrorBoundary extends React.Component {
     );
   }
 }
+initializeNativeShell();
 const root = createRoot(document.getElementById('root'));
 root.render(
   <div className="load-screen" role="status">
@@ -35,7 +37,7 @@ root.render(
     <p>Preparing the scenario comparison.</p>
   </div>,
 );
-fetch('/data/app.json')
+fetch('data/app.json')
   .then((response) => {
     if (!response.ok) throw new Error('Frozen data unavailable');
     return response.json();

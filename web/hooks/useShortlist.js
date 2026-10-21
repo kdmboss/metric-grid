@@ -1,3 +1,4 @@
+import { lightImpact } from '../platform.js';
 import { useEffect, useMemo, useState } from 'react';
 import { FOLLOWUPS, STORAGE_KEY, sanitizePlan } from '../planning.js';
 export function useShortlist(data) {
@@ -23,6 +24,7 @@ export function useShortlist(data) {
     }
   }, [plan, validIds]);
   function addZone(id) {
+    if (!plan.some((item) => item.zone === id)) void lightImpact();
     setPlan((current) =>
       current.some((p) => p.zone === id)
         ? current

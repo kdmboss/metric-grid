@@ -7312,3 +7312,51 @@ button:active {
     letter-spacing: normal;
   }
 }
+
+/* WKWebView shell: preserve map gestures and selectable Methods text. */
+html[data-native-shell='true'],
+html[data-native-shell='true'] body {
+  background: #F6F3EE;
+  overscroll-behavior: none;
+}
+html[data-native-shell='true'] button,
+html[data-native-shell='true'] select,
+html[data-native-shell='true'] .interactive-map,
+html[data-native-shell='true'] .mode-tabs {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+html[data-native-shell='true'][data-keyboard-open='true'] .mode-tabs {
+  display: none;
+}
+html[data-native-shell='true'][data-keyboard-open='true'] .place-results {
+  max-height: 30dvh;
+  overflow-y: auto;
+}
+
+@media (max-width: 700px) {
+  html[data-native-shell='true'] .planning-app.is-standalone {
+    padding-top: calc(88px + max(env(safe-area-inset-top), var(--native-safe-top, 0px)));
+  }
+  html[data-native-shell='true'] .is-standalone .native-header {
+    padding-top: max(env(safe-area-inset-top), var(--native-safe-top, 0px));
+    height: calc(88px + max(env(safe-area-inset-top), var(--native-safe-top, 0px)));
+  }
+  html[data-native-shell='true'] .is-standalone .native-header[data-scrolled='true'] {
+    height: calc(56px + max(env(safe-area-inset-top), var(--native-safe-top, 0px)));
+  }
+  html[data-native-shell='true'] .native-header[data-scrolled='true'] h1 {
+    top: calc(28px + max(env(safe-area-inset-top), var(--native-safe-top, 0px)));
+    transform: translate(-50%, -50%);
+  }
+  html[data-native-shell='true'] .zone-sheet {
+    max-height: calc(100dvh - 65px - env(safe-area-inset-bottom) - max(env(safe-area-inset-top), var(--native-safe-top, 0px)) - 12px);
+  }
+}
+
+/* Text entry owns the screen while WKWebView moves its visual viewport. */
+html[data-native-shell='true'][data-keyboard-open='true'] .native-header {
+  visibility: hidden;
+  pointer-events: none;
+}

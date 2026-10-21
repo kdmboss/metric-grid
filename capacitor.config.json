@@ -1,0 +1,21 @@
+{
+  "appId": "org.hearth.nc08",
+  "appName": "HEARTH",
+  "webDir": "dist",
+  "backgroundColor": "#F6F3EE",
+  "ios": {
+    "contentInset": "never",
+    "scrollEnabled": true,
+    "zoomEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 600,
+      "backgroundColor": "#F6F3EE",
+      "launchAutoHide": true
+    },
+    "StatusBar": {
+      "style": "LIGHT"
+    }
+  }
+}

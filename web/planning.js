@@ -1,3 +1,4 @@
+import { isNative, shareFile } from './platform.js';
 import { fmt, status } from './model.js';
 export const STORAGE_KEY = 'metric-grid.planning.v1';
 export const FOLLOWUPS = ['Outreach', 'Warming-center assessment', 'Backup-power investigation'];
@@ -85,6 +86,12 @@ export function shortlistCsv(rows) {
   );
 }
 export function download(text, name, type = 'text/csv;charset=utf-8') {
+  if (isNative()) {
+    void shareFile(text, name).catch(() =>
+      window.alert('The file could not be shared. Please try again.'),
+    );
+    return;
+  }
   const url = URL.createObjectURL(
     new Blob([text], {
       type,

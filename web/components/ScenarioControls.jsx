@@ -1,3 +1,4 @@
+import { lightImpact } from '../platform.js';
 import React from 'react';
 import { fmt, targets } from '../model.js';
 import { objectiveExplanation } from '../presentation.js';
@@ -43,7 +44,11 @@ export function ScenarioControls({ data, state, record, update, reset }) {
               step="1"
               value={index}
               aria-valuetext={priorityName(state.alpha)}
-              onChange={(event) => update({ alpha: grid[Number(event.target.value)] })}
+              onChange={(event) => {
+                const next = grid[Number(event.target.value)];
+                if (next !== state.alpha) void lightImpact();
+                update({ alpha: next });
+              }}
             />
           </div>
           <div className="range-labels">
