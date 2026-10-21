@@ -1,6 +1,6 @@
 # iOS spacing and icon cleanup
 
-Existing layout and brand retained. Model, frozen inputs, calculations, and numerical test expectations are unchanged. Changes are local on `ios-shell`; main and production are unchanged.
+Existing layout and brand retained. Model, frozen inputs, calculations, and numerical test expectations are unchanged. Changes are published on `ios-shell`; main and production are unchanged.
 
 ## Fixed
 
@@ -17,7 +17,7 @@ Existing layout and brand retained. Model, frozen inputs, calculations, and nume
 - WebKit at 320, 375, 414, and 768px: Compare, Explore, Prepare, Evidence, every Evidence section, Changes, resident Albemarle, and populated shortlists checked.
 - Prepare section gaps and horizontal icon/title centering have numerical layout assertions. Status pills fit; phone menus stay within screen bounds.
 - Chrome 1440px: all primary tabs render without horizontal overflow. No page errors across the tested views.
-- Screenshots and raw results: `docs/figures/ios-spacing/`.
+- Selected browser preview screenshots: `docs/figures/ios-spacing/`.
 
 The screenshots in this pass are browser app-mode previews, not new native captures. Simulator display automation did not expose the review device reliably and its screenshot command returned an image-creation error. The previous native touch and SE letterboxing follow-ups in `IOS_REVIEW.md` remain; this cleanup does not claim to resolve those separate issues.
 

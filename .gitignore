@@ -13,7 +13,6 @@ public/data/
 public/fonts/
 public/methods/
 artifacts/
-.vercel
 
 # Capacitor generated bundles and local Xcode output
 ios/App/App/public/
@@ -24,3 +23,11 @@ ios/build/
 ios/DerivedData/
 ios/**/xcuserdata/
 ios/**/.build/
+
+# Local design-session metadata and generated review artifacts
+.hallmark/
+docs/figures/ui-pass*/
+docs/figures/app-refinement/
+docs/figures/ios-clean/
+docs/figures/ios-map-first/
+docs/figures/ios-tabs/

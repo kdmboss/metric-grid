@@ -61,7 +61,7 @@ npx vercel          # preview deployment; authenticate when prompted
 npx vercel --prod   # production deployment
 ```
 
-`npm test` checks all 40 precomputed scenarios, comparison distributions, target bands, county caps, protected zones, example buildings, and deep links. For browser acceptance checks, install Playwright in your development environment and run `SMOKE_URL=http://127.0.0.1:5173 node scripts/ui-pass2-smoke.cjs`. `PLAYWRIGHT_MODULE` can select a bundled Playwright module; Chromium uses the installed Google Chrome; WebKit uses Playwright’s downloaded build. `SMOKE_URL` selects a deployed or production-preview URL. UI pass 2 screenshots are saved to `docs/figures/ui-pass2/`. Install Playwright WebKit for the Safari-engine checks; `PLAYWRIGHT_BROWSERS_PATH` can select a local browser cache.
+`npm test` checks all 40 precomputed scenarios, comparison distributions, target bands, county caps, protected zones, example buildings, and deep links. For browser acceptance checks, install Playwright in your development environment and run `SMOKE_URL=http://127.0.0.1:5173 node scripts/ui-pass2-smoke.cjs`. `PLAYWRIGHT_MODULE` can select a bundled Playwright module; Chromium uses the installed Google Chrome; WebKit uses Playwright’s downloaded build. `SMOKE_URL` selects a deployed or production-preview URL. Generated screenshots are local review artifacts and are not committed. Install Playwright WebKit for the Safari-engine checks; `PLAYWRIGHT_BROWSERS_PATH` can select a local browser cache.
 
 ![HEARTH comparison interface](docs/figures/ui_first_screen_1440.png)
 
@@ -144,7 +144,7 @@ URLs, retrieval notes and every fallback are in `docs/DATA_SOURCES.md` and `docs
 
 ## Layout
 
-`config.yaml` (every constant), `src/metric_grid/{ingest,geometry,model,train,app}` (`train/` is the build-time demand model), `tests/`, `data/frozen/` (runtime inputs), `docs/` (sources, assumptions, AI disclosure, video shot list, reviews), `scripts/app_screenshots.py` (dev tool). `docs/SPEC.md` is the original brief; amendments are in `CLAUDE.md` and `docs/ASSUMPTIONS.md`.
+`config.yaml` (every constant), `src/metric_grid/{ingest,geometry,model,train,app}` (`train/` is the build-time demand model), `tests/`, `data/frozen/` (runtime inputs), `docs/` (sources, assumptions, AI disclosure, video shot list, reviews), `scripts/app_screenshots.py` (dev tool). `docs/SPEC.md` is the original brief; amendments are recorded in the specification and `docs/ASSUMPTIONS.md`.
 
 ## Prior work
 
@@ -188,7 +188,7 @@ The current review interface uses a warm light theme, self-hosted Inter, three o
 
 Run `make places` to build only `data/frozen/places.json` from the official 2024 NC TIGER place polygons and the existing frozen district/tract geometry. It reuses the existing ingest/intersection functions; it does not run the optimizer or rebuild scenarios. Then run `npm run data:export` (also included in development/build commands). The current lookup contains 79 places, including Albemarle, Rockingham, Laurinburg and Lumberton. Census place boundaries intersect aggregate tract zones; this is not an address lookup.
 
-UI pass 3 adds a desktop overlay drawer, compact scenario controls, a nonmodal phone sheet, conditional installed-app navigation, and `?present=1` (or P outside text inputs) for recording. Review screenshots and verification limits: [UI pass 3 review](docs/UI_PASS3_REVIEW.md). No physical iOS installation is claimed.
+The interface supports compact controls, a phone detail sheet, installed-app navigation and presentation mode (`?present=1`). Native setup and verification limits are documented in [iOS Simulator setup](docs/IOS_SIMULATOR.md) and [iOS review](docs/IOS_REVIEW.md).
 
 ## Resident and planner entry (feature freeze)
 

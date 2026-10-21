@@ -1,5 +1,0 @@
-Shared Cut/Kept on/Protected pills have scrollWidth <= clientWidth; both maps remain left of the 360px panel.
-Albemarle has context padding, labels on both maps, live summary and an in-field clear control.
-Regular Safari comparison tabs and plan toggle stack without overlap; Export is in the menu.
-WebKit touchscreen tapped visible tract 136 on the displayed map and opened peek; Changes is reachable from the app selector.
-No horizontal page overflow at 320/375/414/768px.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-21 — Repository documentation cleanup
+
+Removed retired UI briefs, iterative review reports and duplicate generated captures. Consolidated AI disclosures and contributor guidance; retained scientific documentation, verification scripts and native review limitations. No application, data or model changes.
+
 ## 2026-10-20 · iOS spacing and icon cleanup (OpenAI Codex)
 
 - Added consistent gaps between Prepare headings, export actions, empty state, shortlist, and county import. Centered the empty-state icon, text, and action.

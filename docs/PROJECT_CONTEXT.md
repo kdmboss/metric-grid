@@ -8,7 +8,7 @@ HEARTH helps emergency planners and community stakeholders compare how load-only
 
 Primary public app: https://metric-grid.vercel.app/. The current interface is React + JavaScript, built with Vite and deployed as a static Vercel site. The original Python model and data pipeline produce the precomputed optimization results. The browser selects those results and computes presentation summaries locally. No live optimization, runtime external data services, secrets or database are required. The retained Streamlit interface is for reproducibility, not the primary submission link.
 
-The current UI branch is `codex/map-first-workspace`; production remains unchanged during review. Preview URLs are temporary and may require Vercel sign-in. Do not promote a preview or merge to production without the owner’s approval.
+The iOS wrapper is maintained on `ios-shell`; the published web application is maintained on `main`. Preview URLs are temporary and may require Vercel sign-in. Do not promote a preview or merge to production without the owner’s approval.
 
 ## Navigation
 
@@ -42,11 +42,6 @@ Update `CHANGELOG.md`, `docs/AI_DISCLOSURE.md`, `docs/VIDEO_SHOTLIST.md` and rev
 The current visual cleanup uses the owner-specified warm light theme, Inter only, a wordmark-only header, three KPI tiles, collapsed filters, and mobile map toggles with a zone detail sheet. Shared tokens are in `tokens.css`; visual verification is `node scripts/cleanup-smoke.cjs` with the configured Playwright module. Home-screen metadata uses a standalone manifest and original H icons; no service worker or background data refresh was added.
 
 
-## UI pass 3 (2026-10-20)
+## Resident experience and feature scope
 
-Current local UI uses Apple system fonts first, five shared spacing tokens, a 360px desktop detail drawer and a nonmodal phone sheet with peek/half/full detents. Installed-app mode adds the collapsing header and bottom tabs; regular browser navigation remains available. Presentation mode is `?present=1` or P outside inputs. The separately generated Census lookup now has 79 places; `make places` builds it without rerunning any scenario/model pipeline. Only `data/frozen/places.json` is new; other frozen inputs/results and Python modules remain unchanged. See `UI_PASS3_REVIEW.md` for browser checks and physical-device limitations. Production is unchanged by this pass.
-
-
-## Pass 5 and feature freeze
-
-The public interface has a local resident/planner welcome choice with URL overrides and a menu switch. Resident mode is a fixed Elliott/Balanced, cap-off example and never uses retained planner controls to change its result. Planner mode retains its scenarios and four tabs. The optional independent cooling card is hidden without real heat-off/power-on measurements; no real data ships yet. Test fixtures are blocked from runtime export. WHO's reference is 18°C (64.4°F); 64°F is a separately labeled test line. Features are now frozen; follow-up work is bug fixes, validation and submission preparation. No production deployment in pass 5.
+The public interface has a local resident/planner welcome choice with URL overrides and a menu switch. Resident mode is a fixed Elliott/Balanced, cap-off example and never uses retained planner controls to change its result. Planner mode retains its scenarios and four tabs. The optional independent cooling card is hidden without real heat-off/power-on measurements; no real data ships yet. Test fixtures are blocked from runtime export. WHO's reference is 18°C (64.4°F); 64°F is a separately labeled test line. Features are now frozen; follow-up work is bug fixes, validation and submission preparation. Native verification limits are documented in IOS_REVIEW.md.

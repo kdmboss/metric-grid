@@ -1,5 +1,0 @@
-320px: all four tabs, Changes, resident result, centered empty state and section spacing passed.
-375px: all four tabs, Changes, resident result, centered empty state and section spacing passed.
-414px: all four tabs, Changes, resident result, centered empty state and section spacing passed.
-768px: all four tabs, Changes, resident result, centered empty state and section spacing passed.
-1440px desktop: all four tabs render without overflow; no page errors across either browser engine.
