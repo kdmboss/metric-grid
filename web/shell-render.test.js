@@ -50,7 +50,7 @@ test('Home renders with 0 places, 0 devices and a fresh checklist', async () => 
     'Home',
     'Good evening',
     'Add your town',
-    '0 of 9 ready',
+    '0 of 10 ready',
     'Add place',
     'Start cooling test',
     'Share my plan',
@@ -59,11 +59,26 @@ test('Home renders with 0 places, 0 devices and a fresh checklist', async () => 
   assert.ok(!out.includes('Sample data'));
   assert.ok(out.split(' ').length <= 40, `Home has ${out.split(' ').length} words`);
 });
+const FIXTURE = {
+  device: { id: 'fixture', name: 'Living room' },
+  readings: Array.from({ length: 40 }, (_, i) => ({
+    t: new Date(NOW.getTime() - (39 - i) * 5 * 60000 - 3 * 60000).toISOString().slice(0, 19),
+    temp_f: 67 + i / 40,
+  })),
+  events: [
+    {
+      start: '2026-10-20T18:02:00',
+      end: '2026-10-20T21:14:00',
+      temp_start_f: 71.2,
+      temp_end_f: 63.9,
+    },
+  ],
+};
 test('Home with a place, a device and checklist progress stays glanceable', async () => {
   const { Home } = await load('/web/shell/Home.jsx');
-  const { makeSampleDevice } = await load('/web/demo/deviceSample.js');
+  const { resolveDevices } = await load('/web/device/deviceData.js');
   const { readyProgress } = await load('/web/shell/ready.js');
-  const device = makeSampleDevice(NOW.getTime());
+  const [device] = resolveDevices(FIXTURE);
   const out = text(
     renderToStaticMarkup(
       h(
@@ -72,87 +87,59 @@ test('Home with a place, a device and checklist progress stays glanceable', asyn
           place: { name: 'Albemarle', geoid: '1', zone_ids: [1, 2] },
           counts: { total: 2, baseline: 2, aware: 0 },
           device,
-          progress: readyProgress({}, [
-            'layers',
-            'room',
-            'center',
-            'charge',
-            'light',
-            'stove',
-            'co',
-          ]),
+          progress: readyProgress({}, ['layers', 'charge', 'light']),
         }),
       ),
     ),
   );
-  for (const expected of [
-    'Albemarle',
-    '2 areas lose power',
-    'All stay on',
-    'Living room',
-    'Sample data',
-    '7 of 9 ready',
-  ])
+  for (const expected of ['Albemarle', '2 areas lose power', 'All stay on', 'Living room', 'of'])
     assert.ok(out.includes(expected), expected);
+  assert.ok(!out.includes('Sample'));
   assert.ok(out.split(' ').length <= 48, `Home has ${out.split(' ').length} words`);
 });
-test('every sample-derived surface carries the Sample data badge; real devices never do', async () => {
-  const { makeSampleDevice } = await load('/web/demo/deviceSample.js');
+test('Devices: a clean empty state without data, real rows and outage math with data', async () => {
   const { resolveDevices } = await load('/web/device/deviceData.js');
-  const { DeviceRow, DeviceScreen, OutageDetail, OutageRow, DevicesTab } =
-    await load('/web/shell/Devices.jsx');
-  const sample = makeSampleDevice(NOW.getTime());
+  const { DevicesTab, DeviceScreen, OutageDetail } = await load('/web/shell/Devices.jsx');
   const render = (el) => text(renderToStaticMarkup(el));
-  assert.ok(render(h(DeviceRow, { device: sample, onOpen: noop })).includes('Sample data'));
-  assert.ok(
-    render(h(DevicesTab, { devices: [sample], onOpen: noop, onAdd: noop })).includes('Sample data'),
-  );
-  assert.ok(
-    render(
-      h(DeviceScreen, {
-        device: sample,
-        home: false,
-        setHome: noop,
-        onOutage: noop,
-        onCooling: noop,
-      }),
-    ).includes('Sample data'),
-  );
-  assert.ok(sample.events.length > 0);
-  for (const event of sample.events) {
-    assert.ok(
-      render(h(OutageRow, { event, device: sample, onOpen: noop })).includes('Sample data'),
+  const empty = render(h(DevicesTab, { devices: [], onOpen: noop, onSetup: noop }));
+  for (const expected of ['No device connected yet', 'logs power outages', 'How to set it up'])
+    assert.ok(empty.includes(expected), expected);
+  const [device] = resolveDevices(FIXTURE);
+  const screen = render(h(DeviceScreen, { device, home: true, setHome: noop, onOutage: noop }));
+  for (const expected of [
+    'Last reading',
+    'Power outages',
+    '6:02 PM – 9:14 PM',
+    '3 h 12 min',
+    '−7.3 °F',
+  ])
+    assert.ok(screen.includes(expected), expected);
+  const detail = render(h(OutageDetail, { event: device.events[0] }));
+  for (const expected of [
+    '3 h 12 min',
+    'Power off',
+    'Power back',
+    '71.2 °F',
+    '63.9 °F',
+    '7.3 °F',
+    '2.3 °F/hour',
+    'Recorded by HEARTH Home in this room.',
+  ])
+    assert.ok(detail.includes(expected), expected);
+});
+test('no sample or demo device data exists anywhere in the app source', async () => {
+  const { readdirSync, readFileSync, existsSync } = await import('node:fs');
+  const walk = (dir) =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walk(`${dir}/${e.name}`) : [`${dir}/${e.name}`],
     );
-    assert.ok(render(h(OutageDetail, { device: sample, event })).includes('Sample data'));
-  }
-  const real = resolveDevices(
-    {
-      device: { name: 'Hall' },
-      readings: [
-        { t: '2026-10-21T19:55:00', temp_f: 66.4 },
-        { t: '2026-10-21T19:50:00', temp_f: 66.2 },
-      ],
-      events: [
-        {
-          start: '2026-10-20T03:00:00',
-          end: '2026-10-20T04:00:00',
-          temp_start_f: 67,
-          temp_end_f: 65,
-        },
-      ],
-    },
-    NOW.getTime(),
-  )[0];
-  assert.equal(real.sample, false);
-  assert.ok(!render(h(DeviceRow, { device: real, onOpen: noop })).includes('Sample data'));
-  assert.ok(
-    !render(
-      h(DeviceScreen, { device: real, home: true, setHome: noop, onOutage: noop, onCooling: noop }),
-    ).includes('Sample data'),
-  );
-  const detail = render(h(OutageDetail, { device: real, event: real.events[0] }));
-  assert.ok(!detail.includes('Sample data'));
-  assert.ok(detail.includes('Recorded by HEARTH Home in this room.'));
+  assert.equal(existsSync('web/demo'), false);
+  for (const file of walk('web').filter((f) => /\.(jsx?|css)$/.test(f) && !f.includes('.test.')))
+    assert.doesNotMatch(
+      readFileSync(file, 'utf8'),
+      /Sample data|Demo device|deviceSample|makeSampleDevice/,
+      file,
+    );
 });
 test('the router sends phones and the app shell to the tabs, and ?view= to the classic planner', async () => {
   const { usesAppShell } = await load('/web/App.jsx');

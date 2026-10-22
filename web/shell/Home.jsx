@@ -4,7 +4,6 @@ import { Button } from '../ui/Button.jsx';
 import { LargeTitleBar } from '../ui/LargeTitleBar.jsx';
 import { Sparkline } from '../ui/Sparkline.jsx';
 import { ProgressRing } from '../ResidentLayer.jsx';
-import { SampleBadge } from './Devices.jsx';
 import { PlanRows } from './placeKit.jsx';
 import { currentTemp } from '../device/deviceData.js';
 import { greeting, relativeTime, sparkSeries } from '../device/outage.js';
@@ -63,10 +62,7 @@ export function Home({
                 label={`${device.room} temperature trend`}
               />
             </span>
-            <span className="card-foot">
-              Updated {relativeTime(device.readings.at(-1).t)}
-              {device.sample && <SampleBadge />}
-            </span>
+            <span className="card-foot">Updated {relativeTime(device.readings.at(-1).t)}</span>
           </button>
         )}
         <button type="button" className="home-card ready-card" onClick={onOpenReady}>

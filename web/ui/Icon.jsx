@@ -44,6 +44,17 @@ import {
   TrendingDown,
   Info,
   Pencil,
+  Shirt,
+  Flashlight,
+  BatteryCharging,
+  Pill,
+  Phone,
+  MessageSquare,
+  Hospital,
+  BedDouble,
+  Siren,
+  LocateFixed,
+  ChevronUp,
 } from 'lucide-react';
 
 const ICONS = {
@@ -93,6 +104,17 @@ const ICONS = {
   map: MapGlyph,
   devices: Thermometer,
   ready: CircleCheck,
+  shirt: Shirt,
+  flashlight: Flashlight,
+  battery: BatteryCharging,
+  pill: Pill,
+  phone: Phone,
+  text: MessageSquare,
+  hospital: Hospital,
+  bed: BedDouble,
+  siren: Siren,
+  locate: LocateFixed,
+  up: ChevronUp,
 };
 
 /** One icon set, one stroke weight. `filled` draws the selected variant used by the tab bar. */

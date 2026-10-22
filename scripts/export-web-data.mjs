@@ -32,6 +32,13 @@ try {
   }
   data.node_cooling = cooling;
 } catch (error) { if (error.code !== 'ENOENT') throw error; }
+try {
+  const facilities = await readFrozen('facilities.geojson');
+  data.facilities = facilities.features.map(f => ({
+    type: f.properties.facility_type, name: f.properties.name,
+    lon: f.geometry.coordinates[0], lat: f.geometry.coordinates[1],
+  }));
+} catch (error) { if (error.code !== 'ENOENT') throw error; data.facilities = []; }
 // Real HEARTH Home logs (written by scripts/device_export.py). Absent files mean the app shows labelled sample data.
 try {
   const events = await readFrozen('device_events.json');

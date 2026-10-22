@@ -21,3 +21,8 @@ Based on `node_screen.ino` (screen layout code is byte-identical; checked with `
 
 ## Tests
 `web/device.test.js` (outage math, sample determinism, real-over-sample priority), `web/shell.test.js` (checklist), `web/shell-render.test.js` (Home with 0 places / 0 devices / fresh checklist, sample badge on every sample surface, routing), `tests/test_device_export.py` (serial log to JSON).
+
+## v3: county map, real-only Devices, Ready
+- **Map** is county-first: county chips (default: the county of your first saved place, else Union; "All NC-08" shows the district), "Who's at risk" and "Plan result" modes, and a county sheet (peek: one sentence + two pills; medium: stats and "Areas to watch"; large: places that stay powered, plan comparison bars, "Change the storm"). Risk rule: `docs/ASSUMPTIONS.md` and Methods. Sentence, sums, risk rule, watch ranking and facilities-by-county are tested in `web/county.test.js`.
+- **Devices** has no sample or demo data at all (`web/demo/` and the "Sample data" badge were deleted). No export means an empty state; an export (`scripts/device_export.py` from the firmware's `EXPORT`) shows the device, a 24 h chart, outages and outage detail.
+- **Ready**: ring, category chips, "why" lines, Done group, warm room, check-on avatars, sticky Share. Links are limited to ReadyNC, Ready.gov and NC 211, each checked on its own page.

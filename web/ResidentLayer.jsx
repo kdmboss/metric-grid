@@ -53,7 +53,7 @@ export function ProgressRing({ done, total, big = false }) {
       </svg>
       <strong>
         {done}
-        <small>/{total}</small>
+        <small>{big ? ` of ${total}` : `/${total}`}</small>
       </strong>
     </span>
   );

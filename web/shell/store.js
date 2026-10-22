@@ -6,6 +6,7 @@ export const KEYS = {
   setup: 'hearth.ready.setup.v2',
   check: 'hearth.ready.people.v2',
   deviceHome: 'hearth.device.home.v2',
+  room: 'hearth.ready.room.v2',
 };
 export function readJSON(key, fallback) {
   try {

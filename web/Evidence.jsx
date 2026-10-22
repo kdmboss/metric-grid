@@ -18,6 +18,7 @@ import { Arrow } from './components/Arrow.jsx';
 import { Group, Row } from './ui/Group.jsx';
 import React from 'react';
 import { fmt } from './model.js';
+import { RISK_RULE } from './county/risk.js';
 export function Evidence({ data, record: r, section = 'robust' }) {
   const { constants: c, config: cfg, sensitivity: sens, panel } = data;
   const plans = data.loadonly.sets[r.loadonly_key].plans;
@@ -74,6 +75,15 @@ export function Evidence({ data, record: r, section = 'robust' }) {
                 most {data.loadonly.method.near_opt_pct}% overshoot. Some valid plans are more
                 likely to be generated than others. The typical plan is closest to the median across
                 four impact measures.
+              </p>
+            </article>
+            <article>
+              <h3>Who’s at risk on the map</h3>
+              <p>
+                An area is high risk when its CDC social vulnerability score is at least{' '}
+                {RISK_RULE.highSvi} or at least {RISK_RULE.highHeat * 100}% of its homes heat with
+                electricity. It is medium risk at {RISK_RULE.mediumSvi} or{' '}
+                {RISK_RULE.mediumHeat * 100}%. Otherwise it is low. Areas with no score are gray.
               </p>
             </article>
             <article>

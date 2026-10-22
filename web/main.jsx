@@ -47,6 +47,17 @@ function Shell({ children }) {
   );
 }
 initializeNativeShell();
+/** Resolved top safe-area inset in px, for sheet geometry that needs a number. */
+function publishSafeTop() {
+  const probe = document.createElement('div');
+  probe.style.cssText = 'position:fixed;visibility:hidden;padding-top:var(--safe-top)';
+  document.body.append(probe);
+  const px = parseFloat(getComputedStyle(probe).paddingTop) || 0;
+  probe.remove();
+  document.documentElement.style.setProperty('--safe-top-px', String(px));
+}
+requestAnimationFrame(publishSafeTop);
+setTimeout(publishSafeTop, 700);
 const root = createRoot(document.getElementById('root'));
 root.render(
   <div className="load-screen is-loading" role="status">

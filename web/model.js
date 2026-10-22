@@ -150,7 +150,8 @@ export function locate(features, point) {
     ),
   )?.properties.zone_id;
 }
-export function mapPaths(zones, district) {
+/** The shared lon/lat to map-space projection used by every tract path. */
+export function mapProjection(zones, district) {
   const all = [...zones.features, ...district.features];
   const points = all.flatMap((f) =>
     f.geometry.coordinates.flat(f.geometry.type === 'MultiPolygon' ? 2 : 1),
@@ -165,6 +166,10 @@ export function mapPaths(zones, district) {
   const scale = Math.min(590 / ((maxX - minX) * aspect), 340 / (maxY - minY));
   const offsetX = (640 - (maxX - minX) * aspect * scale) / 2,
     offsetY = (390 - (maxY - minY) * scale) / 2;
+  return ([x, y]) => [(x - minX) * aspect * scale + offsetX, (maxY - y) * scale + offsetY];
+}
+export function mapPaths(zones, district) {
+  const project = mapProjection(zones, district);
   const path = (geometry) =>
     (geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates)
       .map((polygon) =>
@@ -172,14 +177,10 @@ export function mapPaths(zones, district) {
           .map(
             (ring) =>
               ring
-                .map(
-                  ([x, y], i) =>
-                    '' +
-                    `${i ? 'L' : 'M'}` +
-                    `${((x - minX) * aspect * scale + offsetX).toFixed(2)}` +
-                    ',' +
-                    `${((maxY - y) * scale + offsetY).toFixed(2)}`,
-                )
+                .map((point, i) => {
+                  const [px, py] = project(point);
+                  return `${i ? 'L' : 'M'}${px.toFixed(2)},${py.toFixed(2)}`;
+                })
                 .join('') + 'Z',
           )
           .join(''),

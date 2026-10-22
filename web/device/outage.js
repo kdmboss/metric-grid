@@ -86,3 +86,17 @@ export function smoothReadings(readings) {
     return { ...r, temp_f: near.reduce((n, x) => n + x.temp_f, 0) / near.length };
   });
 }
+/** "6:02 PM" */
+export function clock12(value) {
+  const d = new Date(value),
+    h = d.getHours();
+  return `${h % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
+}
+/** "Oct 22, 9:41 PM" */
+export const stamp = (value) => `${dateLabel(value)}, ${clock12(value)}`;
+/** Readings in the 24 hours before the last one (a device that lost power still shows its last day). */
+export function lastDay(readings) {
+  if (!readings.length) return [];
+  const end = parse(readings.at(-1).t);
+  return readings.filter((r) => end - parse(r.t) <= 24 * 3600000);
+}

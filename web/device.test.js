@@ -9,7 +9,6 @@ import {
   sparkSeries,
 } from './device/outage.js';
 import { hasRealDevice, resolveDevices } from './device/deviceData.js';
-import { makeSampleDevice } from './demo/deviceSample.js';
 
 const NOW = new Date('2026-10-21T20:00:00').getTime();
 
@@ -41,27 +40,7 @@ test('cooling summary uses the median recorded rate and counts down to 64 °F', 
   assert.equal(coolingSummary(events, 60).hoursTo64, 0);
 });
 
-test('sample device is deterministic, labelled, and physically plausible', () => {
-  const a = makeSampleDevice(NOW),
-    b = makeSampleDevice(NOW);
-  assert.deepEqual(a, b);
-  assert.equal(a.sample, true);
-  assert.equal(a.name, 'Demo device');
-  assert.ok(a.events.length >= 3);
-  for (const event of a.events) {
-    const stats = outageStats(event);
-    assert.ok(stats.minutes > 0 && stats.drop > 0 && stats.rate > 0 && stats.rate < 5);
-    assert.ok(Date.parse(event.end) < NOW);
-  }
-  assert.ok(a.readings.length > 150);
-  const times = a.readings.map((r) => Date.parse(r.t));
-  assert.deepEqual(
-    times,
-    [...times].sort((x, y) => x - y),
-  );
-});
-
-test('real device files take priority and sample data is never mixed in', () => {
+test('devices come only from the real export; with no export there are none', () => {
   const real = {
     device: { id: 'abc', name: 'Bedroom' },
     readings: [
@@ -79,15 +58,16 @@ test('real device files take priority and sample data is never mixed in', () => 
     ],
   };
   assert.equal(hasRealDevice(real), true);
-  const [device, ...rest] = resolveDevices(real, NOW);
+  const [device, ...rest] = resolveDevices(real);
   assert.equal(rest.length, 0);
-  assert.equal(device.sample, false);
+  assert.equal(device.room, 'Bedroom');
+  assert.equal('sample' in device, false);
   assert.equal(device.events.length, 1);
   assert.equal(device.readings.length, 2);
   assert.equal(hasRealDevice(null), false);
   assert.equal(hasRealDevice({ readings: [] }), false);
-  const [fallback] = resolveDevices(undefined, NOW);
-  assert.equal(fallback.sample, true);
+  assert.deepEqual(resolveDevices(undefined), []);
+  assert.deepEqual(resolveDevices({ readings: [] }), []);
 });
 
 test('relative time, greeting and spark window', () => {

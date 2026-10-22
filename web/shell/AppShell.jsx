@@ -15,7 +15,7 @@ import { shareText } from '../platform.js';
 import { resolveDevices } from '../device/deviceData.js';
 import { Home } from './Home.jsx';
 import { MapTab } from './MapTab.jsx';
-import { AddDeviceSheet, CoolingTestSheet, DevicePushes, DevicesTab } from './Devices.jsx';
+import { CoolingTestSheet, DevicePushes, DeviceSetupSheet, DevicesTab } from './Devices.jsx';
 import { ReadyTab, SetupSheet } from './Ready.jsx';
 import {
   About,
@@ -29,7 +29,7 @@ import {
 import { PlaceDetail, PlacePicker, planStatus } from './placeKit.jsx';
 import { TabBar, TABS } from './TabBar.jsx';
 import { KEYS, resetAppData, useStored } from './store.js';
-import { readyProgress } from './ready.js';
+import { readyItems, readyProgress } from './ready.js';
 
 const TOOL_MODE = { explore: 'explore', shortlist: 'prepare', evidence: 'evidence' };
 function initialTab() {
@@ -46,7 +46,8 @@ export function AppShell({ data }) {
   const [setup, setSetup] = useStored(KEYS.setup, { done: false });
   const [people, setPeople] = useStored(KEYS.check, []);
   const [homeFlags, setHomeFlags] = useStored(KEYS.deviceHome, {});
-  const devices = useMemo(() => resolveDevices(data.device, Date.now()), [data.device]);
+  const [room, setRoom] = useStored(KEYS.room, '');
+  const devices = useMemo(() => resolveDevices(data.device), [data.device]);
   const homeRecord = useMemo(() => residentRecord(data), [data]);
   const places = data.places || [];
   const [sheet, setSheet] = useState(null); // 'place' | 'device' | 'cooling' | 'setup' | 'reset'
@@ -63,7 +64,7 @@ export function AppShell({ data }) {
   const mainPlace = places.find((p) => p.geoid === saved[0]) || null;
   const counts = mainPlace ? residentCounts(mainPlace, workspace.zones, homeRecord) : null;
   const progress = readyProgress(setup, checked);
-  const homeDevice = devices.find((d) => homeFlags[d.id] ?? !d.sample) || null;
+  const homeDevice = devices.find((d) => homeFlags[d.id] ?? true) || null;
   const openDevice = devices.find((d) => d.id === deviceId) || null;
 
   useEffect(() => {
@@ -117,6 +118,11 @@ export function AppShell({ data }) {
       );
     }
     lines.push(`Winter outage readiness: ${progress.done} of ${progress.total} done.`);
+    const todo = readyItems(setup)
+      .filter((i) => !checked.includes(i.id))
+      .slice(0, 3);
+    if (todo.length) lines.push(`Still to do: ${todo.map((i) => i.short).join(', ')}.`);
+    if (room) lines.push(`Warm room: ${room}.`);
     lines.push(
       'Based on a modeled replay of the Christmas Eve 2022 storm. Not a prediction for your home.',
     );
@@ -166,14 +172,14 @@ export function AppShell({ data }) {
             workspace={workspace}
             views={views}
             zoneOpen={Boolean(zoneSheetShown)}
-            hidePill={Boolean(tool)}
+            homePlace={mainPlace}
           />
         )}
         {tab === 'devices' && (
           <DevicesTab
             devices={devices}
             onOpen={(d) => setDeviceId(d.id)}
-            onAdd={() => setSheet('device')}
+            onSetup={() => setSheet('device')}
           />
         )}
         {tab === 'ready' && (
@@ -183,6 +189,9 @@ export function AppShell({ data }) {
             setChecked={setChecked}
             people={people}
             setPeople={setPeople}
+            room={room}
+            setRoom={setRoom}
+            device={devices[0] || null}
             onSetup={() => setSheet('setup')}
             onShare={sharePlan}
           />
@@ -197,6 +206,7 @@ export function AppShell({ data }) {
           close={workspace.closeDetails}
           zone={workspace.zone}
           record={workspace.record}
+          awareLabel={workspace.record.alpha === 0 ? 'Business cost' : 'People-first'}
         >
           <ZoneDetail {...workspace.detailProps} id="sheet-zone" />
         </ZoneSheet>
@@ -209,7 +219,7 @@ export function AppShell({ data }) {
         saved={saved}
         onAdd={addPlace}
       />
-      <AddDeviceSheet open={sheet === 'device'} onClose={() => setSheet(null)} />
+      <DeviceSetupSheet open={sheet === 'device'} onClose={() => setSheet(null)} />
       <CoolingTestSheet open={sheet === 'cooling'} onClose={() => setSheet(null)} />
       <SetupSheet
         open={sheet === 'setup'}
@@ -246,9 +256,8 @@ export function AppShell({ data }) {
         open={Boolean(openDevice)}
         outage={outage}
         setOutage={setOutage}
-        home={openDevice ? (homeFlags[openDevice.id] ?? !openDevice.sample) : false}
+        home={openDevice ? (homeFlags[openDevice.id] ?? true) : false}
         setHome={(on) => setHomeFlags((f) => ({ ...f, [openDevice.id]: on }))}
-        onCooling={() => setSheet('cooling')}
         setOpen={(on) => {
           if (!on) {
             setDeviceId(null);

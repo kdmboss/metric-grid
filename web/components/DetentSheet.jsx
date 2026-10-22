@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { animate, motion, useDragControls, useMotionValue, useTransform } from 'motion/react';
 import { SPRING_SHEET } from '../ui/springs.js';
 import { lightImpact } from '../platform.js';
@@ -6,7 +6,15 @@ import { lightImpact } from '../platform.js';
 const DETENTS = ['peek', 'medium', 'large'];
 /** Visible height of each detent for the space above the tab bar. */
 export function detentHeights(available, peek = 140) {
-  return { peek, medium: Math.round(available * 0.5), large: Math.round(available * 0.92) };
+  if (typeof document === 'undefined')
+    return { peek, medium: available / 2, large: available * 0.92 };
+  const safe =
+    parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top-px')) || 0;
+  return {
+    peek,
+    medium: Math.round(available * 0.5),
+    large: Math.round(Math.min(available * 0.92, available - Math.max(safe, 44) - 12)),
+  };
 }
 function available() {
   const viewport = window.visualViewport?.height ?? innerHeight;
@@ -23,6 +31,7 @@ function available() {
 export function DetentSheet({
   onDismiss,
   onDetent,
+  collapseKey,
   label,
   peek = 140,
   header,
@@ -40,14 +49,27 @@ export function DetentSheet({
   const dragged = useRef(false);
   useLayoutEffect(() => {
     const measure = () => setSpace(available());
+    measure(); // the tab bar mounts after the first render, so measure again once it exists
+    const later = setTimeout(measure, 120);
     window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
+    return () => {
+      clearTimeout(later);
+      window.removeEventListener('resize', measure);
+    };
   }, []);
   function settle(next) {
     setDetentState(next);
     onDetent?.(next);
     animate(y, offsets[next], SPRING_SHEET);
   }
+  const firstCollapse = useRef(true);
+  useEffect(() => {
+    if (firstCollapse.current) {
+      firstCollapse.current = false;
+      return;
+    }
+    settle('peek');
+  }, [collapseKey]); // eslint-disable-line react-hooks/exhaustive-deps
   function release(_, info) {
     dragged.current = true;
     setTimeout(() => (dragged.current = false), 0);
