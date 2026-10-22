@@ -5,6 +5,7 @@ import { Welcome } from './components/Welcome.jsx';
 import { ENTRY_KEY, entryChoice } from './entry.js';
 import { AppShell } from './shell/AppShell.jsx';
 import { isAppShell } from './platform.js';
+import { CountyDashboard, usesDashboard } from './dashboard/CountyDashboard.jsx';
 
 /** The five-tab app runs on phones and in the app shell; `?view=` keeps the classic planner reachable. */
 export function usesAppShell(search = location.search, shell = isAppShell(), narrow = false) {
@@ -16,7 +17,11 @@ export function App({ data }) {
     isAppShell(),
     matchMedia('(max-width:700px)').matches,
   );
-  return phone ? <AppShell data={data} /> : <ClassicApp data={data} />;
+  if (phone) return <AppShell data={data} />;
+  // Wide windows open the county planner; ?view=planner and ?view=resident keep the classic views.
+  if (usesDashboard(location.search, matchMedia('(min-width:1100px)').matches))
+    return <CountyDashboard data={data} />;
+  return <ClassicApp data={data} />;
 }
 function ClassicApp({ data }) {
   const [choice, setChoice] = useState(() => {

@@ -9537,6 +9537,246 @@ body:has(.ios-push) .ios-dim {
   padding: 0;
 }
 
+/* ==========================================================================
+   Desktop county planner dashboard (>= 1100px)
+   ========================================================================== */
+.dashboard {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr) 380px;
+  grid-template-rows: 56px minmax(0, 1fr);
+  height: 100dvh;
+  background: var(--color-paper);
+  overflow: hidden;
+}
+.dashboard[data-panel='wide'] {
+  grid-template-columns: 280px minmax(0, 1fr) 640px;
+}
+.dash-top {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-4);
+  background: var(--material-bg);
+  -webkit-backdrop-filter: var(--material-filter);
+  backdrop-filter: var(--material-filter);
+  border-bottom: 0.5px solid var(--color-separator);
+  z-index: 5;
+}
+.dash-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 700 14px/18px var(--font-body);
+  letter-spacing: 0.14em;
+  color: var(--color-accent-text);
+}
+.dash-brand .hearth-logo-mark {
+  width: 26px;
+  height: 26px;
+}
+.dash-district {
+  font: var(--font-callout);
+  color: var(--color-secondary);
+}
+.dash-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+.dash-actions .text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  font: var(--font-subhead);
+  font-weight: 600;
+}
+.dash-export {
+  min-height: 36px;
+  padding: 0 var(--space-3);
+  font: var(--font-subhead);
+  font-weight: 600;
+}
+.dash-rail {
+  overflow-y: auto;
+  padding: var(--space-3);
+  border-right: 0.5px solid var(--color-separator);
+  background: var(--color-paper);
+}
+.rail-title {
+  margin: var(--space-2) var(--space-1) var(--space-1);
+  font: var(--font-subhead);
+  font-weight: 600;
+  color: var(--color-secondary);
+  letter-spacing: 0;
+}
+.county-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.county-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 38px;
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-ink);
+  font: var(--font-callout);
+  text-align: left;
+  transition: background-color 150ms var(--ease-out);
+}
+.county-item:hover {
+  background: var(--color-fill);
+}
+.county-item[aria-current='true'] {
+  background: var(--color-accent);
+  color: #fff;
+}
+.county-item-name {
+  font-weight: 600;
+}
+.county-item-nums {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font: var(--font-footnote);
+  font-variant-numeric: tabular-nums;
+}
+.county-item-nums i {
+  font-style: normal;
+  opacity: 0.7;
+}
+.county-item-nums b {
+  font-weight: 700;
+}
+.county-item:not([aria-current='true']) .county-item-nums {
+  color: var(--color-secondary);
+}
+.county-item:not([aria-current='true']) .county-item-nums b {
+  color: var(--color-ink);
+}
+.rail-legend {
+  margin: var(--space-1) var(--space-2) var(--space-3);
+  font: var(--font-caption);
+  color: var(--color-secondary);
+}
+.rail-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.rail-field {
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  border-radius: var(--radius-group);
+  background: var(--color-cell);
+  box-shadow: var(--shadow-lift);
+}
+.rail-label {
+  display: block;
+  margin-bottom: var(--space-1);
+  font: var(--font-subhead);
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+.rail-field .range-labels {
+  display: flex;
+  justify-content: space-between;
+  font: var(--font-caption);
+  color: var(--color-secondary);
+}
+.dash-rail .cap-row {
+  min-height: 56px;
+}
+.dash-map {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--color-paper);
+}
+.dash-map .map-canvas.county-map {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  border: 0;
+}
+.dash-map .map-gesture-hint {
+  display: none;
+}
+.dash-map-top {
+  position: absolute;
+  top: var(--space-3);
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  gap: var(--space-2);
+  width: min(560px, calc(100% - 32px));
+  translate: -50% 0;
+}
+.dash-map-top .ios-segmented {
+  flex: 1;
+  background: var(--material-bg);
+  -webkit-backdrop-filter: var(--material-filter);
+  backdrop-filter: var(--material-filter);
+  box-shadow: var(--shadow-lift);
+}
+.dash-legend {
+  bottom: var(--space-3);
+}
+.dash-map .county-controls {
+  position: absolute;
+  top: auto;
+  right: var(--space-3);
+  bottom: var(--space-3);
+}
+.legend-pins .pin-sw {
+  border-radius: 50%;
+  background: var(--color-ink);
+}
+.dash-panel {
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-4) var(--space-5);
+  border-left: 0.5px solid var(--color-separator);
+  background: var(--color-paper);
+}
+.dash-panel .county-peek h2 {
+  font: var(--font-title1);
+}
+.dash-panel .county-sentence {
+  font: var(--font-callout);
+}
+.panel-back {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 var(--space-2) -6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-accent-text);
+  font: var(--font-body-text);
+}
+.dash-panel h2 {
+  letter-spacing: var(--tracking-title);
+}
+.pin-sw {
+  background: var(--color-ink);
+}
+.panel-resources h2 {
+  margin: 0 0 var(--space-3);
+  font: var(--font-title1);
+}
+.panel-export {
+  width: 100%;
+  margin-top: var(--space-3);
+}
 /* Resource pins */
 .resource-pin {
   stroke: #fff;
@@ -9902,3 +10142,33 @@ body:has(.ios-push) .ios-dim {
   }
 }
 
+/* Dashboard tuning */
+.dash-rail .county-item {
+  min-height: 32px;
+  font-size: 15px;
+}
+.dash-rail .rail-title {
+  margin-top: var(--space-1);
+}
+.dash-rail .rail-field {
+  padding: var(--space-1) var(--space-3) var(--space-2);
+}
+.dash-rail .ios-slider {
+  margin-top: 40px;
+}
+.dash-rail .rail-legend {
+  margin-bottom: var(--space-2);
+}
+.watch-flat {
+  flex-direction: column;
+  align-items: stretch;
+}
+.watch-flat .ios-chevron {
+  display: none;
+}
+.watch-flat .add-shortlist {
+  align-self: flex-start;
+}
+.watch-flat .watch-status > span {
+  white-space: nowrap;
+}
