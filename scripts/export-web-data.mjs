@@ -32,6 +32,17 @@ try {
   }
   data.node_cooling = cooling;
 } catch (error) { if (error.code !== 'ENOENT') throw error; }
+// Real HEARTH Home logs (written by scripts/device_export.py). Absent files mean the app shows labelled sample data.
+try {
+  const events = await readFrozen('device_events.json');
+  const readings = await readFrozen('device_readings.json');
+  const okReading = r => typeof r.t === 'string' && Number.isFinite(Date.parse(r.t)) && Number.isFinite(r.temp_f);
+  const okEvent = e => Number.isFinite(Date.parse(e.start)) && Number.isFinite(Date.parse(e.end)) &&
+    Date.parse(e.end) > Date.parse(e.start) && Number.isFinite(e.temp_start_f) && Number.isFinite(e.temp_end_f);
+  if (!Array.isArray(readings.readings) || !readings.readings.every(okReading) ||
+      !Array.isArray(events.events) || !events.events.every(okEvent)) throw new Error('Invalid device export files');
+  data.device = { device: readings.device || events.device || null, events: events.events, readings: readings.readings };
+} catch (error) { if (error.code !== 'ENOENT') throw error; data.device = null; }
 // Match PyYAML's last-key-wins behavior for the retained source configuration.
 const config = parse(await readFile(resolve(root, 'config.yaml'), 'utf8'), { uniqueKeys: false });
 data.config = { harm: config.harm, optimizer: config.optimizer, priority_list: config.priority_list, example_locations: config.example_locations };

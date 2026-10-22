@@ -10,9 +10,10 @@
   },
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 600,
+      "launchShowDuration": 300,
       "backgroundColor": "#F6F3EE",
-      "launchAutoHide": true
+      "launchAutoHide": true,
+      "launchFadeOutDuration": 200
     },
     "StatusBar": {
       "style": "LIGHT"

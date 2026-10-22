@@ -1,35 +1,24 @@
-import { LogoMark } from './LogoMark.jsx';
-import { InterfaceIcon } from './InterfaceIcon.jsx';
-import React, { useRef } from 'react';
-export function StandaloneHeader({ scrolled, mode, showEvidence, exportScenario, onSwitchView }) {
-  const menu = useRef(null);
-  function methods() {
-    showEvidence('methods');
-    menu.current.open = false;
-  }
-  function exportData() {
-    exportScenario();
-    menu.current.open = false;
-  }
-  return (
-    <header className="native-header" data-scrolled={scrolled}>
-      <div className="native-title">
-        <span className="hearth-wordmark">
-          <LogoMark />
-          HEARTH
-        </span>
-        <h1>{mode[0].toUpperCase() + mode.slice(1)}</h1>
-      </div>
-      <details className="native-menu" ref={menu}>
-        <summary aria-label="App options">
-          <InterfaceIcon name="more" />
-        </summary>
-        <div className="menu-content">
-          {showEvidence && <button onClick={methods}>Methods & sources</button>}
-          {exportScenario && <button onClick={exportData}>Export scenario</button>}
-          <button onClick={onSwitchView}>Switch view</button>
-        </div>
-      </details>
-    </header>
-  );
+import { OverflowMenu } from '../ui/OverflowMenu.jsx';
+import { LargeTitleBar } from '../ui/LargeTitleBar.jsx';
+import React from 'react';
+
+/** Large-title navigation bar for the classic planner screens. */
+export function StandaloneHeader({ mode, showEvidence, exportScenario, onSwitchView }) {
+  const title = mode[0].toUpperCase() + mode.slice(1);
+  const items = [
+    showEvidence && {
+      id: 'methods',
+      label: 'Methods & sources',
+      icon: 'book',
+      run: () => showEvidence('methods'),
+    },
+    exportScenario && {
+      id: 'export',
+      label: 'Export scenario',
+      icon: 'share',
+      run: exportScenario,
+    },
+    { id: 'switch', label: 'Switch view', icon: 'people', run: onSwitchView },
+  ];
+  return <LargeTitleBar title={title} actions={<OverflowMenu items={items} />} />;
 }

@@ -3,7 +3,22 @@ import { Workspace } from './Workspace.jsx';
 import { ResidentView } from './ResidentView.jsx';
 import { Welcome } from './components/Welcome.jsx';
 import { ENTRY_KEY, entryChoice } from './entry.js';
+import { AppShell } from './shell/AppShell.jsx';
+import { isAppShell } from './platform.js';
+
+/** The five-tab app runs on phones and in the app shell; `?view=` keeps the classic planner reachable. */
+export function usesAppShell(search = location.search, shell = isAppShell(), narrow = false) {
+  return !new URLSearchParams(search).has('view') && (shell || narrow);
+}
 export function App({ data }) {
+  const phone = usesAppShell(
+    location.search,
+    isAppShell(),
+    matchMedia('(max-width:700px)').matches,
+  );
+  return phone ? <AppShell data={data} /> : <ClassicApp data={data} />;
+}
+function ClassicApp({ data }) {
   const [choice, setChoice] = useState(() => {
     try {
       return entryChoice(location.search, localStorage);

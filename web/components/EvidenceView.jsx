@@ -4,6 +4,7 @@ import { fmt } from '../model.js';
 import { CountySummary } from '../ComparisonPanels.jsx';
 import { awarePlanLabel } from '../presentation.js';
 import { ViewTabs } from './ViewTabs.jsx';
+import { PickerRow } from '../ui/ActionSheet.jsx';
 import { EvidenceRange } from './EvidenceRange.jsx';
 const EVIDENCE_VIEWS = [
   ['counties', 'County summary'],
@@ -35,6 +36,17 @@ export function EvidenceView({
       aria-labelledby="tab-evidence"
       hidden={mode !== 'evidence'}
     >
+      <div className="ios-group evidence-picker">
+        <PickerRow
+          label="View"
+          title="Evidence view"
+          value={evidenceTab}
+          onChange={setEvidenceTab}
+          options={EVIDENCE_VIEWS.filter(([id]) => id !== 'forecast' || data.panel).map(
+            ([value, label]) => ({ value, label }),
+          )}
+        />
+      </div>
       <ViewTabs
         items={EVIDENCE_VIEWS.filter(([id]) => id !== 'forecast' || data.panel)}
         value={evidenceTab}

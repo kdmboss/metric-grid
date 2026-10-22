@@ -6,6 +6,8 @@ import { MapTracts } from './components/MapTracts.jsx';
 import { viewportFrame, pathCentroid, pathBounds } from './mapGeometry.js';
 import { useMapGestures } from './hooks/useMapGestures.js';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { motion } from 'motion/react';
+import { SPRING_POP } from './ui/springs.js';
 export const LAYERS = {
   vulnerability: {
     name: 'Social vulnerability',
@@ -227,11 +229,18 @@ export function MapCanvas({
               ')'
             }
           >
-            <path d="M0 0v-18" />
-            <rect x="-34" y="-46" width="68" height="28" rx="8" />
-            <text x="0" y="-28" textAnchor="middle">
-              Zone {selected}
-            </text>
+            <motion.g
+              key={selected}
+              initial={{ opacity: 0, y: -18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={SPRING_POP}
+            >
+              <path d="M0 0v-18" />
+              <rect x="-34" y="-46" width="68" height="28" rx="8" />
+              <text x="0" y="-28" textAnchor="middle">
+                Zone {selected}
+              </text>
+            </motion.g>
           </g>
         )}
       </svg>

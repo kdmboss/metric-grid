@@ -15,6 +15,7 @@ import {
   LineChart,
 } from './components/EvidencePrimitives.jsx';
 import { Arrow } from './components/Arrow.jsx';
+import { Group, Row } from './ui/Group.jsx';
 import React from 'react';
 import { fmt } from './model.js';
 export function Evidence({ data, record: r, section = 'robust' }) {
@@ -109,17 +110,11 @@ export function Evidence({ data, record: r, section = 'robust' }) {
             interrupted. The start time comes from the SC ORS report in Data provenance. The
             temperature comes from KCLT at the reference hour.
           </p>
-          <div className="document-links">
-            <a href="/methods/ASSUMPTIONS.md" target="_blank" rel="noreferrer">
-              Full assumptions <Arrow direction="external" />
-            </a>
-            <a href="/methods/DATA_SOURCES.md" target="_blank" rel="noreferrer">
-              Data provenance <Arrow direction="external" />
-            </a>
-            <a href="/methods/AI_DISCLOSURE.md" target="_blank" rel="noreferrer">
-              AI disclosure <Arrow direction="external" />
-            </a>
-          </div>
+          <Group className="document-links">
+            <Row icon="book" title="Full assumptions" href="/methods/ASSUMPTIONS.md" external />
+            <Row icon="layers" title="Data provenance" href="/methods/DATA_SOURCES.md" external />
+            <Row icon="shield" title="AI disclosure" href="/methods/AI_DISCLOSURE.md" external />
+          </Group>
         </Section>
       </div>
     </div>

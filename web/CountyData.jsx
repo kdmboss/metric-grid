@@ -1,3 +1,4 @@
+import { PickerRow } from './ui/ActionSheet.jsx';
 import { Arrow } from './components/Arrow.jsx';
 import { awarePlanLabel } from './presentation.js';
 import React, { useRef, useState } from 'react';
@@ -134,18 +135,16 @@ export function CountyData({ zones, record }) {
       {rows.length > 0 && (
         <>
           <div className="county-data-toolbar">
-            <div className="county-filter-field">
-              <label htmlFor="county-resource-filter">Show county</label>
-              <select
-                id="county-resource-filter"
+            <div className="ios-group county-filter-field">
+              <PickerRow
+                label="Show county"
                 value={county}
-                onChange={(event) => setCounty(event.target.value)}
-              >
-                <option value="">All imported counties</option>
-                {counties.map((name) => (
-                  <option key={name}>{name}</option>
-                ))}
-              </select>
+                onChange={setCounty}
+                options={[
+                  { value: '', label: 'All imported counties' },
+                  ...counties.map((name) => ({ value: name, label: name })),
+                ]}
+              />
             </div>
             <button className="text-button" onClick={clear}>
               Remove imported data

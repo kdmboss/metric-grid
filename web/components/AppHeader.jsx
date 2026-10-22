@@ -1,4 +1,4 @@
-import { InterfaceIcon } from './InterfaceIcon.jsx';
+import { OverflowMenu } from '../ui/OverflowMenu.jsx';
 import React from 'react';
 import { Brand } from '../Evidence.jsx';
 export function AppHeader({ showEvidence, exportScenario, onSwitchView }) {
@@ -18,16 +18,19 @@ export function AppHeader({ showEvidence, exportScenario, onSwitchView }) {
         <button className="button" onClick={exportScenario}>
           Export
         </button>
-        <details className="browser-menu native-menu">
-          <summary aria-label="App options">
-            <InterfaceIcon name="more" />
-          </summary>
-          <div className="menu-content">
-            <button onClick={() => showEvidence('methods')}>Methods & sources</button>
-            <button onClick={exportScenario}>Export scenario</button>
-            <button onClick={onSwitchView}>Switch view</button>
-          </div>
-        </details>
+        <OverflowMenu
+          className="browser-menu"
+          items={[
+            {
+              id: 'methods',
+              label: 'Methods & sources',
+              icon: 'book',
+              run: () => showEvidence('methods'),
+            },
+            { id: 'export', label: 'Export scenario', icon: 'share', run: exportScenario },
+            { id: 'switch', label: 'Switch view', icon: 'people', run: onSwitchView },
+          ]}
+        />
       </div>
     </header>
   );

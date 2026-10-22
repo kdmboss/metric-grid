@@ -1,4 +1,6 @@
-import { ModeIcon } from './ModeIcon.jsx';
+import { Icon } from '../ui/Icon.jsx';
+import { SPRING_POP } from '../ui/springs.js';
+import { motion } from 'motion/react';
 import React from 'react';
 
 /** One keyboard pattern for mode, comparison, and evidence tabs. */
@@ -35,7 +37,17 @@ export function ViewTabs({ items, value, onChange, label, prefix, modeTabs = fal
           onClick={chooseTab}
           onKeyDown={moveTab}
         >
-          {modeTabs && <ModeIcon mode={id} />}
+          {modeTabs && (
+            <motion.span
+              key={`${id}-${value === id}`}
+              className="mode-icon"
+              initial={{ scale: value === id ? 0.86 : 1 }}
+              animate={{ scale: 1 }}
+              transition={SPRING_POP}
+            >
+              <Icon name={id} filled={value === id} size={24} />
+            </motion.span>
+          )}
           <span>{title}</span>
         </button>
       ))}

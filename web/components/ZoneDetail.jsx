@@ -1,4 +1,5 @@
 import React from 'react';
+import { PickerRow } from '../ui/ActionSheet.jsx';
 import { Status } from '../Evidence.jsx';
 import { fmt, status } from '../model.js';
 import { awarePlanLabel } from '../presentation.js';
@@ -21,21 +22,24 @@ export function ZoneDetail({
       : fmt(r.alpha * zone.humanNorm + (1 - r.alpha) * zone.econNorm, 3);
   return (
     <aside className="selection-panel" key={zone?.zone_id || 0} data-selected={Boolean(zone)}>
-      <label className="sr-only" htmlFor={id}>
-        Select census tract zone
-      </label>
-      <select
-        id={id}
-        value={zone?.zone_id || 0}
-        onChange={(event) => onSelect(Number(event.target.value))}
-      >
-        <option value="0">Choose a zone…</option>
-        {zones.map((z) => (
-          <option key={z.zone_id} value={z.zone_id}>
-            Zone {z.zone_id} — {z.COUNTY.replace(' County', '')}
-          </option>
-        ))}
-      </select>
+      <div className="ios-group zone-picker" id={id}>
+        <PickerRow
+          label="Zone"
+          title="Choose a zone"
+          searchable
+          value={zone?.zone_id || 0}
+          onChange={(value) => onSelect(Number(value))}
+          options={[
+            { value: 0, label: 'Choose a zone…', short: 'None selected' },
+            ...zones.map((z) => ({
+              value: z.zone_id,
+              label: `Zone ${z.zone_id}`,
+              detail: z.COUNTY,
+              short: `Zone ${z.zone_id} · ${z.COUNTY.replace(' County', '')}`,
+            })),
+          ]}
+        />
+      </div>
       {zone ? (
         <>
           <div className="selected-place">

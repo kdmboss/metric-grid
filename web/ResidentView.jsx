@@ -1,5 +1,5 @@
 import { LogoMark } from './components/LogoMark.jsx';
-import { InterfaceIcon } from './components/InterfaceIcon.jsx';
+import { OverflowMenu } from './ui/OverflowMenu.jsx';
 import React, { useMemo, useState } from 'react';
 import { enrichZones, mapPaths } from './model.js';
 import { HOME_VIEW, fitPaths } from './mapGeometry.js';
@@ -43,14 +43,9 @@ export function ResidentView({ data, choose, switchView }) {
             <LogoMark />
             HEARTH
           </strong>
-          <details className="native-menu">
-            <summary aria-label="App options">
-              <InterfaceIcon name="more" />
-            </summary>
-            <div className="menu-content">
-              <button onClick={switchView}>Switch view</button>
-            </div>
-          </details>
+          <OverflowMenu
+            items={[{ id: 'switch', label: 'Switch view', icon: 'people', run: switchView }]}
+          />
         </header>
       )}
       <main className="resident-main">

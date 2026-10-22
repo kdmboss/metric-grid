@@ -20,6 +20,15 @@ export async function lightImpact() {
     /* Haptics are optional, including in Simulator. */
   }
 }
+export async function successHaptic() {
+  if (!isNative()) return;
+  try {
+    const { Haptics, NotificationType } = await import('@capacitor/haptics');
+    await Haptics.notification({ type: NotificationType.Success });
+  } catch {
+    /* Haptics are optional, including in Simulator. */
+  }
+}
 export async function shareFile(text, name) {
   const [{ Filesystem, Directory, Encoding }, { Share }] = await Promise.all([
     import('@capacitor/filesystem'),
@@ -96,4 +105,26 @@ export function initializeNativeShell() {
     },
     true,
   );
+}
+/** Share plain text: the iOS share sheet in the app, the Web Share API or clipboard elsewhere. */
+export async function shareText(title, text) {
+  if (isNative()) {
+    try {
+      const { Share } = await import('@capacitor/share');
+      await Share.share({ title, text });
+    } catch (error) {
+      if (error?.message !== 'Share canceled') throw error;
+    }
+    return 'shared';
+  }
+  if (globalThis.navigator?.share) {
+    try {
+      await navigator.share({ title, text });
+    } catch (error) {
+      if (error?.name !== 'AbortError') throw error;
+    }
+    return 'shared';
+  }
+  await navigator.clipboard?.writeText(text);
+  return 'copied';
 }

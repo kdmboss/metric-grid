@@ -1,4 +1,5 @@
 import { CoolingCard } from './CoolingCard.jsx';
+import { Segmented } from '../ui/Segmented.jsx';
 import React from 'react';
 import { fmt } from '../model.js';
 import { DifferencePanel } from '../ComparisonPanels.jsx';
@@ -42,35 +43,25 @@ export function ComparePlans({
       hidden={mode !== 'compare'}
     >
       <p className="map-task-hint">Select an area to see who lives there.</p>
-      <div className="mobile-plan-toggle" role="group" aria-label="Displayed plan">
-        <button
-          aria-pressed={compareTab === 'plans' && mobilePlan === 'typical'}
-          onClick={() => {
-            setCompareTab('plans');
-            setMobilePlan('typical');
+      <div className="mobile-plan-toggle">
+        <Segmented
+          label="Displayed plan"
+          value={compareTab === 'changes' ? 'changes' : mobilePlan}
+          onChange={(key) => {
+            if (key === 'changes') {
+              setCompareTab('changes');
+              setDifferenceVisible(true);
+            } else {
+              setCompareTab('plans');
+              setMobilePlan(key);
+            }
           }}
-        >
-          MW-only
-        </button>
-        <button
-          aria-pressed={compareTab === 'plans' && mobilePlan === 'aware'}
-          onClick={() => {
-            setCompareTab('plans');
-            setMobilePlan('aware');
-          }}
-        >
-          {record.alpha === 0 ? 'Business cost' : 'Aware'}
-        </button>
-        <button
-          className="app-only"
-          aria-pressed={compareTab === 'changes'}
-          onClick={() => {
-            setCompareTab('changes');
-            setDifferenceVisible(true);
-          }}
-        >
-          Changes
-        </button>
+          items={[
+            ['typical', 'MW-only'],
+            ['aware', record.alpha === 0 ? 'Business cost' : 'Aware'],
+            ['changes', 'Changes', { className: 'app-only' }],
+          ]}
+        />
       </div>
       <div
         id="compare-plans"

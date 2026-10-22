@@ -1,8 +1,11 @@
-import { InterfaceIcon } from './InterfaceIcon.jsx';
+import { Icon } from '../ui/Icon.jsx';
+import { Group, Row } from '../ui/Group.jsx';
+import { EmptyState } from '../ui/EmptyState.jsx';
 import { isNative } from '../platform.js';
+import { AnimatePresence, motion } from 'motion/react';
+import { SPRING_SOFT } from '../ui/springs.js';
 import { ShortlistItem } from './ShortlistItem.jsx';
 import { PrintSheet } from './PrintSheet.jsx';
-import { Arrow } from './Arrow.jsx';
 import React from 'react';
 import { CountyData } from '../CountyData.jsx';
 import { download, shortlistCsv } from '../planning.js';
@@ -24,47 +27,37 @@ export function Preparation({
   return (
     <div className="preparation">
       <div className="prepare-intro">
-        <div>
-          <span className="workspace-kicker">From comparison to preparation</span>
-          <h2>Your shortlist</h2>
-          <p>Save areas and notes for outreach, warming centers, and backup-power discussions.</p>
-        </div>
-        <div className="prepare-actions">
-          <button
-            className="button"
+        <h2>Your shortlist</h2>
+        <Group className="prepare-actions">
+          <Row
+            icon="download"
+            title="Export CSV"
             disabled={!rows.length}
             onClick={() => download(shortlistCsv(rows), 'hearth-planning-shortlist.csv')}
-          >
-            Export CSV <Arrow direction="down" />
-          </button>
+          />
           {!isNative() && (
-            <button
-              className="button"
+            <Row
+              icon="print"
+              title={printMode ? 'Close print view' : 'Print view'}
               disabled={!rows.length}
               onClick={() => setPrintMode(!printMode)}
-            >
-              {printMode ? 'Close print view' : 'Print view'}
-            </button>
+            />
           )}
-        </div>
+        </Group>
       </div>
 
       {printMode && !isNative() && (
         <PrintSheet setPrintMode={setPrintMode} data={data} record={record} rows={rows} />
       )}
       {!plan.length ? (
-        <div className="empty-shortlist">
-          <span aria-hidden="true">
-            <InterfaceIcon name="plus" />
-          </span>
-          <h3>Start with your map.</h3>
-          <p>
-            Pick areas on the map to build a list for outreach, warming centers, or backup power.
-          </p>
-          <button className="primary-button" onClick={onExplore}>
-            Explore areas <Arrow direction="right" />
-          </button>
-        </div>
+        <EmptyState
+          className="empty-shortlist"
+          icon="list"
+          title="Start with your map."
+          body="Pick areas on the map to build a list for outreach, warming centers, or backup power."
+          action="Explore areas"
+          onAction={onExplore}
+        />
       ) : (
         <>
           <div className="shortlist-count">
@@ -76,26 +69,39 @@ export function Preparation({
             </button>
           </div>
           <div className="shortlist-items">
-            {plan.map((item) => {
-              const z = zones.find((z) => z.zone_id === item.zone);
-              return (
-                <ShortlistItem
-                  key={item.zone}
-                  setPlan={setPlan}
-                  plan={plan}
-                  counts={counts}
-                  data={data}
-                  record={record}
-                  item={item}
-                  z={z}
-                />
-              );
-            })}
+            <AnimatePresence initial={false} mode="popLayout">
+              {plan.map((item) => {
+                const z = zones.find((z) => z.zone_id === item.zone);
+                return (
+                  <motion.div
+                    key={item.zone}
+                    layout="position"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
+                    transition={SPRING_SOFT}
+                  >
+                    <ShortlistItem
+                      setPlan={setPlan}
+                      plan={plan}
+                      counts={counts}
+                      data={data}
+                      record={record}
+                      item={item}
+                      z={z}
+                    />
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           </div>
         </>
       )}
       <details className="county-import-disclosure">
-        <summary>Add county resource data (CSV)</summary>
+        <summary>
+          <span>Add county resource data (CSV)</span>
+          <Icon name="down" size={18} className="ios-chevron" />
+        </summary>
         <CountyData zones={zones} record={record} />
       </details>
       {undo && (

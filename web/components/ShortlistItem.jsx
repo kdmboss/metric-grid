@@ -1,4 +1,5 @@
 import React from 'react';
+import { PickerRow } from '../ui/ActionSheet.jsx';
 import { Badge, Status } from '../Evidence.jsx';
 import { fmt, status } from '../model.js';
 import { awarePlanLabel } from '../presentation.js';
@@ -44,29 +45,17 @@ export function ShortlistItem({ item, z, setPlan, plan, counts, data, record }) 
         {z.protected && <Badge>Protected</Badge>}
       </div>
       <div className="note-fields">
-        <label>
-          Follow-up for zone {z.zone_id}
-          <select
-            aria-label={`Follow-up for zone ${z.zone_id}`}
+        <div className="ios-group">
+          <PickerRow
+            label="Follow-up"
+            title={`Follow-up for zone ${z.zone_id}`}
             value={item.followup}
-            onChange={(event) =>
-              setPlan(
-                plan.map((p) =>
-                  p.zone === item.zone
-                    ? {
-                        ...p,
-                        followup: event.target.value,
-                      }
-                    : p,
-                ),
-              )
+            onChange={(value) =>
+              setPlan(plan.map((p) => (p.zone === item.zone ? { ...p, followup: value } : p)))
             }
-          >
-            {FOLLOWUPS.map((f) => (
-              <option key={f}>{f}</option>
-            ))}
-          </select>
-        </label>
+            options={FOLLOWUPS.map((f) => ({ value: f, label: f }))}
+          />
+        </div>
         <label>
           Planning note for zone {z.zone_id}
           <textarea

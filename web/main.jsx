@@ -1,9 +1,12 @@
+import '@fontsource-variable/plus-jakarta-sans';
 import { initializeNativeShell } from './platform.js';
 import './app.css';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { MotionConfig, motion } from 'motion/react';
 import { App } from './App.jsx';
 import { Brand } from './Evidence.jsx';
+import { LogoMark } from './components/LogoMark.jsx';
 class ErrorBoundary extends React.Component {
   state = {
     error: false,
@@ -28,11 +31,26 @@ class ErrorBoundary extends React.Component {
     );
   }
 }
+/** Reduced-motion users get fades instead of movement everywhere; the first screen rises 8px. */
+function Shell({ children }) {
+  return (
+    <MotionConfig reducedMotion="user">
+      <motion.div
+        className="launch-rise"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] }}
+      >
+        {children}
+      </motion.div>
+    </MotionConfig>
+  );
+}
 initializeNativeShell();
 const root = createRoot(document.getElementById('root'));
 root.render(
-  <div className="load-screen" role="status">
-    <Brand />
+  <div className="load-screen is-loading" role="status">
+    <LogoMark />
     <h1>Loading HEARTH…</h1>
     <p>Preparing the scenario comparison.</p>
   </div>,
@@ -44,9 +62,11 @@ fetch('data/app.json')
   })
   .then((data) =>
     root.render(
-      <ErrorBoundary>
-        <App data={data} />
-      </ErrorBoundary>,
+      <Shell>
+        <ErrorBoundary>
+          <App data={data} />
+        </ErrorBoundary>
+      </Shell>,
     ),
   )
   .catch(() =>

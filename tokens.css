@@ -1,23 +1,37 @@
 /* Hallmark · macrostructure: Map / Diagram · tone: calm editorial · anchor hue: ember
- * Pre-emit critique: P4 H4 E4 S5 R5 V4. Owner-directed cleanup; existing app structure retained.
+ * iOS grouped design, warm version: one accent, hairline separators, frosted materials.
  */
 :root {
-  --color-kept: #efe9e1;
+  /* Surfaces */
   --color-paper: #f6f3ee;
   --color-sidebar: #ffffff;
   --color-panel: #ffffff;
+  --color-cell: #ffffff;
+  --color-fill: #efe9e1;
+  --color-kept: var(--color-fill);
   --color-raised: #f3e6d8;
-  --color-border: #e6e0d6;
+  --color-separator: rgb(31 27 22 / 0.1);
+  --color-border: rgb(31 27 22 / 0.1);
   --color-subtle: var(--color-border);
+  /* Labels */
   --color-ink: #1f1b16;
-  --color-secondary: #5e564c;
-  --color-muted: #8c8378;
+  --color-secondary: #6b635a;
+  --color-muted: #6b635a;
+  --color-tertiary: #9a9187;
+  /* Tint */
   --color-accent: #b4441c;
+  --color-accent-pressed: #8c2f14;
+  --color-accent-text: #a63f19;
+  --color-accent-fill: rgb(180 68 28 / 0.1);
   --color-accent-surface: #f3e6d8;
+  --color-success: #3f7d4e;
+  --color-success-text: #2f6a3f;
+  --color-success-fill: rgb(63 125 78 / 0.12);
   --color-baseline: #7a7268;
   --color-positive: var(--color-accent);
   --color-warning: var(--color-ink);
-  --color-cut: #2a2520;
+  --color-cut: #1f1b16;
+  /* Map ramp */
   --color-map0: #f3e6d8;
   --color-map1: #dfc1aa;
   --color-map2: #c99373;
@@ -32,12 +46,40 @@
   --color-map-removed: var(--color-baseline);
   --color-transparent: transparent;
   --color-overlay: rgb(31 27 22 / 0.24);
-  --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Inter, sans-serif;
+  /* Materials */
+  --material-bg: rgb(246 243 238 / 0.72);
+  --material-filter: saturate(180%) blur(20px);
+  --shadow-lift: 0 1px 2px rgb(0 0 0 / 0.04), 0 4px 16px rgb(0 0 0 / 0.04);
+  --shadow-thumb: 0 1px 1px rgb(0 0 0 / 0.08), 0 3px 8px rgb(0 0 0 / 0.12);
+  --shadow-sheet: 0 -8px 32px rgb(31 27 22 / 0.14);
+  /* Type */
+  --font-body:
+    'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont,
+    'SF Pro Text', sans-serif;
   --font-display: var(--font-body);
+  --font-large-title: 700 34px/41px var(--font-body);
+  --font-title1: 700 28px/34px var(--font-body);
+  --font-title2: 700 22px/28px var(--font-body);
+  --font-title3: 600 20px/25px var(--font-body);
+  --font-headline: 600 17px/22px var(--font-body);
+  --font-body-text: 400 17px/22px var(--font-body);
+  --font-callout: 400 16px/21px var(--font-body);
+  --font-subhead: 400 15px/20px var(--font-body);
+  --font-footnote: 400 13px/18px var(--font-body);
+  --font-caption: 500 12px/16px var(--font-body);
+  --tracking-large: -0.02em;
+  --tracking-title: -0.015em;
+  --text-label: 13px;
+  --text-body: 15px;
+  --text-control: 17px;
+  --text-title: 22px;
+  --text-kpi: 40px;
+  --text-display: 48px;
+  /* Spacing: 8pt grid */
   --space-1: 8px;
   --space-2: 12px;
   --space-3: 16px;
-  --space-4: 20px;
+  --space-4: 24px;
   --space-5: 32px;
   --space-xs: var(--space-1);
   --space-sm: var(--space-2);
@@ -46,16 +88,15 @@
   --space-xl: var(--space-5);
   --space-2xl: var(--space-5);
   --space-3xl: var(--space-5);
-  --text-label: 12px;
-  --text-body: 14px;
-  --text-control: 16px;
-  --text-title: 20px;
-  --text-kpi: 32px;
-  --text-display: 48px;
-  --radius-card: 12px;
-  --radius-input: 12px;
-  --radius-pill: 12px;
-  --rule-width: 1px;
+  /* Radii */
+  --radius-group: 14px;
+  --radius-control: 10px;
+  --radius-button: 12px;
+  --radius-sheet: 22px;
+  --radius-card: var(--radius-group);
+  --radius-input: var(--radius-control);
+  --radius-pill: 999px;
+  --rule-width: 0.5px;
   --workspace-nav-height: 48px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);

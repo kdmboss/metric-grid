@@ -1,6 +1,25 @@
-import { InterfaceIcon } from './InterfaceIcon.jsx';
-import React from 'react';
+import { Icon } from '../ui/Icon.jsx';
+import { ModalSheet } from '../ui/ModalSheet.jsx';
+import { PickerRow } from '../ui/ActionSheet.jsx';
+import { Group } from '../ui/Group.jsx';
+import React, { useImperativeHandle, useState } from 'react';
 import { LAYERS } from '../MapCanvas.jsx';
+function SwitchRow({ title, checked, onChange }) {
+  return (
+    <label className="ios-row ios-switch-row">
+      <span className="ios-row-body">
+        <span className="ios-row-title">{title}</span>
+      </span>
+      <input
+        type="checkbox"
+        className="ios-switch"
+        role="switch"
+        checked={checked}
+        onChange={onChange}
+      />
+    </label>
+  );
+}
 export function MapFilters({
   filtersRef,
   searchRef,
@@ -23,117 +42,132 @@ export function MapFilters({
   boundaryVisible,
   setBoundaryVisible,
 }) {
+  const [open, setOpen] = useState(false);
+  // The workspace closes filters when a zone or tab changes, through the same `.open` flag.
+  useImperativeHandle(filtersRef, () => ({
+    get open() {
+      return open;
+    },
+    set open(value) {
+      setOpen(Boolean(value));
+    },
+  }));
   function _handleChange(event) {
     setDifferenceVisible(event.target.checked);
     if (event.target.checked) setCompareTab('changes');
-    event.currentTarget.closest('details').open = false;
+    setOpen(false);
   }
   function _handleKeyDown(event) {
     if (event.key === 'Escape') setQuery('');
     if (event.key === 'Enter' && results.length) selectZone(results[0].zone_id);
   }
   return (
-    <details
-      className="map-filters"
-      ref={filtersRef}
-      onKeyDown={(event) => {
-        if (event.key === 'Escape') event.currentTarget.open = false;
-      }}
-    >
-      <summary aria-label="Map filters">
+    <div className="map-filters">
+      <button
+        type="button"
+        className="filters-button"
+        aria-label="Map filters"
+        aria-haspopup="dialog"
+        onClick={() => setOpen(true)}
+      >
         <span>Filters</span>
-        <svg className="filters-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 7h16M4 17h16M9 4v6M15 14v6" />
-        </svg>
-      </summary>
-      <div className="map-toolbar">
-        <div className="map-search">
-          <label className="sr-only" htmlFor="zone-search">
-            Search county, zone ID, or tract GEOID
-          </label>
-          <span aria-hidden="true">
-            <InterfaceIcon name="search" />
-          </span>
-          <input
-            id="zone-search"
-            ref={searchRef}
-            placeholder="Search county, zone, or tract…"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            onKeyDown={_handleKeyDown}
-          />
+        <Icon name="filter" size={20} />
+      </button>
+      <ModalSheet
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Map filters"
+        className="ios-filters-sheet"
+      >
+        <div className="ios-sheet-list">
+          <div className="map-search ios-search ios-search-inline">
+            <label className="sr-only" htmlFor="zone-search">
+              Search county, zone ID, or tract GEOID
+            </label>
+            <Icon name="search" size={16} />
+            <input
+              id="zone-search"
+              type="search"
+              ref={searchRef}
+              placeholder="Search county, zone, or tract…"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={_handleKeyDown}
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </div>
           {query && (
-            <div className="search-results" role="region" aria-label="Zone search results">
+            <Group className="search-results" aria-label="Zone search results">
               {results.length ? (
                 results.slice(0, 12).map((z) => (
-                  <button key={z.zone_id} onClick={() => selectZone(z.zone_id)}>
-                    Zone {z.zone_id}
-                    <span>
-                      {z.COUNTY} · {z.GEOID}
+                  <button
+                    type="button"
+                    className="ios-row"
+                    key={z.zone_id}
+                    onClick={() => selectZone(z.zone_id)}
+                  >
+                    <span className="ios-row-body">
+                      <span className="ios-row-title">Zone {z.zone_id}</span>
+                      <span className="ios-row-detail">
+                        {z.COUNTY} · {z.GEOID}
+                      </span>
                     </span>
+                    <Icon name="chevron" size={18} className="ios-chevron" />
                   </button>
                 ))
               ) : (
-                <p>No matching zones. Try a county name or tract GEOID.</p>
+                <p className="ios-row ios-row-empty">
+                  No matching zones. Try a county name or tract GEOID.
+                </p>
               )}
-            </div>
+            </Group>
           )}
-        </div>
-        <label className="sr-only" htmlFor="county-filter">
-          Filter county
-        </label>
-        <select
-          id="county-filter"
-          value={county}
-          onChange={(event) => selectCounty(event.target.value)}
-        >
-          <option value="">All counties</option>
-          {counties.map((county) => (
-            <option key={county}>{county}</option>
-          ))}
-        </select>
-        <label className="sr-only" htmlFor="map-layer">
-          Map layer
-        </label>
-        <select id="map-layer" value={layer} onChange={(event) => setLayer(event.target.value)}>
-          {Object.entries(LAYERS).map(([key, value]) => (
-            <option key={key} value={key}>
-              {value.name}
-            </option>
-          ))}
-        </select>
-        <details className="map-options">
-          <summary>Map overlays</summary>
-          <div>
+          <Group title="Show">
+            <PickerRow
+              icon="pin"
+              label="County"
+              title="County"
+              value={county}
+              onChange={selectCounty}
+              options={[
+                { value: '', label: 'All counties' },
+                ...counties.map((name) => ({ value: name, label: name })),
+              ]}
+            />
+            <PickerRow
+              icon="layers"
+              label="Map layer"
+              title="Map layer"
+              value={layer}
+              onChange={setLayer}
+              options={Object.entries(LAYERS).map(([key, value]) => ({
+                value: key,
+                label: value.name,
+              }))}
+            />
+          </Group>
+          <Group title="Map overlays">
             {mode === 'compare' && (
-              <label>
-                <input
-                  type="checkbox"
-                  checked={compareTab === 'changes' && differenceVisible}
-                  onChange={_handleChange}
-                />
-                Difference map
-              </label>
+              <SwitchRow
+                title="Difference map"
+                checked={compareTab === 'changes' && differenceVisible}
+                onChange={_handleChange}
+              />
             )}
-            <label>
-              <input
-                type="checkbox"
-                checked={protectedVisible}
-                onChange={(event) => setProtectedVisible(event.target.checked)}
-              />
-              Protected facilities
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={boundaryVisible}
-                onChange={(event) => setBoundaryVisible(event.target.checked)}
-              />
-              District boundary
-            </label>
-          </div>
-        </details>
-      </div>
-    </details>
+            <SwitchRow
+              title="Protected facilities"
+              checked={protectedVisible}
+              onChange={(event) => setProtectedVisible(event.target.checked)}
+            />
+            <SwitchRow
+              title="District boundary"
+              checked={boundaryVisible}
+              onChange={(event) => setBoundaryVisible(event.target.checked)}
+            />
+          </Group>
+        </div>
+      </ModalSheet>
+    </div>
   );
 }

@@ -17,7 +17,10 @@ import { ZoneDetail } from './components/ZoneDetail.jsx';
 import { ZoneSheet } from './components/ZoneSheet.jsx';
 import { ScenarioControls } from './components/ScenarioControls.jsx';
 import { PeopleResults } from './components/PeopleResults.jsx';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { animate, useReducedMotion } from 'motion/react';
+import { PushScreen } from './ui/PushScreen.jsx';
+import { Evidence } from './Evidence.jsx';
 const MODES = [
   ['compare', 'Compare'],
   ['explore', 'Explore'],
@@ -31,6 +34,21 @@ const COMPARE_VIEWS = [
 export function Workspace({ data, onSwitchView }) {
   const workspace = useWorkspace(data);
   const views = workspaceProps(workspace);
+  const main = useRef(null),
+    firstMode = useRef(true),
+    reduced = useReducedMotion();
+  // Tab switch: 150ms crossfade, new content settles up 6px (fade only for reduced motion).
+  useEffect(() => {
+    if (firstMode.current) {
+      firstMode.current = false;
+      return;
+    }
+    animate(main.current, reduced ? { opacity: [0, 1] } : { opacity: [0, 1], y: [6, 0] }, {
+      duration: 0.15,
+      ease: [0.16, 1, 0.3, 1],
+    });
+  }, [workspace.mode, reduced]);
+  const modeTitle = workspace.mode[0].toUpperCase() + workspace.mode.slice(1);
   return (
     <div
       className={[
@@ -50,12 +68,7 @@ export function Workspace({ data, onSwitchView }) {
       </a>
       <AppHeader {...views.AppHeader} onSwitchView={onSwitchView} />
       {workspace.standalone && (
-        <StandaloneHeader
-          scrolled={workspace.scrolled}
-          mode={workspace.mode}
-          onSwitchView={onSwitchView}
-          {...views.AppHeader}
-        />
+        <StandaloneHeader mode={workspace.mode} onSwitchView={onSwitchView} {...views.AppHeader} />
       )}
       <div className="workspace-nav">
         <ViewTabs
@@ -66,7 +79,7 @@ export function Workspace({ data, onSwitchView }) {
           modeTabs
         />
       </div>
-      <main className="workspace-main">
+      <main className="workspace-main" ref={main}>
         {['compare', 'explore'].includes(workspace.mode) && (
           <>
             <Hero {...views.Hero} />
@@ -136,7 +149,6 @@ export function Workspace({ data, onSwitchView }) {
           ['compare', 'explore'].includes(workspace.mode) &&
           (workspace.compact ? (
             <ZoneSheet
-              key={workspace.zone.zone_id}
               open={workspace.sheetOpen}
               close={workspace.closeDetails}
               zone={workspace.zone}
@@ -149,6 +161,14 @@ export function Workspace({ data, onSwitchView }) {
           ))}
         <Footer {...views.Footer} />
       </main>
+      <PushScreen
+        open={workspace.methodsOpen}
+        title="Methods & sources"
+        backLabel={modeTitle}
+        onBack={() => workspace.setMethodsOpen(false)}
+      >
+        <Evidence data={data} record={workspace.record} section="methods" />
+      </PushScreen>
     </div>
   );
 }

@@ -1,4 +1,6 @@
 import React from 'react';
+import { CountUp } from '../ui/CountUp.jsx';
+import { Pop } from '../ui/Pop.jsx';
 import { change, fmt, signed } from '../model.js';
 import { awarePlanLabel, comparisonDirection } from '../presentation.js';
 import { Help } from './Help.jsx';
@@ -20,7 +22,9 @@ export function PeopleResults({ record: r }) {
             result.
           </Help>
         </div>
-        <strong>{fmt(w.electric_heat_households)}</strong>
+        <strong>
+          <CountUp value={w.electric_heat_households} format={(v) => fmt(v)} />
+        </strong>
         <p>
           <span className="desktop-copy">
             vs. {fmt(b.electric_heat_households)} · megawatts only
@@ -37,9 +41,17 @@ export function PeopleResults({ record: r }) {
           </Help>
         </div>
         <strong>
-          {direction === 'unchanged'
-            ? '0%'
-            : `${fmt(Math.abs(human), Math.abs(human) < 1 ? 1 : 0)}%`}
+          {direction === 'unchanged' ? (
+            '0%'
+          ) : (
+            <>
+              <CountUp
+                value={Math.abs(human)}
+                format={(v) => fmt(v, Math.abs(human) < 1 ? 1 : 0)}
+              />
+              %
+            </>
+          )}
         </strong>
         <p>
           <span className="desktop-copy">
@@ -65,7 +77,14 @@ export function PeopleResults({ record: r }) {
             {homes > 0 ? 'More homes cut' : homes < 0 ? 'Fewer homes cut' : 'Total homes cut'}
           </span>
         </div>
-        <strong>{homes === 0 ? '0' : signed(homes)}</strong>
+        <strong>
+          <Pop trigger={homes} className="delta-pop">
+            <CountUp
+              value={homes}
+              format={(v) => (Math.round(v) === 0 ? '0' : signed(Math.round(v)))}
+            />
+          </Pop>
+        </strong>
         <p>
           <span className="desktop-copy">
             {homes === 0 ? 'Same total' : `${homes > 0 ? 'More' : 'Fewer'} homes cut`} ·{' '}

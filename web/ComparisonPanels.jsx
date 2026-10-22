@@ -1,3 +1,4 @@
+import { PickerRow } from './ui/ActionSheet.jsx';
 import React from 'react';
 import { fmt } from './model.js';
 import { CHANGE_CATEGORIES, countySummary, swapSentence } from './comparison.js';
@@ -49,18 +50,15 @@ export function CountySummary({ zones, record, counties, county, setCounty }) {
           <h2 id="county-summary-title">What does this mean for a county?</h2>
           <p>Whole-tract public data and the two displayed planning scenarios.</p>
         </div>
-        <label htmlFor="summary-county">
-          Summary county
-          <select
-            id="summary-county"
+        <div className="ios-group county-picker">
+          <PickerRow
+            label="County"
+            title="Summary county"
             value={county}
-            onChange={(event) => setCounty(event.target.value)}
-          >
-            {counties.map((name) => (
-              <option key={name}>{name}</option>
-            ))}
-          </select>
-        </label>
+            onChange={setCounty}
+            options={counties.map((name) => ({ value: name, label: name }))}
+          />
+        </div>
       </div>
       <h3>{county}</h3>
       <dl className="county-facts">

@@ -60,6 +60,7 @@ export function useWorkspace(data) {
   const [showAllPriority, setShowAllPriority] = useState(false);
   const shell = useAppShell();
   const [selectedPlace, setSelectedPlace] = useState(null);
+  const [methodsOpen, setMethodsOpen] = useState(false);
   const animateView = useMapAnimation(map.setView);
   const scenario = useScenario(data, navigation.state, map, shortlist.plan);
   const { state, setState, setMode, setEvidenceTab } = navigation;
@@ -69,9 +70,21 @@ export function useWorkspace(data) {
     if (id) void lightImpact();
     update({ zone: id });
     setSelectedPlace(null);
-    if (shell.present && id) {
+    if ((shell.present || shell.standalone) && id) {
       const path = scenario.paths.zones.find((z) => z.zone_id === id);
-      if (path) animateView(fitPaths([path]));
+      if (path) {
+        const fit = fitPaths([path]);
+        if (shell.present) animateView(fit);
+        else {
+          // Ease to the selection without zooming tighter than the sheet allows the map to read.
+          const scale = Math.min(fit.scale, Math.max(map.view.scale, 2.2));
+          animateView({
+            scale,
+            x: 320 - ((320 - fit.x) / fit.scale) * scale,
+            y: 195 - ((195 - fit.y) / fit.scale) * scale,
+          });
+        }
+      }
     }
     map.setQuery('');
     if (filtersRef.current) filtersRef.current.open = false;
@@ -113,6 +126,11 @@ export function useWorkspace(data) {
     }
   }
   function showEvidence(target = 'robust') {
+    if (target === 'methods' && shell.standalone) {
+      // Inside the app shell, Methods is a pushed screen rather than a tab change.
+      setMethodsOpen(true);
+      return;
+    }
     setMode('evidence');
     setEvidenceTab(target);
   }
@@ -141,6 +159,8 @@ export function useWorkspace(data) {
     ...navigation,
     ...shell,
     selectedPlace,
+    methodsOpen,
+    setMethodsOpen,
     selectPlace,
     clearPlace,
     closeDetails,
