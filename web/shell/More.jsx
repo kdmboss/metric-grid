@@ -65,6 +65,7 @@ export function PlannerTools({ onTool }) {
     <Group>
       <Row icon="map" title="Explore areas" onClick={() => onTool('explore')} />
       <Row icon="list" title="Shortlist" onClick={() => onTool('shortlist')} />
+      <Row icon="upload" title="County resources" onClick={() => onTool('resources')} />
       <Row icon="layers" title="Evidence" onClick={() => onTool('evidence')} />
       <Row icon="book" title="Methods & sources" onClick={() => onTool('methods')} />
     </Group>

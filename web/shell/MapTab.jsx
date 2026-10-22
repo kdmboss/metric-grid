@@ -18,6 +18,7 @@ import {
   townAnchors,
 } from '../county/county.js';
 import { mapProjection } from '../model.js';
+import { resourcePins, withStatuses } from '../county/resources.js';
 import { pathBounds } from '../mapGeometry.js';
 
 const PEEK = 200;
@@ -46,7 +47,7 @@ function Chips({ value, onChange }) {
   );
 }
 /** County-first map: "what does this mean for people in my county?" */
-export function MapTab({ workspace: w, views, zoneOpen, homePlace }) {
+export function MapTab({ workspace: w, views, zoneOpen, homePlace, resourceRows = [] }) {
   const data = w.data;
   const places = useMemo(() => data.places || [], [data.places]);
   const homeCounty = useMemo(
@@ -68,6 +69,10 @@ export function MapTab({ workspace: w, views, zoneOpen, homePlace }) {
   const project = useMemo(() => mapProjection(data.zones, data.district), [data]);
   const towns = useMemo(() => townAnchors(places, w.paths.zones, w.zones), [places, w]);
   const summary = useMemo(() => countySummary(w.zones, record, county), [w.zones, record, county]);
+  const pins = useMemo(
+    () => resourcePins(withStatuses(resourceRows, w.zones, record), w.paths, project, planKey),
+    [resourceRows, w.zones, w.paths, record, project, planKey],
+  );
   const districtSummary = useMemo(() => countySummary(w.zones, record, ALL), [w.zones, record]);
   const shift = useMemo(
     () => shiftSentence(summary, districtSummary, w.zones, county),
@@ -139,6 +144,7 @@ export function MapTab({ workspace: w, views, zoneOpen, homePlace }) {
         project={project}
         towns={towns}
         placeLocator={homePlace ? locate : null}
+        resources={pins}
       />
       <div className="map-top" ref={top}>
         <Chips value={county} onChange={pick} />

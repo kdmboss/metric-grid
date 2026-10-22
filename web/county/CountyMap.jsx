@@ -65,6 +65,10 @@ export function CountyMap({
   project,
   towns,
   placeLocator,
+  resources = [],
+  hoverId = null,
+  onHover = () => {},
+  locatorBottom = null,
 }) {
   const canvas = useRef(null),
     svgRef = useRef(null);
@@ -236,6 +240,34 @@ export function CountyMap({
               />
             </g>
           )}
+          {resources.length > 0 && (
+            <g className="resource-pins">
+              {resources.map((r) => {
+                const k = frame.width / size.width / view.scale;
+                const active = hoverId === r.id;
+                return (
+                  <motion.g
+                    key={r.id}
+                    initial={{ opacity: 0, y: -14 * k }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={SPRING_POP}
+                    onPointerEnter={() => onHover(r.id)}
+                    onPointerLeave={() => onHover(null)}
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    <circle
+                      className={`resource-pin ${r.tone}${active ? ' is-active' : ''}`}
+                      cx={r.x}
+                      cy={r.y}
+                      r={(active ? 11 : 8) * k}
+                      strokeWidth={3 * k}
+                    />
+                    <title>{r.name}</title>
+                  </motion.g>
+                );
+              })}
+            </g>
+          )}
         </g>
         {(!county || county === ALL) && (
           <g className="county-labels" aria-hidden="true">
@@ -316,7 +348,10 @@ export function CountyMap({
           </g>
         )}
       </svg>
-      <div className="map-controls county-controls">
+      <div
+        className="map-controls county-controls"
+        style={locatorBottom != null ? { bottom: locatorBottom } : undefined}
+      >
         <button
           type="button"
           aria-label="Zoom in"

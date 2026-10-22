@@ -28,7 +28,7 @@ export function uiStyleInventory(){
     });
   }
   // These suffixes come from the layer, plan and chart keys in current data-driven JSX.
-  for(const name of ['h','c','hh','dashed','observed','county-plan-baseline','county-plan-weighted'])
+  for(const name of ['h','c','hh','dashed','observed','county-plan-baseline','county-plan-weighted','pin-cut','pin-kept','pin-protected'])
     classes.add(name);
   for(let i=0;i<5;i++){classes.add(`ramp-${i}`);classes.add(`vulnerability-${i}`);}
   for(const key of ['only-baseline','only-aware','both','neither','protected'])

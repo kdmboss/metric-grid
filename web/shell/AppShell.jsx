@@ -11,6 +11,8 @@ import { MapFilters } from '../components/MapFilters.jsx';
 import { Preparation } from '../components/Preparation.jsx';
 import { EvidenceView } from '../components/EvidenceView.jsx';
 import { Evidence } from '../Evidence.jsx';
+import { Resources } from '../county/Resources.jsx';
+import { withStatuses } from '../county/resources.js';
 import { shareText, successHaptic } from '../platform.js';
 import { resolveDevices } from '../device/deviceData.js';
 import { Home } from './Home.jsx';
@@ -73,6 +75,8 @@ export function AppShell({ data }) {
   const [outage, setOutage] = useState(null);
   const [moreScreen, setMoreScreen] = useState(null);
   const [tool, setTool] = useState(null);
+  const [resourceRows, setResourceRows] = useState([]);
+  const [resourceHover, setResourceHover] = useState(null);
   const [toast, setToast] = useState('');
   const content = useRef(null),
     first = useRef(true),
@@ -113,7 +117,7 @@ export function AppShell({ data }) {
       return;
     }
     setTool(next);
-    workspace.setMode(TOOL_MODE[next]);
+    if (TOOL_MODE[next]) workspace.setMode(TOOL_MODE[next]);
   }
   function closeTool() {
     setTool(null);
@@ -179,7 +183,12 @@ export function AppShell({ data }) {
     sources: 'Data sources',
     about: 'About HEARTH',
   };
-  const toolTitle = { explore: 'Explore areas', shortlist: 'Shortlist', evidence: 'Evidence' };
+  const toolTitle = {
+    explore: 'Explore areas',
+    shortlist: 'Shortlist',
+    evidence: 'Evidence',
+    resources: 'County resources',
+  };
 
   return (
     <div className="planning-app is-standalone app-shell" data-tab={tab}>
@@ -214,6 +223,7 @@ export function AppShell({ data }) {
             views={views}
             zoneOpen={Boolean(zoneSheetShown)}
             homePlace={mainPlace}
+            resourceRows={resourceRows}
           />
         )}
         {tab === 'devices' && (
@@ -349,6 +359,16 @@ export function AppShell({ data }) {
           <Preparation {...views.Preparation} onExplore={() => openTool('explore')} />
         )}
         {tool === 'evidence' && <EvidenceView {...views.EvidenceView} />}
+        {tool === 'resources' && (
+          <Resources
+            zones={workspace.zones}
+            features={data.zones.features}
+            rows={withStatuses(resourceRows, workspace.zones, workspace.record)}
+            onRows={setResourceRows}
+            hoverId={resourceHover}
+            onHover={setResourceHover}
+          />
+        )}
       </PushScreen>
       <PushScreen
         open={workspace.methodsOpen}
