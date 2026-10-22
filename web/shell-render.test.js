@@ -191,3 +191,22 @@ test('Home shows the need card without health detail, and the official-lists car
     assert.ok(lists.includes(expected), expected);
 });
 
+const THIN = new RegExp(`[${String.fromCharCode(0x2009)}${String.fromCharCode(0x202f)}]`);
+const ALL_SOURCES = async () => {
+  const { readdirSync, readFileSync } = await import('node:fs');
+  const walk = (dir) =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+      e.isDirectory() ? walk(`${dir}/${e.name}`) : [`${dir}/${e.name}`],
+    );
+  return walk('web')
+    .filter((f) => /\.(jsx?|css)$/.test(f))
+    .map((f) => [f, readFileSync(f, 'utf8')]);
+};
+test('numbers use en-US commas everywhere: no thin or narrow spaces in source or rendered output', async () => {
+  for (const [file, source] of await ALL_SOURCES())
+    assert.ok(!THIN.test(source), `${file} has a thin space`);
+  const { CountUp } = await load('/web/ui/CountUp.jsx');
+  const { fmt } = await load('/web/model.js');
+  const markup = renderToStaticMarkup(h(CountUp, { value: 15910, format: (v) => fmt(v) }));
+  assert.ok(markup.includes('15,910') && !THIN.test(markup));
+});

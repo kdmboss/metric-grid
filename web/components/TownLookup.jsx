@@ -1,7 +1,6 @@
 import { Icon } from '../ui/Icon.jsx';
 import { Group, Row } from '../ui/Group.jsx';
 import { PushScreen } from '../ui/PushScreen.jsx';
-import { thin } from '../ui/springs.js';
 import { isNative } from '../platform.js';
 import { residentCounts } from '../resident.js';
 import React, { useState } from 'react';
@@ -200,7 +199,7 @@ export function TownLookup({ places, zones, record, selected, onPick, onClear, r
                     <Row title={awarePlanLabel(record)}>
                       <Status value={status(zone, record.weighted)} />
                     </Row>
-                    <Row icon="home" title="Households" value={thin(fmt(zone.occupied_units))} />
+                    <Row icon="home" title="Households" value={fmt(zone.occupied_units)} />
                     <Row
                       icon="bolt"
                       tone="amber"

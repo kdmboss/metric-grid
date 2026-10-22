@@ -5,7 +5,6 @@ import { ModalSheet } from '../ui/ModalSheet.jsx';
 import { Status } from '../components/EvidencePrimitives.jsx';
 import { fmt, status } from '../model.js';
 import { awarePlanLabel } from '../presentation.js';
-import { thin } from '../ui/springs.js';
 
 export function planStatus(count, total) {
   return count > 0
@@ -112,7 +111,7 @@ export function PlaceDetail({ place, zones, record, counts }) {
             <Row title={awarePlanLabel(record)}>
               <Status value={status(zone, record.weighted)} />
             </Row>
-            <Row icon="home" title="Households" value={thin(fmt(zone.occupied_units))} />
+            <Row icon="home" title="Households" value={fmt(zone.occupied_units)} />
             <Row
               icon="bolt"
               title="Electric heat"

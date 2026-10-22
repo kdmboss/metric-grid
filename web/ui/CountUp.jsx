@@ -1,6 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { animate, useMotionValue, useMotionValueEvent, useReducedMotion } from 'motion/react';
-import { thin } from './springs.js';
 
 /**
  * Counts to a new value in ~400ms. The moving digits are aria-hidden and written straight to
@@ -14,7 +13,7 @@ export function CountUp({ value, format }) {
   formatRef.current = format;
   const previous = useRef(value);
   const paint = (latest) => {
-    if (text.current) text.current.textContent = thin(formatRef.current(latest));
+    if (text.current) text.current.textContent = formatRef.current(latest);
   };
   useLayoutEffect(() => paint(value), []); // eslint-disable-line react-hooks/exhaustive-deps
   useMotionValueEvent(shown, 'change', paint);
@@ -31,7 +30,7 @@ export function CountUp({ value, format }) {
   return (
     <>
       <span ref={text} aria-hidden="true" className="count-up" />
-      <span className="sr-only">{thin(format(value))}</span>
+      <span className="sr-only">{format(value)}</span>
     </>
   );
 }
