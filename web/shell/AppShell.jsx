@@ -18,7 +18,7 @@ import { MapTab } from './MapTab.jsx';
 import { CoolingTestSheet, DevicePushes, DeviceSetupSheet, DevicesTab } from './Devices.jsx';
 import { ReadyTab } from './Ready.jsx';
 import { Checkin } from '../household/Checkin.jsx';
-import { Onboarding } from '../household/Onboarding.jsx';
+import { isFirstLaunch, Onboarding, onboardingOutcome } from '../household/Onboarding.jsx';
 import { OfficialLists } from '../household/cards.jsx';
 import {
   deleteHousehold,
@@ -358,13 +358,23 @@ export function AppShell({ data }) {
       >
         <Evidence data={data} record={workspace.record} section="methods" />
       </PushScreen>
-      {!onboarded && (
+      {isFirstLaunch(onboarded) && (
         <Onboarding
           places={places}
+          zones={workspace.zones}
+          record={homeRecord}
+          paths={workspace.paths}
           onPlace={addPlace}
           onDone={(answers, completed) => {
+            const outcome = onboardingOutcome('checkin');
             saveAnswers(answers, completed);
-            setOnboarded(true);
+            setOnboarded(outcome.onboarded);
+            setTab(outcome.tab);
+          }}
+          onPlanner={() => {
+            const outcome = onboardingOutcome('planner');
+            setOnboarded(outcome.onboarded);
+            setTab(outcome.tab);
           }}
         />
       )}

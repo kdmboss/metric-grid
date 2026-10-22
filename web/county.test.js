@@ -199,7 +199,8 @@ test('county facilities equal facilities.geojson filtered by point-in-polygon on
   );
 });
 
-import { shiftSentence } from './county/county.js';
+import { fmt } from './model.js';
+import { popularTowns, shiftSentence } from './county/county.js';
 
 test('shift sentence: only when people-first cuts more homes in the county, and only with true clauses', () => {
   const record = solved.find((r) => r.target_key === 'elliott' && r.alpha === 0.5 && !r.cap);
@@ -250,4 +251,24 @@ test('the county cap lowers the share any one county takes in every capped scena
     countySummary(zones, off, 'Union County').weighted,
     countySummary(zones, on, 'Union County').weighted,
   );
+});
+test('popular towns are the largest by occupied homes, computed from the data', () => {
+  const homes = (p) =>
+    p.zone_ids.reduce((n, id) => n + zones.find((z) => z.zone_id === id).occupied_units, 0);
+  const expected = [...data.places]
+    .sort((a, b) => homes(b) - homes(a) || a.name.localeCompare(b.name))
+    .slice(0, 8)
+    .map((p) => p.name);
+  const actual = popularTowns(data.places, zones).map((p) => p.name);
+  assert.deepEqual(actual, expected);
+  assert.equal(actual.length, 8);
+  // Different data gives different chips: nothing is hard-coded.
+  const fake = [
+    { geoid: '1', name: 'Alpha', zone_ids: [zones[0].zone_id] },
+    { geoid: '2', name: 'Beta', zone_ids: [zones[1].zone_id, zones[2].zone_id] },
+  ];
+  assert.equal(popularTowns(fake, zones).length, 2);
+  assert.deepEqual(popularTowns(fake, zones, 1).length, 1);
+  assert.equal(fmt(4017), '4,017');
+  assert.equal(fmt(15910), '15,910');
 });

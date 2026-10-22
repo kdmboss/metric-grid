@@ -5,6 +5,7 @@ import { Button } from '../ui/Button.jsx';
 import { LogoMark } from '../components/LogoMark.jsx';
 import { SPRING, SPRING_SOFT } from '../ui/springs.js';
 import { QUESTIONS, answered } from './household.js';
+import { SwipeBack } from './SwipeBack.jsx';
 
 const slide = {
   enter: (dir) => ({ x: dir * 48, opacity: 0 }),
@@ -96,7 +97,7 @@ export function HouseholdSummary({ answers }) {
  * `intro` shows the welcome screen first (first launch). Answers are handed back to the caller; this
  * component never stores or transmits them.
  */
-export function Checkin({ initial = {}, intro = true, onDone, onClose }) {
+export function Checkin({ initial = {}, intro = true, onDone, onClose, onExit }) {
   const [answers, setAnswers] = useState(initial);
   const total = QUESTIONS.length;
   // 0 = intro (when shown), 1..total = questions, total + 1 = summary
@@ -147,6 +148,9 @@ export function Checkin({ initial = {}, intro = true, onDone, onClose }) {
     );
   return (
     <div className="checkin" role="dialog" aria-modal="true" aria-label="Household check-in">
+      <SwipeBack
+        onBack={() => (step > (intro ? 0 : 1) ? go(step - 1) : step === 0 && onExit && onExit())}
+      />
       <div className="checkin-top">
         {step > 0 ? <Progress step={step} total={total + 1} /> : <span />}
         <button
@@ -176,8 +180,8 @@ export function Checkin({ initial = {}, intro = true, onDone, onClose }) {
       <div className="checkin-actions">
         {step === 0 && (
           <>
-            <Button variant="plain" onClick={() => onClose(answers)}>
-              Not now
+            <Button variant="plain" onClick={() => (onExit ? onExit() : onClose(answers))}>
+              {onExit ? 'Back' : 'Not now'}
             </Button>
             <Button onClick={() => go(1)}>Start</Button>
           </>

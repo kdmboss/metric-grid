@@ -222,3 +222,15 @@ export function shiftSentence(summary, districtSummary, zones, county) {
     );
   return parts.join(' ');
 }
+/** The largest towns by occupied homes in their tracts, computed from places.json (no hard-coded names). */
+export function popularTowns(places, zones, limit = 8) {
+  const byId = new Map(zones.map((z) => [z.zone_id, z]));
+  return places
+    .map((place) => ({
+      place,
+      homes: place.zone_ids.reduce((n, id) => n + (byId.get(id)?.occupied_units ?? 0), 0),
+    }))
+    .sort((a, b) => b.homes - a.homes || a.place.name.localeCompare(b.place.name))
+    .slice(0, limit)
+    .map((entry) => entry.place);
+}
