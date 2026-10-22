@@ -9766,17 +9766,43 @@ body:has(.ios-push) .ios-dim {
 .dash-panel h2 {
   letter-spacing: var(--tracking-title);
 }
-.pin-sw {
-  background: var(--color-ink);
+.watch-flat {
+  align-items: flex-start;
+  gap: var(--space-2);
 }
-.panel-resources h2 {
-  margin: 0 0 var(--space-3);
-  font: var(--font-title1);
+.watch-main {
+  display: flex;
+  flex: 1;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+}
+.add-shortlist {
+  flex: none;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-fill);
+  color: var(--color-accent-text);
+  font: var(--font-footnote);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.add-shortlist:disabled {
+  background: var(--color-fill);
+  color: var(--color-secondary);
 }
 .panel-export {
   width: 100%;
   margin-top: var(--space-3);
 }
+
 /* Resource pins */
 .resource-pin {
   stroke: #fff;
@@ -9793,6 +9819,9 @@ body:has(.ios-push) .ios-dim {
 }
 .resource-pin.is-active {
   stroke: var(--color-accent);
+}
+.pin-sw {
+  background: var(--color-ink);
 }
 
 /* County resources */
@@ -9930,66 +9959,6 @@ body:has(.ios-push) .ios-dim {
   display: block;
   color: var(--color-secondary);
   font: var(--font-caption);
-}
-
-.resources-table {
-  table-layout: fixed;
-}
-.resources-table th:nth-child(1) {
-  width: 44%;
-}
-.resources-table th:nth-child(2) {
-  width: 14%;
-}
-.resources-table .status {
-  padding: 2px 8px;
-  font: var(--font-caption);
-  font-weight: 600;
-}
-.resources-table td strong {
-  display: block;
-  overflow-wrap: anywhere;
-}
-.resources-table .cell-sub {
-  overflow-wrap: anywhere;
-}
-
-.resources-table td,
-.resources-table .cell-sub {
-  overflow: hidden;
-  white-space: normal;
-}
-.watch-flat {
-  align-items: flex-start;
-  gap: var(--space-2);
-}
-.watch-main {
-  display: flex;
-  flex: 1;
-  align-items: flex-start;
-  gap: var(--space-2);
-  min-width: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  text-align: left;
-  font: inherit;
-}
-.add-shortlist {
-  flex: none;
-  padding: 6px 12px;
-  border: 0;
-  border-radius: var(--radius-pill);
-  background: var(--color-accent-fill);
-  color: var(--color-accent-text);
-  font: var(--font-footnote);
-  font-weight: 600;
-  white-space: nowrap;
-}
-.add-shortlist:disabled {
-  background: var(--color-fill);
-  color: var(--color-secondary);
 }
 
 /* Brief (print view) */
@@ -10142,6 +10111,37 @@ body:has(.ios-push) .ios-dim {
   }
 }
 
+/* Presentation mode: bigger numbers, no extra chrome */
+.dashboard[data-present='true'] .dash-top {
+  height: 48px;
+}
+.dashboard[data-present='true'] .county-item {
+  min-height: 44px;
+  font-size: 17px;
+}
+.dashboard[data-present='true'] .county-item-nums {
+  font-size: 14px;
+}
+.dashboard[data-present='true'] .county-sentence {
+  font: 500 18px/26px var(--font-body);
+}
+.dashboard[data-present='true'] .county-sentence b {
+  font-size: 22px;
+}
+.dashboard[data-present='true'] .stat-tile strong,
+.dashboard[data-present='true'] .stat-tile strong span {
+  font-size: 34px;
+  line-height: 38px;
+}
+.dashboard[data-present='true'] .plan-pill {
+  padding: 6px 14px;
+  font: var(--font-callout);
+  font-weight: 600;
+}
+.dashboard[data-present='true'] .rail-legend {
+  display: none;
+}
+
 /* Dashboard tuning */
 .dash-rail .county-item {
   min-height: 32px;
@@ -10171,4 +10171,35 @@ body:has(.ios-push) .ios-dim {
 }
 .watch-flat .watch-status > span {
   white-space: nowrap;
+}
+.resources-table {
+  table-layout: fixed;
+}
+.resources-table th:nth-child(1) {
+  width: 44%;
+}
+.resources-table th:nth-child(2) {
+  width: 14%;
+}
+.resources-table .status {
+  padding: 2px 8px;
+  font: var(--font-caption);
+  font-weight: 600;
+}
+.resources-table td strong {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.resources-table .cell-sub {
+  overflow-wrap: anywhere;
+}
+.panel-resources h2 {
+  margin: 0 0 var(--space-3);
+  font: var(--font-title1);
+}
+
+.resources-table td,
+.resources-table .cell-sub {
+  overflow: hidden;
+  white-space: normal;
 }
