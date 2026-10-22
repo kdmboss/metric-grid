@@ -1,4 +1,4 @@
-# METRIC-Grid
+# Human-Centered, Energy, Allocation, Resilient, Thermally-Safe, Homes
 
 METRIC-Grid helps emergency planners and community stakeholders compare how load-only and vulnerability-aware outage scenarios could distribute risk across North Carolina's 8th Congressional District (NC-08).
 
