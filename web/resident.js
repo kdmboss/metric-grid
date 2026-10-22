@@ -1,7 +1,8 @@
-import { status } from './model.js';
+import { defaults, status } from './model.js';
 export function residentRecord(data) {
   const record = data.records.find(
-    (r) => r.target_key === 'elliott' && r.alpha === 0.5 && !r.cap && r.solved,
+    (r) =>
+      r.target_key === 'elliott' && r.alpha === 0.5 && r.cap === defaults(data).cap && r.solved,
   );
   if (!record) throw new Error('The resident Elliott/Balanced scenario is unavailable');
   return record;

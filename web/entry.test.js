@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { entryChoice } from './entry.js';
 import { residentRecord, residentCounts } from './resident.js';
-import { enrichZones, status } from './model.js';
+import { defaults, enrichZones, status } from './model.js';
 const data = JSON.parse(readFileSync('public/data/app.json', 'utf8'));
 test('entry queries override saved choice and broken storage falls back to welcome', () => {
   assert.equal(entryChoice('?view=resident', { getItem: () => 'planner' }), 'resident');
@@ -23,7 +23,9 @@ test('resident town counts match status for the fixed Elliott Balanced scenario'
     zones = enrichZones(data);
   assert.equal(r.target_key, 'elliott');
   assert.equal(r.alpha, 0.5);
-  assert.equal(r.cap, false);
+  // The default scenario is Elliott / Balanced with the county cap ON, and the resident view follows it.
+  assert.equal(r.cap, true);
+  assert.equal(r.cap, defaults(data).cap);
   for (const place of data.places) {
     const actual = residentCounts(place, zones, r),
       rows = zones.filter((z) => place.zone_ids.includes(z.zone_id));

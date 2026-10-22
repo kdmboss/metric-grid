@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-22 — County cap ON by default
+
+The default scenario is now Elliott / Balanced with the county cap on, so no single county takes more than half of a plan's cut. Only the default selection changed: the optimizer and presolved data are untouched, and the switch (or `?cap=0`) still shows cap off. Two tests that assumed cap off were updated (the resident scenario and the default headline); the original cap-off headline is still asserted explicitly.
+
 ## 2026-10-22 — Household check-in
 
 - Added a skippable first-launch flow: add your town, then six optional questions about heating, medical equipment, 65+/needing help, past outages, a warm place and backup power. Answers live only in this phone's local storage (`hearth.household.v1`); nothing is sent anywhere, and My household can edit, share (user-initiated) or delete them.

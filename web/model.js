@@ -11,7 +11,7 @@ export const targets = (data) => ['elliott', ...data.config.optimizer.target_pct
 export const defaults = (data) => ({
   alpha: data.config.harm.alpha_default,
   target: 'elliott',
-  cap: false,
+  cap: true,
   zone: data.sensitivity.priority_list[0]?.zone_id || 0,
 });
 export function readState(data, search = '') {
@@ -30,7 +30,7 @@ export function readState(data, search = '') {
     const pct = snap(Number(query.get('pct')), [elliott, ...data.config.optimizer.target_pcts]);
     state.target = pct === elliott ? 'elliott' : String(pct);
   }
-  state.cap = query.get('cap') === '1';
+  if (query.has('cap')) state.cap = query.get('cap') === '1';
   const zone = Number(query.get('zone'));
   if (
     query.has('zone') &&

@@ -278,10 +278,25 @@ test('all comparison distributions reproduce stored extrema and plan counts', ()
     );
   }
 });
-test('default headline matches the original Elliott result', () => {
-  const r = getView(data, defaults(data)).record;
+test('the original (cap off) Elliott headline is unchanged in the presolved data', () => {
+  // Same assertions as before the default changed: the cap-off record is still available and untouched.
+  const r = getView(data, { ...defaults(data), cap: false }).record;
+  assert.equal(r.cap, false);
   assert.equal(r.baseline.electric_heat_households - r.weighted.electric_heat_households, 3412);
   assert.equal(r.weighted.households - r.baseline.households, 2543);
+});
+test('the default scenario is Elliott / Balanced with the county cap ON', () => {
+  assert.deepEqual(
+    { alpha: defaults(data).alpha, target: defaults(data).target, cap: defaults(data).cap },
+    { alpha: 0.5, target: 'elliott', cap: true },
+  );
+  const r = getView(data, defaults(data)).record;
+  assert.equal(r.cap, true);
+  assert.equal(r.baseline.electric_heat_households - r.weighted.electric_heat_households, 3428);
+  assert.equal(r.weighted.households - r.baseline.households, 109);
+  assert.equal(readState(data, '').cap, true);
+  assert.equal(readState(data, '?cap=0').cap, false);
+  assert.equal(readState(data, '?cap=1').cap, true);
 });
 test('malformed deep links fall back safely and legacy deep links still work', () => {
   assert.deepEqual(readState(data, '?alpha=nope&pct=NaN&zone=9999'), defaults(data));

@@ -56,18 +56,31 @@ Both plans use the same band: T_NC08 <= sum x_i L_i <= T_NC08 + delta, delta = 2
 - **Run time.** Default scenario (T_NC08, 183 zones): about 0.5 to 0.6 s for both plans. The 10, 15 and 20% presets take 2 to 3 s (Stage A's tie-break solve dominates); the app must pre-solve those, see Phase 4 step 5. Tests assert under 2 s for the default.
 - **Bug found by tests:** PuLP ignores `upBound` on Binary variables, so an early version selected protected zones. The hard exclusion is now an explicit `x_i == 0` constraint and tests cover it.
 
-**Default scenario result (alpha = 0.5, band 91.93 to 93.77 MW), against the load-only plan set (N = 200):**
+**Default scenario result: Elliott, alpha = 0.5, county cap ON (the app default since 2026-10-22; band 91.93 to 93.77 MW), against the cap-ON load-only plan set (N = 200):**
 
 | | Typical load-only plan | Range over the 200 load-only plans | Vulnerability-aware plan |
 |---|---|---|---|
-| MW cut (overshoot) | 92.25 (0.32) | 91.93 to 92.85 | 92.20 (0.27) |
+| MW cut (overshoot) | 92.25 (0.32) | 91.93 to 92.74 | 91.95 (0.02) |
+| Zones cut | 11 | | 10 |
+| Households | 15,413 | 13,387 to 17,458 | 15,522 |
+| Electric-heat households | 8,896 | 6,874 to 11,454 | 5,468 |
+| Vulnerability-weighted households | 7,741 | 4,866 to 11,116 | 2,316 (-70.1% vs typical) |
+| Interruption cost (1 h, 2013$) | $417,615 | $260,199 to $731,161 | $263,819 (-36.8% vs typical) |
+
+With the cap ON the vulnerability-aware plan has fewer electric-heat households than 200 of 200 load-only plans, fewer vulnerability-weighted households than 200 of 200, and lower interruption cost than 199 of 200. It cuts MORE total households than only 102 of 200 plans (+109 vs the typical plan, +0.7%), so the household trade-off is nearly neutral. 19 zones differ from the typical plan; the vulnerability-aware plan's mean SVI is 0.08 vs 0.49. No single county takes more than half of either plan's cut: the largest share is 27.6% (Stanly) in the typical plan and 49.6% (Union) in the vulnerability-aware plan.
+
+**The same scenario with the cap OFF** (still available with the switch or `?cap=0`; the numbers earlier versions of this document and the app called "the default"), against the cap-off load-only plan set (N = 200):
+
+| | Typical load-only plan | Range over the 200 load-only plans | Vulnerability-aware plan (cap OFF) |
+|---|---|---|---|
+| MW cut (overshoot) | 92.25 (0.32) | 91.93 to 92.74 | 92.20 (0.27) |
 | Zones cut | 11 | | 10 |
 | Households | 15,413 | 13,387 to 17,458 | 17,956 |
 | Electric-heat households | 8,896 | 6,874 to 11,454 | 5,484 |
 | Vulnerability-weighted households | 7,741 | 4,784 to 11,116 | 2,053 (-73% vs typical) |
 | Interruption cost (1 h, 2013$) | $417,615 | $260,199 to $731,161 | $264,733 (-37% vs typical) |
 
-The vulnerability-aware plan has fewer electric-heat households than all 200 of 200 load-only plans, fewer vulnerability-weighted households than 200 of 200, lower interruption cost than 199 of 200, and MORE total households cut than 200 of 200 (+2,543 vs the typical plan). 21 zones differ from the typical plan; the vulnerability-aware plan's mean SVI is 0.03 vs 0.49. Alpha sweep: at alpha 0 (economic only) the weighted plan imposes +52% human harm while changing economic cost by -65%; at alpha 1 it changes human harm by -83% and cost by +9% (all vs the typical plan).
+With the cap OFF the vulnerability-aware plan has fewer electric-heat households than all 200 of 200 load-only plans, fewer vulnerability-weighted households than 200 of 200, lower interruption cost than 199 of 200, and MORE total households cut than 200 of 200 (+2,543 vs the typical plan), but it puts 88% of its cut in Union County. 21 zones differ from the typical plan; its mean SVI is 0.03 vs 0.49. Alpha sweep (cap OFF): at alpha 0 (economic only) the weighted plan imposes +52% human harm while changing economic cost by -65%; at alpha 1 it changes human harm by -83% and cost by +9% (all vs the typical plan).
 
 ## Sensitivity, scenarios, pre-solved grid (Phase 4 steps 3-4; all in data/frozen/)
 
@@ -104,7 +117,17 @@ The vulnerability-aware plan has fewer electric-heat households than all 200 of 
 
 Zones cut in all three scenarios: typical plans 3, weighted 18. Zones cut only in the 20% scenario: typical 22, weighted 10.
 
-**Alpha sweep (`docs/figures/alpha_tradeoff.png`, T_NC08, default weights, vs the typical plan):**
+**Alpha sweep (T_NC08, default weights, vs the typical plan), county cap ON (the default):**
+
+| alpha | Human harm change | Interruption cost change | Households cut change |
+|---|---|---|---|
+| 0 | +52% | -65% | +2,286 (+15%) |
+| 0.25 | -59% | -51% | +202 (+1%) |
+| 0.5 | -70% | -37% | +109 (+1%) |
+| 0.75 | -82% | +10% | +1,197 (+8%) |
+| 1 | -82% | +17% | +1,002 (+7%) |
+
+**The same sweep with the cap OFF** (`docs/figures/alpha_tradeoff.png` shows the cap-off sweep):
 
 | alpha | Human harm change | Interruption cost change | Households cut change |
 |---|---|---|---|
@@ -125,11 +148,11 @@ Zones cut in all three scenarios: typical plans 3, weighted 18. Zones cut only i
 - **Generation (deterministic, `model/loadonly.py`).** Plan 0 is the exact optimum of the old load-only objective. The other 199 come from one CBC solve each of min sum c_i x_i inside the same band, with c_i = L_i x u_i and u_i drawn from a generator with fixed seed 20261019 (uniform on [0.5, 1.5]); duplicates are discarded. 200 distinct plans per setting (199 solves), 157 of the 157 selectable zones used, mean overlap between plans (Jaccard) 0.034. Plan sets are frozen by `make freeze` (`data/frozen/loadonly_plans.json`, nine sets: the four targets x cap off/on, plus the flat-allocation sensitivity).
 - **Why it is representative, and what it is not.** Each random cost vector is a different "preference" among equivalent zones, so the set spreads over the whole near-optimal family (all selectable zones appear, plans overlap very little). It is NOT a uniform sample of that family (uniform sampling of subset-sum slices is not practical); a test checks that a fresh set with another seed has medians within 5%.
 - **Typical plan.** The member closest to the median on all four displayed measures (households, electric-heat households, vulnerability-weighted households, interruption cost): distance = sum of |percentile rank - 0.5|, ties to the lowest index. (Choosing the plan closest to the median on human harm alone gave a plan at about the 85th percentile for electric-heat households and would have overstated the headline gap by about 1,400 households.) It is shown on the left map and is the plan the headline, the flip strip and the percent changes refer to.
-- **Headline and range line.** "Same 92 MW cut. 3,412 fewer electric-heat households than the typical load-only plan." Under it: "Across 200 equivalent load-only plans, they cut 6,874-11,454 electric-heat households; the vulnerability-aware plan cut 5,484. It cuts MORE total households than 200 of 200."
+- **Headline and range line (default, cap ON).** "Same 92 MW cut. 3,428 fewer electric-heat households than the typical load-only plan." Under it: "Across 200 equivalent load-only plans, they cut 6,874-11,454 electric-heat households; the vulnerability-aware plan cut 5,468. It cuts MORE total households than 102 of 200." With the cap OFF the same lines read 3,412 fewer, 5,484, and MORE total households than 200 of 200.
 - **Strip charts.** Four dot plots (electric-heat households, vulnerability-weighted households, cost, total households) show all 200 plans, the typical plan (diamond) and the vulnerability-aware plan (circle).
 - **Every number that used to refer to "the baseline" now refers to the typical plan**, and the cut frequency of each zone (how many of the 200 plans cut it) is shown in tooltips, the flip strip, the zone detail and the example-locations table.
 
-**Result.** Against the 200 plans (default setting): electric-heat households 6,874 to 11,454 (median 9,067) vs 5,484; vulnerability-weighted households 4,784 to 11,116 (median 7,680) vs 2,053; cost $260,199 to $731,161 (median $420,919) vs $264,733; total households 13,387 to 17,458 (median 15,516) vs 17,956. The directions are robust (the vulnerability-aware plan is outside the load-only range on three of the four measures and cuts MORE total households than every plan), while the size of any gap depends on which plan you compare with, which is why the page shows the range. `scripts/baseline_spread.py` is an earlier, simpler version of this check.
+**Result.** Against the 200 plans (default setting, cap ON): electric-heat households 6,874 to 11,454 (median 9,067) vs 5,468; vulnerability-weighted households 4,866 to 11,116 (median 7,687) vs 2,316; cost $260,199 to $731,161 (median $421,877) vs $263,819; total households 13,387 to 17,458 (median 15,517) vs 15,522. The vulnerability-aware plan is outside the load-only range on two of the four measures (electric-heat and vulnerability-weighted households) and inside it on cost and total households, which is why the page shows the range. With the cap OFF: electric-heat 5,484, vulnerability-weighted 2,053, cost $264,733 and total households 17,956 (above every load-only plan). The size of any gap depends on which plan you compare with. `scripts/baseline_spread.py` is an earlier, simpler version of this check.
 
 **The vulnerability-aware plan is one optimum.** It is a single optimum of its objective; no distribution of equivalent vulnerability-aware plans was generated, so only the load-only side is shown as a range.
 
@@ -137,7 +160,7 @@ Zones cut in all three scenarios: typical plans 3, weighted 18. Zones cut only i
 
 ## County-share cap (optional, default OFF; added 2026-10-18)
 
-In the default scenario the typical load-only plan puts 28% of its cut in Stanly County and the weighted plan puts 88% in Union County. As a response to cumulative-burden concentration the optimizer has an optional constraint (`optimizer.county_cap`, enabled: false, max_share: 0.5): no single county may take more than 50% of the total MW cut. It is linear (county MW <= share x total MW cut), applied to BOTH plans equally, and changes the baseline too. Infeasible if the unprotected load is in too few counties (the result says so). Solve time about 1.3 s (the default without the cap is about 0.5 s). It limits concentration by county only; it does not make the weighted plan spread cuts to vulnerable counties.
+With the cap OFF the typical load-only plan puts 28% of its cut in Stanly County and the weighted plan puts 88% in Union County; the app default is now cap ON (2026-10-22), where the largest shares are 27.6% (Stanly) and 49.6% (Union). As a response to cumulative-burden concentration the optimizer has an optional constraint (`optimizer.county_cap`, `enabled: false` in the config but ON in the app's default selection, max_share: 0.5): no single county may take more than 50% of the total MW cut. It is linear (county MW <= share x total MW cut), applied to BOTH plans equally, and changes the baseline too. Infeasible if the unprotected load is in too few counties (the result says so). Solve time about 1.3 s (the default without the cap is about 0.5 s). It limits concentration by county only; it does not make the weighted plan spread cuts to vulnerable counties.
 
 **Default scenario with the cap ON (alpha 0.5, band 91.93 to 93.77 MW, T_NC08 = 91.9 MW; the cap applies to the load-only plans too, so the set is different):**
 
@@ -354,3 +377,7 @@ The check-in (`web/household/`) asks six optional questions. Answers are stored 
 - **Some need**: electric heat, OR 65+/needs help, OR past outages of 1 hour or more, OR no warm place, OR no backup (and not Higher).
 - **Lower need**: answered, none of the above. "Prefer not to say" and "Not sure" count as no information.
 It uses no model data, is not a medical or official assessment, and does not change any plan or number. The "Get on the official lists" card appears only when medical equipment or 65+/needs help is yes, and lists only verified official pages (`web/data/registries.js`, each with its source in a comment). Duke Energy's Medically Essential Program flags accounts for careful handling before disconnection and does not move a home up in outage restoration; the card says so.
+
+## Default scenario: county cap ON (2026-10-22)
+The app's default selection is now Elliott / Balanced with the existing county cap ON (`defaults()` in `web/model.js`; the resident and county views follow it). Nothing in the optimizer or the presolved data changed, and the cap-off records are still selectable with the switch or `?cap=0`. Older figures elsewhere in these notes that predate this change (the sensitivity and robustness sections) were computed with the cap OFF and are labeled or should be read that way. At the new default the district totals are MW-only 15,413 homes / 8,896 electric-heat homes / 11 areas / 92.25 MW and people-first 15,522 / 5,468 / 10 areas / 91.95 MW, so people-first leaves 3,428 fewer electric-heat homes cut. The largest share of the cut any one county takes is 27.6% (Stanly) under MW-only and 49.6% (Union) under people-first, within the 50% cap.
+
