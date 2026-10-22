@@ -195,3 +195,30 @@ export const placeCounty = (place, zones) => {
   );
 };
 export const boundsOf = (pathsZones) => pathBounds(pathsZones);
+
+const meanSvi = (list) => {
+  const scored = list.filter((z) => !z.svi_missing && z.RPL_THEMES != null && z.occupied_units > 0);
+  const homes = scored.reduce((n, z) => n + z.occupied_units, 0);
+  return homes ? scored.reduce((n, z) => n + z.RPL_THEMES * z.occupied_units, 0) / homes : null;
+};
+/**
+ * Second sentence for a county where the people-first plan cuts MORE homes than MW-only. It says so only
+ * with data: the "lower vulnerability" reason appears only when the county's household-weighted SVI really
+ * is below the district's, and the district-wide benefit only when the plan leaves fewer electric-heat
+ * homes cut. Returns null when there is nothing true to add.
+ */
+export function shiftSentence(summary, districtSummary, zones, county) {
+  if (!summary.county || summary.weighted.homes <= summary.baseline.homes) return null;
+  const here = meanSvi(countyZones(zones, county)),
+    everywhere = meanSvi(zones);
+  const lower = here != null && everywhere != null && here < everywhere;
+  const fewer = districtSummary.baseline.heat - districtSummary.weighted.heat;
+  const why =
+    ' because these neighborhoods score lower on vulnerability than other parts of the district';
+  const parts = [`The people-first plan shifts more of the cut here${lower ? why : ''}.`];
+  if (fewer > 0)
+    parts.push(
+      `District-wide, it leaves about ${fmt(fewer)} fewer electric-heat homes in the dark.`,
+    );
+  return parts.join(' ');
+}

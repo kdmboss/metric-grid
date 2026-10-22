@@ -12,6 +12,7 @@ import {
   COUNTY_NAMES,
   countyFacilities,
   countySummary,
+  shiftSentence,
   placeCounty,
   shortName,
   townAnchors,
@@ -67,6 +68,11 @@ export function MapTab({ workspace: w, views, zoneOpen, homePlace }) {
   const project = useMemo(() => mapProjection(data.zones, data.district), [data]);
   const towns = useMemo(() => townAnchors(places, w.paths.zones, w.zones), [places, w]);
   const summary = useMemo(() => countySummary(w.zones, record, county), [w.zones, record, county]);
+  const districtSummary = useMemo(() => countySummary(w.zones, record, ALL), [w.zones, record]);
+  const shift = useMemo(
+    () => shiftSentence(summary, districtSummary, w.zones, county),
+    [summary, districtSummary, w.zones, county],
+  );
   const watch = useMemo(() => areasToWatch(w.zones, county), [w.zones, county]);
   const facilities = useMemo(
     () =>
@@ -220,6 +226,10 @@ export function MapTab({ workspace: w, views, zoneOpen, homePlace }) {
               places={places}
               watch={watch}
               facilities={allFacilities}
+              shift={shift}
+              cap={w.state.cap}
+              capShare={data.config.optimizer.county_cap.max_share}
+              onCap={(on) => w.update({ cap: on })}
               onWatch={(zone) => w.selectZone(zone.zone_id)}
               onFacility={(f) => {
                 setPoint(f);

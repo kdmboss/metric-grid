@@ -93,6 +93,10 @@ export function CountyBody({
   places,
   watch,
   facilities,
+  shift,
+  cap,
+  capShare,
+  onCap,
   onWatch,
   onFacility,
   onScenario,
@@ -103,6 +107,24 @@ export function CountyBody({
   const district = county === ALL;
   return (
     <div className="county-body">
+      {shift && <p className="shift-sentence">{shift}</p>}
+      <Group>
+        <label className="ios-row ios-switch-row cap-row">
+          <span className="ios-row-body">
+            <span className="ios-row-title">Limit how much any one county takes</span>
+            <span className="ios-row-detail">
+              At most {fmt(capShare * 100)}% of each plan’s cut
+            </span>
+          </span>
+          <input
+            type="checkbox"
+            className="ios-switch"
+            role="switch"
+            checked={cap}
+            onChange={(event) => onCap(event.target.checked)}
+          />
+        </label>
+      </Group>
       <div className="stat-row">
         <Tile value={summary.homes} format={(v) => fmt(v)} label="Homes" />
         <Tile

@@ -198,3 +198,56 @@ test('county facilities equal facilities.geojson filtered by point-in-polygon on
     true,
   );
 });
+
+import { shiftSentence } from './county/county.js';
+
+test('shift sentence: only when people-first cuts more homes in the county, and only with true clauses', () => {
+  const record = solved.find((r) => r.target_key === 'elliott' && r.alpha === 0.5 && !r.cap);
+  const district = countySummary(zones, record, ALL);
+  const fewer = district.baseline.heat - district.weighted.heat;
+  assert.equal(fewer, 3412);
+  const union = countySummary(zones, record, 'Union County');
+  assert.ok(union.weighted.homes > union.baseline.homes);
+  const text = shiftSentence(union, district, zones, 'Union County');
+  assert.equal(
+    text,
+    'The people-first plan shifts more of the cut here because these neighborhoods score lower on ' +
+      'vulnerability than other parts of the district. District-wide, it leaves about 3,412 fewer ' +
+      'electric-heat homes in the dark.',
+  );
+  // Counties where the people-first plan does not cut more homes get no second sentence.
+  for (const county of COUNTY_NAMES.filter((c) => c !== 'Union County'))
+    assert.equal(
+      shiftSentence(countySummary(zones, record, county), district, zones, county),
+      null,
+      county,
+    );
+  assert.equal(shiftSentence(district, district, zones, ALL), null);
+  // The vulnerability reason is dropped when the county is not actually lower than the district.
+  const high = zones.map((z) => (z.COUNTY === 'Union County' ? { ...z, RPL_THEMES: 0.99 } : z));
+  assert.equal(
+    shiftSentence(union, district, high, 'Union County'),
+    'The people-first plan shifts more of the cut here. ' +
+      'District-wide, it leaves about 3,412 fewer electric-heat homes in the dark.',
+  );
+  // The district-wide clause is dropped when it would not be true.
+  const flat = { ...district, weighted: { ...district.weighted, heat: district.baseline.heat } };
+  assert.doesNotMatch(shiftSentence(union, flat, zones, 'Union County'), /District-wide/);
+});
+test('the county cap lowers the share any one county takes in every capped scenario', () => {
+  const cap = data.config.optimizer.county_cap.max_share;
+  for (const record of solved.filter((r) => r.cap))
+    for (const plan of [record.baseline, record.weighted]) {
+      const byCounty = {};
+      zones
+        .filter((z) => plan.zone_ids.includes(z.zone_id))
+        .forEach((z) => (byCounty[z.COUNTY] = (byCounty[z.COUNTY] || 0) + z.L_mw));
+      for (const mw of Object.values(byCounty)) assert.ok(mw / plan.mw_shed <= cap + 1e-6);
+    }
+  const off = solved.find((r) => r.target_key === 'elliott' && r.alpha === 0.5 && !r.cap);
+  const on = solved.find((r) => r.target_key === 'elliott' && r.alpha === 0.5 && r.cap);
+  assert.notDeepEqual(
+    countySummary(zones, off, 'Union County').weighted,
+    countySummary(zones, on, 'Union County').weighted,
+  );
+});
