@@ -6,6 +6,8 @@ import { Sparkline } from '../ui/Sparkline.jsx';
 import { ProgressRing } from '../ResidentLayer.jsx';
 import { PlanRows } from './placeKit.jsx';
 import { NeedCard, OfficialListsCard } from '../household/cards.jsx';
+import { DistrictThumb } from '../county/DistrictThumb.jsx';
+import { fmt } from '../model.js';
 import { currentTemp } from '../device/deviceData.js';
 import { greeting, relativeTime, sparkSeries } from '../device/outage.js';
 
@@ -26,6 +28,9 @@ export function Home({
   counts,
   device,
   progress,
+  paths = null,
+  districtHomes = null,
+  onOpenMap = () => {},
   level = null,
   answers = {},
   showLists = false,
@@ -53,7 +58,7 @@ export function Home({
           </button>
         ) : (
           <section className="home-card place-card place-empty">
-            <h2>Is your area safe?</h2>
+            <h2>See how your town fared on Christmas Eve 2022</h2>
             <Button onClick={onAddPlace}>Add your town</Button>
           </section>
         )}
@@ -83,6 +88,18 @@ export function Home({
           </span>
           <Icon name="chevron" size={18} className="ios-chevron" />
         </button>
+        {!place && paths && districtHomes != null && (
+          <button type="button" className="home-card district-card" onClick={onOpenMap}>
+            <DistrictThumb paths={paths} />
+            <span className="district-card-text">
+              <b>NC-08</b>
+              <span>
+                In the replay, about {fmt(districtHomes)} homes lost power under the usual plan
+              </span>
+            </span>
+            <Icon name="chevron" size={18} className="ios-chevron" />
+          </button>
+        )}
         <div className="quick-actions">
           <QuickAction icon="plus" label="Add place" onClick={onAddPlace} />
           <QuickAction icon="snowflake" label="Start cooling test" onClick={onCooling} />

@@ -210,3 +210,29 @@ test('numbers use en-US commas everywhere: no thin or narrow spaces in source or
   const markup = renderToStaticMarkup(h(CountUp, { value: 15910, format: (v) => fmt(v) }));
   assert.ok(markup.includes('15,910') && !THIN.test(markup));
 });
+test('Home with no town: new heading, the district card from data; with a town: no district card', async () => {
+  const { Home } = await load('/web/shell/Home.jsx');
+  const { enrichZones, mapPaths } = await load('/web/model.js');
+  const { residentRecord } = await load('/web/resident.js');
+  const { readFileSync } = await import('node:fs');
+  const data = JSON.parse(readFileSync('public/data/app.json', 'utf8'));
+  const paths = mapPaths(data.zones, data.district);
+  const homes = residentRecord(data).baseline.households;
+  const render = async (extra) =>
+    text(renderToStaticMarkup(h(Home, await homeProps({ paths, districtHomes: homes, ...extra }))));
+  const empty = await render({});
+  assert.ok(empty.includes('See how your town fared on Christmas Eve 2022'));
+  assert.ok(!empty.includes('Is your area safe?'));
+  assert.ok(
+    empty.includes(
+      `In the replay, about ${homes.toLocaleString('en-US')} homes lost power under the usual plan`,
+    ),
+  );
+  assert.equal(homes, 15413);
+  const withTown = await render({
+    place: { name: 'Albemarle', geoid: '1', zone_ids: [1] },
+    counts: { total: 1, baseline: 1, aware: 0 },
+  });
+  assert.ok(!withTown.includes('In the replay'));
+  void enrichZones;
+});

@@ -190,6 +190,9 @@ export function AppShell({ data }) {
             counts={counts}
             device={homeDevice}
             progress={progress}
+            paths={workspace.paths}
+            districtHomes={homeRecord.baseline.households}
+            onOpenMap={() => setTab('map')}
             level={level}
             answers={setup}
             showLists={showsOfficialLists(setup)}

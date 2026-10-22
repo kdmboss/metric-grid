@@ -9297,8 +9297,55 @@ body:has(.ios-push) .ios-dim {
   height: 84px;
 }
 
-
-/* County explainer and cap switch */
+/* Home empty state, district card, thumbnail */
+.district-thumb {
+  flex: none;
+  width: 96px;
+  height: 72px;
+}
+.thumb-tract {
+  stroke: rgb(255 255 255 / 0.7);
+  stroke-width: 0.6;
+}
+.thumb-tract.risk-low {
+  fill: var(--color-map0);
+}
+.thumb-tract.risk-medium {
+  fill: var(--color-map2);
+}
+.thumb-tract.risk-high {
+  fill: var(--color-map4);
+}
+.thumb-tract.risk-unknown {
+  fill: #d8d2c8;
+}
+.thumb-boundary {
+  fill: none;
+  stroke: var(--color-secondary);
+  stroke-width: 1.2;
+}
+.district-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.district-card-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.district-card-text b {
+  font: var(--font-headline);
+}
+.district-card-text span {
+  font: var(--font-footnote);
+  color: var(--color-secondary);
+}
+.place-empty h2 {
+  font: var(--font-title3);
+  letter-spacing: var(--tracking-title);
+}
 .shift-sentence {
   margin: 0 0 var(--space-3);
   padding: 0 var(--space-1);
@@ -9314,3 +9361,4 @@ body:has(.ios-push) .ios-dim {
 .map-top {
   top: calc(var(--safe-top) + 12px);
 }
+
