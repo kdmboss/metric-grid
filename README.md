@@ -1,4 +1,4 @@
-# Human-Centered, Energy, Allocation, Resilient, Thermally-Safe, Homes -- HEARTH
+# Human-Centered, Energy, Allocation, Resilient, Thermally-Safe, Homes —— HEARTH
 
 HEARTH helps emergency planners and community stakeholders compare how load-only and vulnerability-aware outage scenarios could distribute risk across North Carolina's 8th Congressional District (NC-08).
 
@@ -47,7 +47,7 @@ npx vercel --prod   # production deployment
 
 When a utility cannot meet demand it sheds load by opening breakers at substations. On December 24, 2022 (Winter Storm Elliott), Duke Energy Carolinas began shedding at 6:14 a.m. and shed up to 1,000 MW, and Duke Energy Progress shed up to 961 MW. Publicly described procedures protect critical facilities but publish no community-vulnerability layer.
 
-METRIC-Grid takes the observed regional demand curves from that morning (EIA-930), public census vulnerability data, and published interruption-cost figures, scales the regional event down to the district, and solves two plans held to the same MW band:
+HEARTH takes the observed regional demand curves from that morning (EIA-930), public census vulnerability data, and published interruption-cost figures, scales the regional event down to the district, and solves two plans held to the same MW band:
 
 - **load-only plans**: any way of cutting the required MW with little overshoot, ignoring who lives there (there are very many; the app generates a fixed, reproducible set of 200 and shows the typical one);
 - a **vulnerability-aware plan**: cut the same MW band at the lowest modeled harm.
