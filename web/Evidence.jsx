@@ -87,6 +87,16 @@ export function Evidence({ data, record: r, section = 'robust' }) {
               </p>
             </article>
             <article>
+              <h3>Your outage need (check-in)</h3>
+              <p>
+                From your own answers only, on this phone. Higher need: powered medical equipment,
+                or electric heat or needing help leaving with no warm place to go. Some need:
+                electric heat, 65+ or needing help, past outages of an hour or more, no warm place,
+                or no backup. Otherwise lower. “Prefer not to say” and “Not sure” never raise it. It
+                is not a medical or official assessment, and HEARTH never sends it anywhere.
+              </p>
+            </article>
+            <article>
               <h3>Costs and critical facilities</h3>
               <p>
                 Costs use LBNL interruption estimates in 2013 dollars for a one-hour outage.{' '}

@@ -9,6 +9,8 @@ Git history preserves the development record, including retired design briefs.
 The owners must complete the contribution statements below themselves. No owner
 review or personal contribution is claimed by these placeholders.
 
+The household check-in (`web/household/`), its need-level rule, the registry table (`web/data/registries.js`) and the iOS app shell were written with Claude Code (Claude Sonnet 5.5). Registry and program pages were looked up by the assistant on 2026-10-21 and are only as current as those pages; the owners should re-verify each link and wording before relying on it. The check-in is not a medical or official assessment, and its answers never leave the phone.
+
 Optional hardware is outside the submission: hardware testing in progress.
 Personal stories must be supplied by the owners; quotes require explicit permission.
 

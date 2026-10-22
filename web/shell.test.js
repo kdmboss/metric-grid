@@ -6,13 +6,14 @@ import {
   readyItems,
   readyProgress,
   readyStatus,
-  SETUP_STEPS,
 } from './shell/ready.js';
 
-test('ready checklist adapts to setup answers and reports progress', () => {
+const ids = (a) => enabledCategories(a).map(([id]) => id);
+test('ready checklist adapts to household answers and reports progress', () => {
   assert.equal(readyItems({}).length, 10);
   assert.equal(readyItems({ heat: 'electric' }).length, 12);
-  assert.equal(readyItems({ heat: 'electric', medical: 'yes', people: ['kids'] }).length, 16);
+  assert.equal(readyItems({ heat: 'electric', medical: 'yes' }).length, 15);
+  assert.equal(readyItems({ heat: 'electric', medical: 'yes', help: 'yes' }).length, 17);
   const progress = readyProgress({}, ['layers', 'charge']);
   assert.deepEqual([progress.done, progress.total, progress.next.id], [2, 10, 'light']);
   assert.equal(
@@ -22,17 +23,33 @@ test('ready checklist adapts to setup answers and reports progress', () => {
     ).next,
     null,
   );
-  assert.equal(SETUP_STEPS.length, 3);
 });
-test('conditional categories appear only when the setup answers enable them', () => {
-  const ids = (a) => enabledCategories(a).map(([id]) => id);
+test('which checklist categories turn on for each answer combination, most important first', () => {
   assert.deepEqual(ids({}), ['before', 'out', 'after']);
-  assert.deepEqual(ids({ heat: 'electric' }), ['before', 'out', 'heat', 'after']);
-  assert.deepEqual(ids({ medical: 'yes' }), ['before', 'out', 'medical', 'after']);
-  assert.equal(CATEGORIES.length, 5);
+  assert.deepEqual(ids({ heat: 'gas', medical: 'no', help: 'no', warm: 'easy' }), [
+    'before',
+    'out',
+    'after',
+  ]);
+  assert.deepEqual(ids({ heat: 'electric' }), ['heat', 'before', 'out', 'after']);
+  assert.deepEqual(ids({ medical: 'yes' }), ['medical', 'before', 'out', 'after']);
+  assert.deepEqual(ids({ help: 'yes' }), ['help', 'before', 'out', 'after']);
+  assert.deepEqual(ids({ warm: 'no' }), ['help', 'before', 'out', 'after']);
+  assert.deepEqual(ids({ heat: 'electric', medical: 'yes', help: 'yes' }), [
+    'medical',
+    'help',
+    'heat',
+    'before',
+    'out',
+    'after',
+  ]);
+  assert.deepEqual(ids({ medical: 'skip', help: 'skip' }), ['before', 'out', 'after']);
+  assert.equal(CATEGORIES.length, 6);
+  // The next item to do follows the most important category.
+  assert.equal(readyProgress({ medical: 'yes' }, []).next.cat, 'medical');
 });
 test('copy limits: titles at most 6 words, why lines at most 10, no paragraphs', () => {
-  for (const item of readyItems({ heat: 'electric', medical: 'yes', people: ['kids', 'pets'] })) {
+  for (const item of readyItems({ heat: 'electric', medical: 'yes', help: 'yes' })) {
     assert.ok(item.title.split(' ').length <= 6, item.title);
     assert.ok(item.why.split(' ').length <= 10, item.why);
   }

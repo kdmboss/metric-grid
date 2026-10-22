@@ -5,6 +5,7 @@ import { LargeTitleBar } from '../ui/LargeTitleBar.jsx';
 import { Sparkline } from '../ui/Sparkline.jsx';
 import { ProgressRing } from '../ResidentLayer.jsx';
 import { PlanRows } from './placeKit.jsx';
+import { NeedCard, OfficialListsCard } from '../household/cards.jsx';
 import { currentTemp } from '../device/deviceData.js';
 import { greeting, relativeTime, sparkSeries } from '../device/outage.js';
 
@@ -25,6 +26,11 @@ export function Home({
   counts,
   device,
   progress,
+  level = null,
+  answers = {},
+  showLists = false,
+  onOpenNeed = () => {},
+  onOpenLists = () => {},
   onAddPlace,
   onOpenPlace,
   onOpenDevice,
@@ -51,6 +57,8 @@ export function Home({
             <Button onClick={onAddPlace}>Add your town</Button>
           </section>
         )}
+        {level && <NeedCard level={level} answers={answers} onOpen={onOpenNeed} />}
+        {showLists && <OfficialListsCard onOpen={onOpenLists} />}
         {device && (
           <button type="button" className="home-card device-card" onClick={onOpenDevice}>
             <span className="card-head">

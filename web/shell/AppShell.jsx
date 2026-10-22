@@ -11,17 +11,31 @@ import { MapFilters } from '../components/MapFilters.jsx';
 import { Preparation } from '../components/Preparation.jsx';
 import { EvidenceView } from '../components/EvidenceView.jsx';
 import { Evidence } from '../Evidence.jsx';
-import { shareText } from '../platform.js';
+import { shareText, successHaptic } from '../platform.js';
 import { resolveDevices } from '../device/deviceData.js';
 import { Home } from './Home.jsx';
 import { MapTab } from './MapTab.jsx';
 import { CoolingTestSheet, DevicePushes, DeviceSetupSheet, DevicesTab } from './Devices.jsx';
-import { ReadyTab, SetupSheet } from './Ready.jsx';
+import { ReadyTab } from './Ready.jsx';
+import { Checkin } from '../household/Checkin.jsx';
+import { Onboarding } from '../household/Onboarding.jsx';
+import { OfficialLists } from '../household/cards.jsx';
+import {
+  deleteHousehold,
+  householdSummary,
+  loadHousehold,
+  needLevel,
+  officialLists,
+  saveHousehold,
+  showsOfficialLists,
+} from '../household/household.js';
+import { placeCounty } from '../county/county.js';
 import {
   About,
   DataSources,
   HowItWorks,
   MoreTab,
+  MyHousehold,
   MyPlaces,
   PlannerTools,
   ResetSheet,
@@ -43,14 +57,17 @@ export function AppShell({ data }) {
   const [tab, setTab] = useState(initialTab);
   const [saved, setSaved] = useStored(KEYS.places, []);
   const [checked, setChecked] = useStored(KEYS.ready, []);
-  const [setup, setSetup] = useStored(KEYS.setup, { done: false });
+  const [household, setHouseholdState] = useState(loadHousehold);
+  const [onboarded, setOnboarded] = useStored(KEYS.onboarded, false);
+  const [checkin, setCheckin] = useState(false);
+  const setup = household.answers;
   const [people, setPeople] = useStored(KEYS.check, []);
   const [homeFlags, setHomeFlags] = useStored(KEYS.deviceHome, {});
   const [room, setRoom] = useStored(KEYS.room, '');
   const devices = useMemo(() => resolveDevices(data.device), [data.device]);
   const homeRecord = useMemo(() => residentRecord(data), [data]);
   const places = data.places || [];
-  const [sheet, setSheet] = useState(null); // 'place' | 'device' | 'cooling' | 'setup' | 'reset'
+  const [sheet, setSheet] = useState(null); // 'place' | 'device' | 'cooling'
   const [placeOpen, setPlaceOpen] = useState(false);
   const [deviceId, setDeviceId] = useState(null);
   const [outage, setOutage] = useState(null);
@@ -81,12 +98,6 @@ export function AppShell({ data }) {
       ease: [0.16, 1, 0.3, 1],
     });
   }, [tab, reduced]);
-  useEffect(() => {
-    if (tab === 'ready' && !setup.done && setup.asked !== true) {
-      setSetup((s) => ({ ...s, asked: true }));
-      setSheet('setup');
-    }
-  }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!toast) return undefined;
     const timer = setTimeout(() => setToast(''), 2200);
@@ -133,15 +144,37 @@ export function AppShell({ data }) {
       setToast('Could not share');
     }
   }
-  function finishSetup(answers, completed) {
-    setSetup({ ...answers, done: completed, asked: true });
-    setSheet(null);
+  function saveAnswers(answers, completed = true) {
+    const next = { answers, completed };
+    saveHousehold(next);
+    setHouseholdState(next);
   }
+  function removeAnswers() {
+    setHouseholdState(deleteHousehold());
+    void successHaptic();
+    setToast('Answers deleted');
+  }
+  async function shareHousehold() {
+    try {
+      const result = await shareText(
+        'My household',
+        householdSummary(setup, mainPlace?.name || ''),
+      );
+      if (result === 'copied') setToast('Summary copied');
+    } catch {
+      setToast('Could not share');
+    }
+  }
+  const level = needLevel(setup);
+  const county = mainPlace ? placeCounty(mainPlace, workspace.zones) : null;
+  const lists = officialLists(setup, county);
   const zoneSheetShown =
     (tab === 'map' || tool === 'explore') && workspace.sheetOpen && workspace.zone;
   const moreTitle = {
     places: 'My places',
     tools: 'Planner tools',
+    household: 'My household',
+    lists: 'Official lists',
     how: 'How HEARTH works',
     sources: 'Data sources',
     about: 'About HEARTH',
@@ -157,6 +190,11 @@ export function AppShell({ data }) {
             counts={counts}
             device={homeDevice}
             progress={progress}
+            level={level}
+            answers={setup}
+            showLists={showsOfficialLists(setup)}
+            onOpenNeed={() => setMoreScreen('household')}
+            onOpenLists={() => setMoreScreen('lists')}
             onAddPlace={() => setSheet('place')}
             onOpenPlace={() => setPlaceOpen(true)}
             onOpenDevice={() => {
@@ -192,7 +230,7 @@ export function AppShell({ data }) {
             room={room}
             setRoom={setRoom}
             device={devices[0] || null}
-            onSetup={() => setSheet('setup')}
+            onSetup={() => setCheckin(true)}
             onShare={sharePlan}
           />
         )}
@@ -221,12 +259,6 @@ export function AppShell({ data }) {
       />
       <DeviceSetupSheet open={sheet === 'device'} onClose={() => setSheet(null)} />
       <CoolingTestSheet open={sheet === 'cooling'} onClose={() => setSheet(null)} />
-      <SetupSheet
-        open={sheet === 'setup'}
-        onClose={() => finishSetup(setup, setup.done)}
-        answers={setup}
-        onDone={finishSetup}
-      />
       <ResetSheet
         open={moreScreen === 'reset'}
         onClose={() => setMoreScreen(null)}
@@ -266,7 +298,9 @@ export function AppShell({ data }) {
         }}
       />
       <PushScreen
-        open={['places', 'tools', 'how', 'sources', 'about'].includes(moreScreen)}
+        open={['places', 'tools', 'how', 'sources', 'about', 'household', 'lists'].includes(
+          moreScreen,
+        )}
         title={moreTitle[moreScreen] || ''}
         backLabel="More"
         onBack={() => setMoreScreen(null)}
@@ -282,6 +316,15 @@ export function AppShell({ data }) {
             onRemove={(place) => setSaved((cur) => cur.filter((g) => g !== place.geoid))}
           />
         )}
+        {moreScreen === 'household' && (
+          <MyHousehold
+            answers={setup}
+            onEdit={() => setCheckin(true)}
+            onShare={shareHousehold}
+            onDelete={removeAnswers}
+          />
+        )}
+        {moreScreen === 'lists' && <OfficialLists rows={lists} />}
         {moreScreen === 'tools' && <PlannerTools onTool={openTool} />}
         {moreScreen === 'how' && <HowItWorks onMethods={() => openTool('methods')} />}
         {moreScreen === 'sources' && <DataSources data={data} />}
@@ -312,6 +355,27 @@ export function AppShell({ data }) {
       >
         <Evidence data={data} record={workspace.record} section="methods" />
       </PushScreen>
+      {!onboarded && (
+        <Onboarding
+          places={places}
+          onPlace={addPlace}
+          onDone={(answers, completed) => {
+            saveAnswers(answers, completed);
+            setOnboarded(true);
+          }}
+        />
+      )}
+      {checkin && (
+        <Checkin
+          intro={false}
+          initial={setup}
+          onDone={(answers) => {
+            saveAnswers(answers, true);
+            setCheckin(false);
+          }}
+          onClose={() => setCheckin(false)}
+        />
+      )}
       <AnimatePresence>
         {toast && (
           <motion.div

@@ -7,6 +7,8 @@ export const KEYS = {
   check: 'hearth.ready.people.v2',
   deviceHome: 'hearth.device.home.v2',
   room: 'hearth.ready.room.v2',
+  household: 'hearth.household.v1',
+  onboarded: 'hearth.onboarded.v1',
 };
 export function readJSON(key, fallback) {
   try {

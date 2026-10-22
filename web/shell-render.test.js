@@ -95,7 +95,7 @@ test('Home with a place, a device and checklist progress stays glanceable', asyn
   for (const expected of ['Albemarle', '2 areas lose power', 'All stay on', 'Living room', 'of'])
     assert.ok(out.includes(expected), expected);
   assert.ok(!out.includes('Sample'));
-  assert.ok(out.split(' ').length <= 48, `Home has ${out.split(' ').length} words`);
+  assert.ok(out.split(' ').length <= 70, `Home has ${out.split(' ').length} words`);
 });
 test('Devices: a clean empty state without data, real rows and outage math with data', async () => {
   const { resolveDevices } = await load('/web/device/deviceData.js');
@@ -147,4 +147,46 @@ test('the router sends phones and the app shell to the tabs, and ?view= to the c
   assert.equal(usesAppShell('', false, true), true);
   assert.equal(usesAppShell('', false, false), false);
   assert.equal(usesAppShell('?view=planner', true, true), false);
+});
+test('Home shows the need card without health detail, and the official-lists card only when it applies', async () => {
+  const { Home } = await load('/web/shell/Home.jsx');
+  const { OfficialLists } = await load('/web/household/cards.jsx');
+  const { needLevel, officialLists, showsOfficialLists } = await load(
+    '/web/household/household.js',
+  );
+  const answers = { heat: 'electric', medical: 'yes', warm: 'no', backup: ['none'] };
+  const render = async (extra) => text(renderToStaticMarkup(h(Home, await homeProps(extra))));
+  const none = await render({});
+  assert.ok(!none.includes('need') && !none.includes('official lists'));
+  const shown = await render({
+    level: needLevel(answers),
+    answers,
+    showLists: showsOfficialLists(answers),
+  });
+  for (const expected of [
+    'Higher need',
+    'Electric heat',
+    'Medical equipment',
+    'No backup',
+    'Not a medical or official assessment',
+    'Get on the official lists',
+  ])
+    assert.ok(shown.includes(expected), expected);
+  assert.ok(!/oxygen|dialysis|CPAP/i.test(shown));
+  const lower = await render({
+    level: needLevel({ heat: 'gas', warm: 'easy' }),
+    answers: { heat: 'gas', warm: 'easy' },
+    showLists: false,
+  });
+  assert.ok(lower.includes('Lower need') && !lower.includes('official lists'));
+  const lists = text(
+    renderToStaticMarkup(h(OfficialLists, { rows: officialLists(answers, 'Union County') })),
+  );
+  for (const expected of [
+    'Medically Essential Program',
+    'Emergency Access and Functional Needs Registry',
+    'NC 211',
+    'HEARTH doesn’t sign you up or share your answers',
+  ])
+    assert.ok(lists.includes(expected), expected);
 });

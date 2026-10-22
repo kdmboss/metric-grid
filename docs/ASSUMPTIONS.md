@@ -347,3 +347,10 @@ The county map colors each census tract by a combined level (decided with the co
 - **No data (gray)**: the tract has no SVI value.
 
 This is a display rule only. It does not change the optimizer, the plans, or any published number. "Areas to watch" ranks high-risk tracts in a county by the model's vulnerability-weighted exposure (households x (w_svi x SVI + w_eheat x electric-heat share)), ties broken by zone id. Reason chips quote real tract values (electric-heat share, SVI, share of homes built before 1980 from ACS year-built bins 1979-or-earlier, renter share). Hospitals, nursing homes and water treatment sites are hard exclusions; fire stations are shown for context only.
+
+## Household check-in and "Your outage need"
+The check-in (`web/household/`) asks six optional questions. Answers are stored in the phone's local storage under `hearth.household.v1` and are never sent anywhere (no server, no analytics, no submit). Level rule (`needLevel`, tested):
+- **Higher need**: powered medical equipment = yes, OR (electric heat AND "no" to getting somewhere warm), OR (65+/needs help to leave AND "no" to getting somewhere warm).
+- **Some need**: electric heat, OR 65+/needs help, OR past outages of 1 hour or more, OR no warm place, OR no backup (and not Higher).
+- **Lower need**: answered, none of the above. "Prefer not to say" and "Not sure" count as no information.
+It uses no model data, is not a medical or official assessment, and does not change any plan or number. The "Get on the official lists" card appears only when medical equipment or 65+/needs help is yes, and lists only verified official pages (`web/data/registries.js`, each with its source in a comment). Duke Energy's Medically Essential Program flags accounts for careful handling before disconnection and does not move a home up in outage restoration; the card says so.

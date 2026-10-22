@@ -5,6 +5,7 @@ import { LargeTitleBar } from '../ui/LargeTitleBar.jsx';
 import { ActionSheet } from '../ui/ActionSheet.jsx';
 import { LogoMark } from '../components/LogoMark.jsx';
 import pkg from '../../package.json';
+import { HouseholdSummary } from '../household/Checkin.jsx';
 
 export function MoreTab({ onOpen }) {
   return (
@@ -12,6 +13,7 @@ export function MoreTab({ onOpen }) {
       <LargeTitleBar title="More" />
       <main className="tab-main more-tab">
         <Group>
+          <Row icon="people" title="My household" onClick={() => onOpen('household')} />
           <Row icon="pin" title="My places" onClick={() => onOpen('places')} />
           <Row icon="layers" title="Planner tools" onClick={() => onOpen('tools')} />
         </Group>
@@ -68,6 +70,30 @@ export function PlannerTools({ onTool }) {
     </Group>
   );
 }
+/** Household answers: view, edit, share (user-initiated), and delete from this phone. */
+export function MyHousehold({ answers, onEdit, onShare, onDelete }) {
+  const [confirm, setConfirm] = useState(false);
+  return (
+    <div className="my-household">
+      <HouseholdSummary answers={answers} />
+      <Group>
+        <Row icon="pencil" title="Edit answers" onClick={onEdit} />
+        <Row icon="share" title="Share with someone" onClick={onShare} />
+      </Group>
+      <Group footer="Saved only on this phone. HEARTH never sends your answers anywhere.">
+        <Row icon="trash" tone="ink" title="Delete my answers" onClick={() => setConfirm(true)} />
+      </Group>
+      <ActionSheet
+        open={confirm}
+        onClose={() => setConfirm(false)}
+        title="Delete your answers from this phone?"
+        menu
+        options={[{ value: 'delete', label: 'Delete my answers', icon: 'trash' }]}
+        onSelect={onDelete}
+      />
+    </div>
+  );
+}
 export function HowItWorks({ onMethods }) {
   return (
     <>
@@ -75,6 +101,13 @@ export function HowItWorks({ onMethods }) {
         <Row icon="snowflake" title="We replay a real storm" detail="Christmas Eve 2022" />
         <Row icon="bolt" title="We compare two plans" detail="Megawatts only, or people first" />
         <Row icon="people" title="You see who is affected" detail="Down to your town" />
+      </Group>
+      <Group title="Next steps">
+        <Row
+          icon="people"
+          title="With a county partner"
+          detail="An opt-in, anonymous version of the check-in could show planners where needs are concentrated."
+        />
       </Group>
       <Group>
         <Row icon="book" title="Full methods" onClick={onMethods} />

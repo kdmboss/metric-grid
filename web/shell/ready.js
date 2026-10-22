@@ -1,14 +1,18 @@
+import { enabledFlags } from '../household/household.js';
+
 /**
  * The "get ready" checklist. Advice is limited to what ReadyNC and Ready.gov state on their winter-weather
  * pages (layers, closing off rooms, never heating with a stove or grill, generators outdoors 20 ft from
  * openings, CO detectors with battery backup, spare batteries, medications, public shelters) plus
- * plain-sense items (charge phones, check on neighbors).
+ * plain-sense items (charge phones, check on neighbors). Household answers (see household.js) switch on
+ * extra categories and move the most important ones to the front.
  */
 export const CATEGORIES = [
   ['before', 'Before a storm'],
   ['out', 'If power goes out'],
   ['heat', 'Electric heat'],
   ['medical', 'Medical needs'],
+  ['help', 'Getting help leaving'],
   ['after', 'After'],
 ];
 const ITEMS = [
@@ -43,15 +47,6 @@ const ITEMS = [
     title: 'Know your nearest shelter',
     why: 'Call 2-1-1 if you’re not sure.',
     short: 'find your nearest shelter',
-  },
-  {
-    id: 'care',
-    cat: 'before',
-    icon: 'people',
-    title: 'Plan for kids and pets',
-    why: 'Warm gear, food, and a safe spot.',
-    short: 'plan for kids and pets',
-    when: (a) => (a.people || []).some((p) => p === 'kids' || p === 'pets'),
   },
   {
     id: 'room',
@@ -92,7 +87,7 @@ const ITEMS = [
     title: 'Plan for no electric heat',
     why: 'Heat stops when the power does.',
     short: 'plan for no electric heat',
-    when: (a) => a.heat === 'electric',
+    when: (a) => enabledFlags(a).heat,
   },
   {
     id: 'warm',
@@ -101,7 +96,7 @@ const ITEMS = [
     title: 'Pick a warm place to go',
     why: 'Public shelters open in extreme cold.',
     short: 'pick a warm place to go',
-    when: (a) => a.heat === 'electric',
+    when: (a) => enabledFlags(a).heat,
   },
   {
     id: 'meds',
@@ -110,7 +105,7 @@ const ITEMS = [
     title: 'Gather your medications',
     why: 'Keep each person’s needs in mind.',
     short: 'gather your medications',
-    when: (a) => a.medical === 'yes',
+    when: (a) => enabledFlags(a).medical,
   },
   {
     id: 'devices',
@@ -119,7 +114,7 @@ const ITEMS = [
     title: 'Plan power for medical devices',
     why: 'Ask your provider about backup.',
     short: 'plan power for medical devices',
-    when: (a) => a.medical === 'yes',
+    when: (a) => enabledFlags(a).medical,
   },
   {
     id: 'numbers',
@@ -128,7 +123,25 @@ const ITEMS = [
     title: 'Save key phone numbers',
     why: 'Doctor, pharmacy, and a friend.',
     short: 'save key phone numbers',
-    when: (a) => a.medical === 'yes',
+    when: (a) => enabledFlags(a).medical,
+  },
+  {
+    id: 'ride',
+    cat: 'help',
+    icon: 'people',
+    title: 'Line up a ride',
+    why: 'Someone who can drive you out.',
+    short: 'line up a ride',
+    when: (a) => enabledFlags(a).help,
+  },
+  {
+    id: 'buddy',
+    cat: 'help',
+    icon: 'phone',
+    title: 'Ask someone to check on you',
+    why: 'A neighbor or family member.',
+    short: 'ask someone to check on you',
+    when: (a) => enabledFlags(a).help,
   },
   {
     id: 'neighbors',
@@ -147,46 +160,20 @@ const ITEMS = [
     short: 'restock supplies',
   },
 ];
-export const SETUP_STEPS = [
-  {
-    key: 'heat',
-    title: 'How do you heat your home?',
-    multi: false,
-    options: [
-      ['electric', 'Electric', 'bolt'],
-      ['gas', 'Gas or oil', 'flame'],
-      ['other', 'Wood or other', 'home'],
-    ],
-  },
-  {
-    key: 'medical',
-    title: 'Does anyone rely on medical equipment?',
-    multi: false,
-    options: [
-      ['yes', 'Yes', 'pill'],
-      ['no', 'No', 'check'],
-    ],
-  },
-  {
-    key: 'people',
-    title: 'Who else lives with you?',
-    multi: true,
-    options: [
-      ['older', 'Older adult', 'people'],
-      ['kids', 'Young kids', 'home'],
-      ['pets', 'Pets', 'flame'],
-    ],
-  },
-];
 export function readyItems(answers = {}) {
   return ITEMS.filter((item) => !item.when || item.when(answers));
 }
+/** Most important first: medical, getting help, electric heat, then the standard order. */
 export function enabledCategories(answers = {}) {
   const used = new Set(readyItems(answers).map((i) => i.cat));
-  return CATEGORIES.filter(([id]) => used.has(id));
+  const front = ['medical', 'help', 'heat'];
+  const rank = (id) =>
+    front.includes(id) ? front.indexOf(id) - 10 : CATEGORIES.findIndex((c) => c[0] === id);
+  return CATEGORIES.filter(([id]) => used.has(id)).sort((a, b) => rank(a[0]) - rank(b[0]));
 }
 export function readyProgress(answers, checked) {
-  const items = readyItems(answers);
+  const cats = enabledCategories(answers).map(([id]) => id);
+  const items = readyItems(answers).sort((a, b) => cats.indexOf(a.cat) - cats.indexOf(b.cat));
   const done = items.filter((item) => checked.includes(item.id));
   const next = items.find((item) => !checked.includes(item.id));
   return { total: items.length, done: done.length, next: next || null };

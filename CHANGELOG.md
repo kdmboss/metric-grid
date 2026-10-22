@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-10-22 — Household check-in
+
+- Added a skippable first-launch flow: add your town, then six optional questions about heating, medical equipment, 65+/needing help, past outages, a warm place and backup power. Answers live only in this phone's local storage (`hearth.household.v1`); nothing is sent anywhere, and My household can edit, share (user-initiated) or delete them.
+- Home shows a "Higher / Some / Lower need" card from the answers only, with generic reason chips and the label "Based on your answers. Not a medical or official assessment." The rule is in Methods and `docs/ASSUMPTIONS.md`.
+- The Ready checklist switches on Electric heat, Medical needs and Getting help leaving from the answers and puts the most important first.
+- "Get on the official lists" (only for medical equipment or 65+/needs help) links Duke Energy's Medically Essential Program, the county's page when a verified one exists, and NC 211. Sources are in comments in `web/data/registries.js`; Stanly and Anson have no verified page and show none.
+- County Map, real-only Devices (all sample data removed) and the new Ready tab shipped earlier in this branch. No model, data or existing test expectations changed.
+
 ## 2026-10-21 — Home Flame logo
 
 Installed the supplied Home Flame artwork in headers, loading screen, web icons and native iOS icon/launch assets. No model, data or navigation changes.

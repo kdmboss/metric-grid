@@ -8,73 +8,11 @@ import { ModalSheet } from '../ui/ModalSheet.jsx';
 import { ActionSheet } from '../ui/ActionSheet.jsx';
 import { PushScreen } from '../ui/PushScreen.jsx';
 import { Box, ProgressRing } from '../ResidentLayer.jsx';
-import { SPRING, SPRING_SOFT } from '../ui/springs.js';
+import { SPRING_SOFT } from '../ui/springs.js';
 import { coolingSummary } from '../device/outage.js';
 import { currentTemp } from '../device/deviceData.js';
-import { enabledCategories, readyItems, readyProgress, readyStatus, SETUP_STEPS } from './ready.js';
+import { enabledCategories, readyItems, readyProgress, readyStatus } from './ready.js';
 
-export function SetupSheet({ open, onClose, answers, onDone }) {
-  const [step, setStep] = useState(0);
-  const [draft, setDraft] = useState(answers);
-  useEffect(() => {
-    if (open) {
-      setStep(0);
-      setDraft(answers);
-    }
-  }, [open, answers]);
-  const current = SETUP_STEPS[step];
-  const value = draft[current.key] ?? (current.multi ? [] : null);
-  const last = step === SETUP_STEPS.length - 1;
-  function choose(option) {
-    setDraft((d) => {
-      if (!current.multi) return { ...d, [current.key]: option };
-      const list = d[current.key] || [];
-      return {
-        ...d,
-        [current.key]: list.includes(option) ? list.filter((o) => o !== option) : [...list, option],
-      };
-    });
-  }
-  const advance = (finished) => (last ? onDone(draft, finished) : setStep(step + 1));
-  return (
-    <ModalSheet open={open} onClose={onClose} title="Quick setup">
-      <div className="setup-progress" aria-hidden="true">
-        {SETUP_STEPS.map((_, i) => (
-          <span key={i}>
-            <motion.i initial={false} animate={{ scaleX: i <= step ? 1 : 0 }} transition={SPRING} />
-          </span>
-        ))}
-      </div>
-      <div className="ios-sheet-list">
-        <h3 className="setup-question">{current.title}</h3>
-        <div className="option-cards">
-          {current.options.map(([key, label, icon]) => {
-            const selected = current.multi ? value.includes(key) : value === key;
-            return (
-              <button
-                key={key}
-                type="button"
-                className="option-card"
-                role={current.multi ? 'checkbox' : 'radio'}
-                aria-checked={selected}
-                onClick={() => choose(key)}
-              >
-                <IconTile name={icon} tone={selected ? 'ember' : 'ink'} />
-                <span>{label}</span>
-              </button>
-            );
-          })}
-        </div>
-        <div className="setup-actions">
-          <Button variant="plain" onClick={() => advance(false)}>
-            Skip
-          </Button>
-          <Button onClick={() => advance(true)}>{last ? 'Done' : 'Next'}</Button>
-        </div>
-      </div>
-    </ModalSheet>
-  );
-}
 const PALETTE = ['#B4441C', '#3F7D4E', '#5B6B8C', '#8C6A1C', '#7A4E7E', '#2F6F73'];
 const initials = (name) =>
   name
