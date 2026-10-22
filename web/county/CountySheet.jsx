@@ -100,6 +100,9 @@ export function CountyBody({
   onWatch,
   onFacility,
   onScenario,
+  flat = false,
+  shortlist = null,
+  onResources = null,
 }) {
   const list = county === ALL ? zones : zones.filter((z) => z.COUNTY === county);
   const heatDenominator = list.reduce((n, z) => n + z.heat_total_occupied, 0);
@@ -108,23 +111,25 @@ export function CountyBody({
   return (
     <div className="county-body">
       {shift && <p className="shift-sentence">{shift}</p>}
-      <Group>
-        <label className="ios-row ios-switch-row cap-row">
-          <span className="ios-row-body">
-            <span className="ios-row-title">Limit how much any one county takes</span>
-            <span className="ios-row-detail">
-              At most {fmt(capShare * 100)}% of each plan’s cut
+      {!flat && (
+        <Group>
+          <label className="ios-row ios-switch-row cap-row">
+            <span className="ios-row-body">
+              <span className="ios-row-title">Limit how much any one county takes</span>
+              <span className="ios-row-detail">
+                At most {fmt(capShare * 100)}% of each plan’s cut
+              </span>
             </span>
-          </span>
-          <input
-            type="checkbox"
-            className="ios-switch"
-            role="switch"
-            checked={cap}
-            onChange={(event) => onCap(event.target.checked)}
-          />
-        </label>
-      </Group>
+            <input
+              type="checkbox"
+              className="ios-switch"
+              role="switch"
+              checked={cap}
+              onChange={(event) => onCap(event.target.checked)}
+            />
+          </label>
+        </Group>
+      )}
       <div className="stat-row">
         <Tile value={summary.homes} format={(v) => fmt(v)} label="Homes" />
         <Tile
@@ -139,7 +144,39 @@ export function CountyBody({
         {watch.length ? (
           watch.map((zone) => {
             const st = planStatuses(zone, record);
-            return (
+            return shortlist ? (
+              <div key={zone.zone_id} className="ios-row watch-row watch-flat">
+                <button type="button" className="watch-main" onClick={() => onWatch(zone)}>
+                  <span className="ios-row-body">
+                    <span className="ios-row-title">{areaName(zone, places)}</span>
+                    <span className="reason-chips">
+                      {reasonChips(zone).map((chip) => (
+                        <i key={chip}>{chip}</i>
+                      ))}
+                    </span>
+                    <span className="watch-status">
+                      <span>
+                        MW-only <Status value={st.baseline} />
+                      </span>
+                      <span>
+                        People-first <Status value={st.weighted} />
+                      </span>
+                    </span>
+                  </span>
+                  <Icon name="chevron" size={18} className="ios-chevron" />
+                </button>
+                {shortlist && (
+                  <button
+                    type="button"
+                    className="add-shortlist"
+                    disabled={shortlist.ids.has(zone.zone_id)}
+                    onClick={() => shortlist.onAdd(zone.zone_id)}
+                  >
+                    {shortlist.ids.has(zone.zone_id) ? 'Shortlisted' : 'Add to shortlist'}
+                  </button>
+                )}
+              </div>
+            ) : (
               <button
                 type="button"
                 key={zone.zone_id}
@@ -222,9 +259,12 @@ export function CountyBody({
         </div>
       </section>
 
-      <Group>
-        <Row icon="bolt" title="Change the storm" onClick={onScenario} />
-      </Group>
+      {(!flat || onResources) && (
+        <Group>
+          {!flat && <Row icon="bolt" title="Change the storm" onClick={onScenario} />}
+          {onResources && <Row icon="upload" title="County resources" onClick={onResources} />}
+        </Group>
+      )}
     </div>
   );
 }
