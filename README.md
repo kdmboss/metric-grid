@@ -1,6 +1,6 @@
-# Human-Centered, Energy, Allocation, Resilient, Thermally-Safe, Homes
+# Human-Centered, Energy, Allocation, Resilient, Thermally-Safe, Homes -- HEARTH
 
-METRIC-Grid helps emergency planners and community stakeholders compare how load-only and vulnerability-aware outage scenarios could distribute risk across North Carolina's 8th Congressional District (NC-08).
+HEARTH helps emergency planners and community stakeholders compare how load-only and vulnerability-aware outage scenarios could distribute risk across North Carolina's 8th Congressional District (NC-08).
 
 A Congressional App Challenge entry. It is a **public-data planning simulator**: not Duke's method, not an operational switching tool, and not a prediction of what any utility did or will do.
 
