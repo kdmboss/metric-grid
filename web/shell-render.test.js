@@ -236,3 +236,27 @@ test('Home with no town: new heading, the district card from data; with a town: 
   assert.ok(!withTown.includes('In the replay'));
   void enrichZones;
 });
+test('every tab renders an icon in both states, and the selected icon is filled', async () => {
+  const { TabBar, TABS } = await load('/web/shell/TabBar.jsx');
+  assert.equal(TABS.length, 5);
+  for (const [id] of TABS) {
+    const markup = renderToStaticMarkup(h(TabBar, { value: id, onChange: noop }));
+    const buttons = markup.split('<button').slice(1);
+    assert.equal(buttons.length, 5);
+    for (const [index, button] of buttons.entries()) {
+      assert.match(button, /<svg/, `tab ${index} has an icon`);
+      const selected = TABS[index][0] === id;
+      assert.equal(button.includes('aria-selected="true"'), selected);
+      assert.equal(
+        button.includes('data-filled="true"'),
+        selected,
+        `tab ${TABS[index][0]} filled when selected`,
+      );
+      if (selected && TABS[index][0] === 'more')
+        assert.ok(
+          button.includes('<circle') && /r="2\.6"/.test(button),
+          'filled More is solid dots',
+        );
+    }
+  }
+});

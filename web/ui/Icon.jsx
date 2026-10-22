@@ -119,6 +119,23 @@ const ICONS = {
 
 /** One icon set, one stroke weight. `filled` draws the selected variant used by the tab bar. */
 export function Icon({ name, size = 24, filled = false, className = '' }) {
+  if (filled && name === 'more')
+    // The outline glyph is three dots; its filled variant is three larger solid dots, never invisible.
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        focusable="false"
+        className={`ui-icon ${className}`}
+        data-filled="true"
+      >
+        <circle cx="5" cy="12" r="2.6" fill="currentColor" stroke="none" />
+        <circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none" />
+        <circle cx="19" cy="12" r="2.6" fill="currentColor" stroke="none" />
+      </svg>
+    );
   const Glyph = ICONS[name] || Plus;
   return (
     <Glyph
